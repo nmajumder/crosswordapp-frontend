@@ -1,0 +1,11 @@
+.mini-crossword-back-button {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 1em;
+    font-weight: 600;
+}
+
+.mini-crossword-back-button:hover {
+    cursor: pointer;
+    background-color: #F0F0F0;
+}

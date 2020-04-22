@@ -1,0 +1,17 @@
+.crossword-header-page-wrapper {
+    margin: 20px 150px;
+}
+
+.crossword-header-back-button {
+    display: inline-block;
+    margin: 20px 150px;
+    padding: 5px 10px;
+    border-radius: 1em;
+    font-weight: 600;
+    color: #3f84fb;
+}
+
+.crossword-header-back-button:hover {
+    cursor: pointer;
+    background-color: #F0F0F0;
+}

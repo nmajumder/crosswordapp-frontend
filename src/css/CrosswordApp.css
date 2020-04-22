@@ -1,0 +1,41 @@
+.crossword-app-wrapper {
+    top: 0;
+    left: 0;
+    position: fixed;
+    padding: 0 10%;
+}
+
+.crossword-app-option {
+    width: 30%;
+    height: 80%;
+    min-width: 300px;
+    min-height: 500px;
+    margin: calc(5% - 4px);
+    border-radius: 1em;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.05);
+    border-color: #DFDFDF;
+    border-style: solid;
+    border-width: 2px;
+    display: inline-block;
+}
+
+.crossword-app-option:hover {
+    cursor: pointer;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.crossword-app-header {
+    width: 80%;
+    height: 20%;
+    margin: 10% 10%;
+    text-align: center;
+    font-size: 30pt;
+}
+
+.crossword-app-body {
+    width: 80%;
+    height: 50%;
+    margin: 5% 10%;
+    text-align: left;
+    font-size: 20pt;
+}
