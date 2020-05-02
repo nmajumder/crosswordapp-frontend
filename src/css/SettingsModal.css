@@ -1,8 +1,10 @@
 .settings-modal-wrapper {
     float: left;
-    height: 700px;
+    height: 90%;
+    max-height: 725px;
+    min-height: 600px;
     width: 600px;
-    top: calc(50% - 350px);
+    top: 5%;
     left: calc(50% - 300px);
     z-index: 1;
     background-color: white;
@@ -37,18 +39,20 @@
 
 .settings-modal-body {
     margin: 20px 100px;
-    height: 490px;
+    height: calc(100% - 210px);
 }
 
 .settings-modal-section-title {
     font-size: 16pt;
     font-weight: 600;
     text-align: left;
-    margin: 10px 0;
+    margin: 5px 0;
 }
 
 .color-scheme-row-scroll {
-    height: 230px;
+    margin-bottom: 20px;
+    padding: 10px 3px;
+    height: calc(100% - 230px);
     overflow: scroll;
 }
 
@@ -69,7 +73,7 @@
 .color-scheme-row-part {
     width: 180px;
     height: 30px;
-    font-size: 16pt;
+    font-size: 15pt;
     display: inline-block;
 }
 
@@ -87,7 +91,7 @@
 }
 
 .settings-interaction-section {
-    margin: 12px 0;
+    margin: 16px 0;
 }
 
 .settings-interaction-header {
@@ -118,7 +122,7 @@
     margin: 0 100px 30px 100px;
 }
 
-.modal-footer-btn {
+.settings-restore-button {
     width: 150px;
     height: 50px;
     border: none;
@@ -128,10 +132,12 @@
     font-weight: 800;
     font-size: 11pt;
     color: white;
+    background-color: #3f84fb;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
-.settings-restore-button {
-    background-color: #3f84fb;
+.settings-restore-button:hover {
+    background-color: #1f64db;
 }
 
 .settings-restore-button:disabled {

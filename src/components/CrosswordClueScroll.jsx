@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import '../css/CrosswordBoardApp.css'
+import Settings from '../libs/Settings.js'
 
 class CrosswordClueScroll extends Component {
     constructor (props) {
@@ -18,19 +18,28 @@ class CrosswordClueScroll extends Component {
 
     componentDidUpdate() {
         let selectedInd = this.props.clueList.findIndex(c => c.number === this.props.selectedClue.number)
-        this.scrollRef.current.scrollTop = this.clueRefs[selectedInd].current.offsetTop - this.clueRefs[0].current.offsetTop
+        for (let clue of this.props.clueList) {
+            this.clueRefs.push(React.createRef())
+        }
+        try {
+            if (this.scrollRef !== undefined) {
+                this.scrollRef.current.scrollTop = this.clueRefs[selectedInd].current.offsetTop - this.clueRefs[0].current.offsetTop
+            }
+        } catch(error) {
+            // this will fail first time before we have rendered the clues
+        }
     }
 
     getClueBackgroundColor (clue) {
         if (clue.number === this.props.selectedClue.number && this.props.isMatchingDirection) {
-            return this.props.settings.colorScheme.colors[2]
+            return Settings.colorScheme.colors[2]
         }
         return "white"
     }
 
     getClueBorderColor (clue) {
         if (clue.number === this.props.selectedClue.number) {
-            return this.props.settings.colorScheme.colors[2]
+            return Settings.colorScheme.colors[2]
         }   
         return "white"
     }
@@ -60,8 +69,7 @@ CrosswordClueScroll.propTypes = {
     clueList: PropTypes.array.isRequired,
     selectedClue: PropTypes.object.isRequired,
     isMatchingDirection: PropTypes.bool.isRequired,
-    clueClicked: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired
+    clueClicked: PropTypes.func.isRequired
 }
 
 export default CrosswordClueScroll

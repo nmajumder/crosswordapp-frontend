@@ -5,7 +5,12 @@ class CrosswordKeyActions {
         let [r, c] = [selection.rowCoord, selection.colCoord]
         let boardSize = grid.length
         let wasEmpty = grid[r][c].value === ""
-        grid[r][c].value = key
+        if (this.canBeChanged(grid[r][c])) {
+            grid[r][c].value = key
+            if (grid[r][c].status === "CheckedFalse") {
+                grid[r][c].status = "Unchecked"
+            }
+        }
         if (selection.direction === "Across") {
             if (wasEmpty || c+1 === boardSize || grid[r][c+1].value === "_") {
                 // find next open square in the word with wrapping
@@ -31,35 +36,34 @@ class CrosswordKeyActions {
                 selection.rowCoord = r+1
             }
         }
-        return selection
     }
 
     delete (board) {
         let grid = board.grid
         let selection = board.selection
         let [r, c] = [selection.rowCoord, selection.colCoord]
-        let boardSize = grid.length
-        let wasEmpty = grid[r][c].value === ""
-        if (selection.direction === "Across") {
-            if (wasEmpty && c-1 >= 0 && grid[r][c-1].value !== "_") {
-                // move left a square and delete
+        let moveAndDelete = grid[r][c].value === "" || !this.canBeChanged(grid[r][c])
+        if (selection.direction === "Across" && moveAndDelete && c-1 >= 0 && grid[r][c-1].value !== "_") {
+            // move left a square and delete if able
+            if (this.canBeChanged(grid[r][c-1])) {
                 grid[r][c-1].value = ""
-                selection.colCoord = c-1
-            } else {
-                // delete this square and stay put
-                grid[r][c].value = ""
             }
-        } else {
-            if (wasEmpty && r-1 >= 0 && grid[r-1][c].value !== "_") {
-                // move up a square and delete
+            selection.colCoord = c-1
+        } else if (selection.direction === "Down" && moveAndDelete && r-1 >= 0 && grid[r-1][c].value !== "_") {
+            // move up a square and delete if able
+            if (this.canBeChanged(grid[r-1][c])) {
                 grid[r-1][c].value = ""
-                selection.rowCoord = r-1
-            } else {
-                // delete this square and stay put
+            }
+            selection.rowCoord = r-1
+        } else {
+            // delete this square if able and stay put
+            if (this.canBeChanged(grid[r][c])) {
                 grid[r][c].value = ""
             }
         }
-        return selection
+        if (grid[selection.rowCoord][selection.colCoord].status === "CheckedFalse") {
+            grid[selection.rowCoord][selection.colCoord].status = "Unchecked"
+        }
     }
 
     tabOrEnter (board, shiftKey, acrossClues, downClues) {
@@ -122,7 +126,6 @@ class CrosswordKeyActions {
             }
         }
         selection.direction = newDirection
-        return selection
     }
 
     leftArrow (board) {
@@ -154,7 +157,6 @@ class CrosswordKeyActions {
             selection.rowCoord = r
             selection.colCoord = c
         }
-        return selection
     }
 
     upArrow (board) {
@@ -186,7 +188,6 @@ class CrosswordKeyActions {
             selection.rowCoord = r
             selection.colCoord = c
         }
-        return selection
     }
 
     rightArrow (board) {
@@ -218,7 +219,6 @@ class CrosswordKeyActions {
             selection.rowCoord = r
             selection.colCoord = c
         }
-        return selection
     }
 
     downArrow (board) {
@@ -250,7 +250,10 @@ class CrosswordKeyActions {
             selection.rowCoord = r
             selection.colCoord = c
         }
-        return selection
+    }
+
+    canBeChanged (square) {
+        return square.status !== "Revealed" && square.status !== "CheckedTrue" && square.status !== "Complete"
     }
 
     gridIsFull (grid) {
@@ -291,8 +294,11 @@ class CrosswordKeyActions {
             do {
                 c++
                 if (c >= grid.length || grid[r][c].value === "_") {
+                    console.log("Found end of an across word at " + r + "," + c);
+                    console.log("Last letter had across word ind of " + grid[r][c-1].acrossWordIndex);
                     // go to beginning of word
                     c = c - grid[r][c-1].acrossWordIndex - 1
+                    console.log("Moved back to " + r + "," + c);
                 }
                 if (grid[r][c].value === "") {
                     return [r,c]

@@ -1,0 +1,140 @@
+.nav-full-page-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    background-color: black;
+    opacity: 40%;
+}
+
+.crossword-nav-bar {
+    width: 100%;
+    height: 80px;
+    top: 0;
+    left: 0;
+    background-color: #3f84fb;
+    box-shadow: 0 5px 5px 0 rgba(63, 132, 251, 0.5), 0 3px 8px 0 rgba(42, 82, 150, 0.19);
+    position: relative;
+    z-index: 1;
+}
+
+.nav-button {
+    margin: 0 10px;
+    height: 80px;
+    line-height: 80px;
+    color: white;
+    text-align: center;
+    float: left;
+    transition: background-color .3s;
+}
+
+.nav-home-button {
+    margin-left: 80px;
+    width: 150px;
+    font-size: 28pt;
+}
+
+.nav-button:hover {
+    background-color: #306acf;
+    cursor: pointer;
+}
+
+.nav-crosswords-button {
+    width: 180px;
+    line-height: 80px;
+    font-size: 18pt;
+}
+
+.nav-minis-button {
+    width: 120px;
+    font-size: 18pt;
+}
+
+#nav-account-dropdown {
+    width: 120px;
+    margin-right: 80px;
+    height: 80px;
+    float: right;
+    font-size: 30pt;
+    background-color: #3f84fb;
+    outline: none;
+    border: none;
+    transition: background-color .3s;
+}
+
+#nav-account-dropdown:hover {
+    cursor: pointer;
+    background-color: #306acf;
+}
+
+.nav-account-dropdown-body {
+    cursor: default;
+    display: block;
+    height: 300px;
+    width: 350px;
+    padding: 10px 20px;
+    background-color: white;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 15px 15px 0 rgba(0, 0, 0, 0.6), 0 8px 25px 0 rgba(0, 0, 0, 0.3);
+}
+
+.nav-account-dropdown-separator {
+    height: 5%;
+    margin-bottom: 3%;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #CCCCCC;
+}
+
+.nav-account-dropdown-profile-body {
+    margin: 10px 0 5px 0;
+}
+
+.nav-account-dropdown-settings-header {
+    font-size: 16pt;
+}
+
+.nav-account-dropdown-settings-subtitle {
+    margin: 10px 0 20px 0;
+    font-size: 11pt;
+    font-style: italic;
+}
+
+.nav-account-dropdown-settings-body {
+    margin: 10px 0;
+}
+
+.nav-account-dropdown-link {
+    color: #3f84fb;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.nav-account-dropdown-link:hover {
+    color: #306acf;
+    cursor: pointer;
+}
+
+.nav-account-dropdown-profile {
+    padding: 10px 0;
+    height: 25%;
+}
+
+.nav-account-dropdown-settings {
+    padding: 5px 0;
+}
+
+.nav-account-dropdown-settings-row {
+    margin-bottom: 6px;
+}
+
+.nav-account-dropdown-settings-row-title {
+    width: 130px;
+    font-size: 13pt;
+    display: inline-block;
+    text-align: right;
+    margin-right: 10px;
+}

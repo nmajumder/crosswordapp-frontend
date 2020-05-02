@@ -1,11 +1,85 @@
-.mini-crossword-back-button {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 1em;
-    font-weight: 600;
+.crossword-mini-app-wrapper {
+    margin: 50px 150px;
 }
 
-.mini-crossword-back-button:hover {
-    cursor: pointer;
+.crossword-mini-app-intro-header {
+    font-size: 22pt;
+}
+
+.crossword-mini-app-intro-body {
+    margin: 20px 0 30px 0;
+    font-size: 17pt;
+}
+
+.crossword-mini-app-divider {
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: #BBBBBB;
+    margin: 0 .5% 30px .5%;
+}
+
+.crossword-mini-app-customizations {
+    background-color: #d1ebff;
+    border-radius: .5em;
+    padding: 20px 25px;
+    font-size: 16pt;
+    display: inline-block;
+}
+
+.crossword-mini-app-customizations-title {
+    margin: 5px 0 15px 0;
+    font-size: 18pt;
+    font-style: italic;
+}
+
+.crossword-mini-app-size {
+    margin: 5px 20px 7px 20px;
+    display: inline-block;
+    box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.3), 0 3px 9px 0 rgba(0, 0, 0, 0.1);
+}
+
+.crossword-mini-app-difficulty {
+    margin: 5px 20px 7px 20px;
+    display: inline-block;
+    box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.3), 0 3px 9px 0 rgba(0, 0, 0, 0.1);
+}
+
+.crossword-mini-app-option {
+    padding: 8px 10px;
+    border-style: solid;
+    border-color: white;
+    border-width: 2px;
+    background-color: white;
+    float: left;
+}
+
+.crossword-mini-app-option:hover {
     background-color: #F0F0F0;
+    cursor: pointer;
+}
+
+.crossword-mini-app-generate {
+    margin: 5px 10px 5px 50px;
+    display: inline-block;
+}
+
+.crossword-mini-app-generate-button {
+    background-color: #3f84fb;
+    color: white;
+    font-size: 18pt;
+    border-radius: .2em;
+    padding: 12px;
+    float: left;
+    box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.3), 0 3px 9px 0 rgba(0, 0, 0, 0.1);
+}
+
+.crossword-mini-app-generate-button:hover {
+    background-color: #3167c4;
+    cursor: pointer;
+}
+
+.crossword-mini-generation-error {
+    color: red;
+    margin: 20px 0;
+    font-size: 14pt;
 }

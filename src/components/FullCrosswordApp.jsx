@@ -2,7 +2,9 @@ import React, { StrictMode, Component } from 'react'
 import PropTypes from 'prop-types'
 import CrosswordPage from './CrosswordPage.jsx'
 import CrosswordHeaderPage from './CrosswordHeaderPage.jsx'
+import CrosswordNavBar from './CrosswordNavBar.jsx'
 import api from '../libs/api.js'
+import UserValidation from '../libs/UserValidation.js'
 
 class FullCrosswordApp extends Component {
     constructor(props) {
@@ -20,6 +22,14 @@ class FullCrosswordApp extends Component {
 
     componentDidMount () {
         this.loadCrosswords()
+    }
+
+    componentWillReceiveProps (props) {
+        if (props.location.home === true) {
+            this.setState({
+                selectedCrossword: null
+            })
+        }
     }
 
     async loadCrosswords () {
@@ -44,30 +54,25 @@ class FullCrosswordApp extends Component {
 
     crosswordSelected (crosswordId) {
         let selectedCrossword = this.state.crosswords.find(c => c.id === crosswordId)
-        this.setState((state) => {
-            return {
-                selectedCrossword: selectedCrossword
-            }
+        this.setState({
+            selectedCrossword: selectedCrossword
         })
     }
 
     crosswordDeselected () {
-        this.setState((state) => {
-            return {
-                selectedCrossword: null
-            }
+        this.setState({
+            selectedCrossword: null
         })
     }
 
     render () {
-        const { crosswords, selectedCrossword } = this.state
+        let { crosswords, selectedCrossword } = this.state
 
         if (selectedCrossword) {
             return (
                 <StrictMode>
                     <CrosswordPage 
-                        crossword={selectedCrossword} 
-                        backSelected={this.crosswordDeselected}/>
+                        crossword={selectedCrossword} />
                 </StrictMode>
             )
         } else {
@@ -75,16 +80,11 @@ class FullCrosswordApp extends Component {
                 <StrictMode>
                     <CrosswordHeaderPage 
                         crosswords={crosswords}
-                        crosswordSelected={this.crosswordSelected}
-                        backSelected={this.props.backSelected} />
+                        crosswordSelected={this.crosswordSelected} />
                 </StrictMode>
             )
         }
     }
-}
-
-FullCrosswordApp.propTypes = {
-    backSelected: PropTypes.func.isRequired
 }
 
 export default FullCrosswordApp

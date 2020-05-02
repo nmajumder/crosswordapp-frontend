@@ -7,100 +7,82 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import '../css/SettingsModal.css'
 import Settings from '../libs/Settings.js'
+import api from '../libs/api.js'
+import User from '../libs/User.js'
 
 class SettingsModal extends Component {
     constructor (props) {
         super(props)
 
-        this.state = {
-            settings: this.props.settings
-        }
-
         this.colorSchemeClicked = this.colorSchemeClicked.bind(this)
         this.inactivityOptionClicked = this.inactivityOptionClicked.bind(this)
         this.soundOptionClicked = this.soundOptionClicked.bind(this)
-        this.showTimerClicked = this.showTimerClicked.bind(this)
-
         this.settingsRestored = this.settingsRestored.bind(this)
-        this.settingsAreDefault = this.settingsAreDefault.bind(this)
+        this.saveAndClose = this.saveAndClose.bind(this)
     }
 
     settingsRestored () {
-        if (this.settingsAreDefault(this.state.settings)) {
+        if (Settings.isDefault()) {
             return
         }
-        let newSettings = this.state.settings
-        newSettings.restoreDefaults()
-        this.setState({
-            settings: newSettings
-        })
-        this.props.settingsSave(this.state.settings)
-    }
-
-    settingsAreDefault () {
-        return this.state.settings.isDefault()
+        Settings.restoreDefaults()
+        this.props.settingsSave(Settings)
     }
 
     colorSchemeClicked (c) {
-        if (c.key === this.state.settings.colorScheme.key) {
+        if (c.key === Settings.colorScheme.key) {
             return
         }
-        let newSettings = this.state.settings
-        newSettings.colorScheme = c
-        this.setState({
-            settings: newSettings
-        })
-        this.props.settingsSave(this.state.settings)
+        Settings.colorScheme = c
+        this.props.settingsSave(Settings)
     }
 
     inactivityOptionClicked (seconds) {
-        if (seconds === this.state.settings.timerInactivity) {
+        if (seconds === Settings.timerInactivity) {
             return
         }
-        let newSettings = this.state.settings
-        newSettings.timerInactivity = seconds
-        this.setState({
-            settings: newSettings
-        })
-        this.props.settingsSave(this.state.settings)
+        Settings.timerInactivity = seconds
+        this.props.settingsSave(Settings)
     }
 
     soundOptionClicked (yesNo) {
-        if (yesNo === this.state.settings.playSound) {
+        if (yesNo === Settings.playSound) {
             return
         }
-        let newSettings = this.state.settings
-        newSettings.playSound = yesNo
-        this.setState({
-            settings: newSettings
-        })
-        this.props.settingsSave(this.state.settings)
+        Settings.playSound = yesNo
+        this.props.settingsSave(Settings)
     }
 
-    showTimerClicked (yesNo) {
-        if (yesNo === this.state.settings.showTimer) {
-            return
+    async saveAndClose () {
+        let response
+        let requestSuccess
+        try {
+            let colorSchemeInd = ColorSchemeList.findIndexByKey(Settings.colorScheme.key)
+            response = await api.saveSettings(User.token, colorSchemeInd, Settings.timerInactivity, Settings.playSound)
+            requestSuccess = true
+        } catch(error) {
+            requestSuccess = false
         }
-        let newSettings = this.state.settings
-        newSettings.showTimer = yesNo
-        this.setState({
-            settings: newSettings
-        })
-        this.props.settingsSave(this.state.settings)
+
+        if (!requestSuccess) {
+            console.log("There was a network error saving settings")
+        } else if (!response.data.success) {
+            console.log("There was an error saving settings: " + response.data.error)
+        }
+        this.props.settingsBack(Settings)
     }
 
     render () {
-        const { savedSettings, settings } = this.state
         return (
             <div style={{display: `${this.props.shouldShow ? "block" : "none"}`}} className="settings-modal-wrapper">
-                <FontAwesomeIcon className="settings-modal-cancel" icon={faTimes} onClick={() => this.props.settingsBack()}/>
+                <FontAwesomeIcon className="settings-modal-cancel" icon={faTimes} onClick={() => this.saveAndClose()}/>
                 <div className="settings-modal-header">Crossword Settings</div>
                 <div className="settings-modal-body">
                     <div className="settings-modal-section-title">Color Schemes</div>
                     <div className="color-scheme-row-scroll">
                         {ColorSchemeList.colorSchemes.map( (c,i) =>
                             <div key={i} className="color-scheme-row" 
-                                style={{backgroundColor : `${c.key === settings.colorScheme.key ? "#D0D0D0" : ""}`}}
+                                style={{backgroundColor : `${c.key === Settings.colorScheme.key ? "#D0D0D0" : ""}`}}
                                 onClick={() => this.colorSchemeClicked(c)}>
                                 <div className="color-scheme-row-part">
                                     <div className="color-scheme-row-name">{c.displayName}</div>
@@ -117,16 +99,16 @@ class SettingsModal extends Component {
                             <div className="settings-interaction-header">Pause game when inactive for...</div>
                             <div className="settings-interaction-body">
                                 <span className="interaction-settings-option" 
-                                    style={{backgroundColor : `${settings.timerInactivity === 30 ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${Settings.timerInactivity === 30 ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.inactivityOptionClicked(30)}>30s</span>
                                 <span className="interaction-settings-option" 
-                                    style={{backgroundColor : `${settings.timerInactivity === 60 ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${Settings.timerInactivity === 60 ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.inactivityOptionClicked(60)}>60s</span>
                                 <span className="interaction-settings-option" 
-                                    style={{backgroundColor : `${settings.timerInactivity === 90 ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${Settings.timerInactivity === 90 ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.inactivityOptionClicked(90)}>90s</span>
                                 <span className="interaction-settings-option" 
-                                    style={{backgroundColor : `${settings.timerInactivity === 0 ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${Settings.timerInactivity === 0 ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.inactivityOptionClicked(0)}>Never</span>
                             </div>
                         </div>
@@ -134,29 +116,18 @@ class SettingsModal extends Component {
                             <div className="settings-interaction-header">Play sound on completion?</div>
                             <div className="settings-interaction-body">
                                 <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${settings.playSound ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${Settings.playSound ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.soundOptionClicked(true)}>Yes</span>
                                 <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${!settings.playSound ? "#D0D0D0" : ""}`}}
+                                    style={{backgroundColor : `${!Settings.playSound ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.soundOptionClicked(false)}>No</span>
-                            </div>
-                        </div>
-                        <div className="settings-interaction-section">
-                            <div className="settings-interaction-header">Show timer?</div>
-                            <div className="settings-interaction-body">
-                                <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${settings.showTimer ? "#D0D0D0" : ""}`}}
-                                    onClick={() => this.showTimerClicked(true)}>Yes</span>
-                                <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${!settings.showTimer ? "#D0D0D0" : ""}`}}
-                                    onClick={() => this.showTimerClicked(false)}>No</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="settings-modal-footer">
-                    <Button disabled={this.settingsAreDefault()}
-                        className="modal-footer-btn settings-restore-button"
+                    <Button disabled={Settings.isDefault()}
+                        className="settings-restore-button"
                         onClick={() => this.settingsRestored()}>Restore Defaults</Button>
                 </div>
             </div>
@@ -166,7 +137,6 @@ class SettingsModal extends Component {
 
 SettingsModal.propTypes = {
     shouldShow: PropTypes.bool.isRequired,
-    settings: PropTypes.object.isRequired,
     settingsSave: PropTypes.func.isRequired,
     settingsBack: PropTypes.func.isRequired
 }

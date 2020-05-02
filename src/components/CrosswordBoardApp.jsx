@@ -3,66 +3,49 @@ import PropTypes from 'prop-types'
 import '../css/CrosswordBoardApp.css'
 import CrosswordClueScroll from './CrosswordClueScroll.jsx'
 import api from '../libs/api.js'
+import Settings from '../libs/Settings.js'
 import CrosswordSquareSlash from './CrosswordSquareSlash'
 
 class CrosswordBoardApp extends Component {
     constructor (props) {
         super(props)
 
-        this.acrossClues = this.props.crossword.acrossClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
-        this.downClues = this.props.crossword.downClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
-        this.clueRefMap = this.props.crossword.clueRefMap
+        this.acrossClues = this.props.acrossClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
+        this.downClues = this.props.downClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
+        this.clueRefMap = this.props.clueRefMap
 
         this.getSelectedSquares = this.getSelectedSquares.bind(this)
         this.getReferencedSquares = this.getReferencedSquares.bind(this)
         this.getSquaresOfClue = this.getSquaresOfClue.bind(this)
         this.getSquareBackgroundColor = this.getSquareBackgroundColor.bind(this)
         this.getSquareValueColor = this.getSquareValueColor.bind(this)
-
-        this.crosswordIsComplete = this.crosswordIsComplete.bind(this)
+        this.getSquareStyle = this.getSquareStyle.bind(this)
     }
 
-    async crosswordIsComplete (showNotComplete) {
-        let response
-        let requestSuccess = false
-        try {
-            console.log('Checking whether crossword is finished...')
-            console.log(this.props.crossword.board)
-            response = await api.crosswordIsComplete(this.props.crossword.id, "ME", this.props.crossword.board)
-            console.log(response)
-            requestSuccess = response.status === 200
-        } catch (error) {
-            requestSuccess = false
-        }
-
-        if (requestSuccess) {
-            if (response.data) {
-                this.props.crosswordFinished()
-            } else {
-                if (showNotComplete) {
-                    this.props.crosswordUnfinished()
-                }
-            }
-        }
+    componentWillReceiveProps (props) {
+        this.acrossClues = this.props.acrossClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
+        this.downClues = this.props.downClues.sort((c1, c2) => (c1.number > c2.number) ? 1 : -1)
     }
 
     getSelectedSquares (selection) {
-        let boardSquare = this.props.crossword.board.grid[selection.rowCoord][selection.colCoord]
+        if (this.props.generating) return []
+        let boardSquare = this.props.board.grid[selection.rowCoord][selection.colCoord]
         let selectedCoordList = []
         if (selection.direction === "Across") {
-            let clue = this.acrossClues.find(clue => clue.number === boardSquare.acrossClueNum)
+            let clue = this.props.acrossClues.find(clue => clue.number === boardSquare.acrossClueNum)
             selectedCoordList = selectedCoordList.concat(this.getSquaresOfClue(clue))
         } else {
-            let clue = this.downClues.find(clue => clue.number === boardSquare.downClueNum)
+            let clue = this.props.downClues.find(clue => clue.number === boardSquare.downClueNum)
             selectedCoordList = selectedCoordList.concat(this.getSquaresOfClue(clue))
         }
         return selectedCoordList
     }
 
     getReferencedSquares (selection) {
+        if (this.props.generating) return []
         let selectedCoordList = []
         if (selection.direction === "Across") {
-            let clueNum = this.props.crossword.board.grid[selection.rowCoord][selection.colCoord].acrossClueNum
+            let clueNum = this.props.board.grid[selection.rowCoord][selection.colCoord].acrossClueNum
             let clueKey = "A" + clueNum
             if (clueKey in this.clueRefMap) {
                 for (let key of this.clueRefMap[clueKey]) {
@@ -76,7 +59,7 @@ class CrosswordBoardApp extends Component {
                 }
             }
         } else {
-            let clueNum = this.props.crossword.board.grid[selection.rowCoord][selection.colCoord].downClueNum
+            let clueNum = this.props.board.grid[selection.rowCoord][selection.colCoord].downClueNum
             let clueKey = "D" + clueNum
             if (clueKey in this.clueRefMap) {
                 for (let key of this.clueRefMap[clueKey]) {
@@ -113,57 +96,89 @@ class CrosswordBoardApp extends Component {
         let thisSquareKey = [square.rowCoord, square.colCoord].toString()
         if (highlightedSquares.includes(thisSquareKey)) {
             if (thisSquareKey === [selection.rowCoord, selection.colCoord].toString()) {
-                return this.props.settings.colorScheme.colors[1]
+                return Settings.colorScheme.colors[1]
             } else {
-                return this.props.settings.colorScheme.colors[2]
+                return Settings.colorScheme.colors[2]
             }
         } else if (referencedSquares.includes(thisSquareKey)) {
-            return this.props.settings.colorScheme.colors[0]
+            return Settings.colorScheme.colors[0]
         }
         return "white"
     }
 
     getSquareValueColor (square) {
         if (square.status === "Revealed" || square.status === "CheckedTrue") {
-            return this.props.settings.colorScheme.colors[3]
+            return Settings.colorScheme.colors[4]
         }
         return "black"
     }
 
-    render () {
-        //const { currentSelection, grid } = this.state
-        const selection = this.props.crossword.board.selection
-        const grid = this.props.crossword.board.grid
+    getSquareStyle (squarePx, grid, square, selection, highlightedSquares, referencedSquares) {
+        let r = square.rowCoord
+        let c = square.colCoord
+        let bottomColor = r + 1 < grid.length ? `${grid[r+1][c].value === "_" ? "#777777" : "black"}` : "black"
+        let rightColor = c + 1 < grid.length ? `${grid[r][c+1].value === "_" ? "#777777" : "black"}` : "black"
+        let style = {
+            width: squarePx,
+            height: squarePx,
+            backgroundColor: this.getSquareBackgroundColor(square, selection, highlightedSquares, referencedSquares),
+            borderBottomColor: bottomColor,
+            borderRightColor: rightColor
+        }
+        return style
+    }
 
-        let clueWidthPx = "" + (this.props.windowWidthPx - (this.props.boardWidthPx + 160) - 2) + "px"
+    render () {
+        const selection = this.props.board.selection
+        const grid = this.props.board.grid
+
+        let clueWidthPx = "" + (this.props.windowWidthPx - (this.props.boardWidthPx + 300) - 1) + "px"
 
         const boardPx = this.props.boardWidthPx
-        const boardSize = this.props.crossword.board.grid.length
+        const boardSize = grid.length
         const rowPx = boardPx / boardSize
         const squarePx = rowPx - 1
 
         const highlightedSquares = this.getSelectedSquares(selection)
         const referencedSquares = this.getReferencedSquares(selection)
 
-        const acrossClue = this.acrossClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].acrossClueNum)
-        const downClue = this.downClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].downClueNum)
+        const acrossClue = this.props.generating ? null : this.acrossClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].acrossClueNum)
+        const downClue = this.props.generating ? null : this.downClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].downClueNum)
 
         let squareNumberStyle = {
-            fontSize: `${boardSize > 15 ? "6pt" : `${boardSize > 9 ? "9pt" : "16pt"}`}`,
-            marginLeft: `${boardSize <= 9 ? "5px" : ""}`,
-            marginTop: `${boardSize <= 9 ? "4px" : ""}`
+            fontSize: boardSize > 15 ? "6pt" : `${boardSize > 9 ? "9pt" : `${boardSize > 6 ? "15pt" : "16pt"}`}`,
+            marginLeft: boardSize <= 9 ? "5px" : "",
+            marginTop: boardSize <= 9 ? "4px" : ""
         }
-        let squareValueStyle = {
-            width: squarePx,
-            height: squarePx/2,
-            marginTop: squarePx*3/10,
-            fontSize: `${boardSize > 15 ? "13pt" : `${boardSize > 10 ? "17pt" : "44pt"}`}`
+
+        let squareFontSizeMap = {
+            5: ["68px", "76px"],
+            6: ["58px", "66px"],
+            7: ["52px", "60px"],
+            8: ["43px", "50px"],
+            9: ["40px", "45px"],
+            15: ["22px", "28px"],
+            21: ["17px", "21px"]
         }
+
+        let squareMarginTopMap = {
+            5: [squarePx*3/10, squarePx*35/100],
+            6: [squarePx*35/100, squarePx*35/100],
+            7: [squarePx*3/10, squarePx*3/10],
+            8: [squarePx*35/100, squarePx*35/100],
+            9: [squarePx*3/10, squarePx*35/100],
+            15: [squarePx*4/10, squarePx*35/100],
+            21: [squarePx*33/100, squarePx*3/10]
+        }
+
+        let squareValueSize = squareFontSizeMap[boardSize][0]
+        let squareMarginTop = squareMarginTopMap[boardSize][0]
 
         if (boardPx > 700) {
             // handle bigger board on large screens
-            squareNumberStyle["fontSize"] = `${boardSize > 15 ? "10pt" : `${boardSize > 10 ? "13pt" : "22pt"}`}`
-            squareValueStyle["fontSize"] = `${boardSize > 15 ? "20pt" : `${boardSize > 10 ? "24pt" : "64pt"}`}`
+            squareNumberStyle["fontSize"] = `${boardSize > 15 ? "8pt" : `${boardSize > 10 ? "12pt" : "22pt"}`}`
+            squareValueSize = squareFontSizeMap[boardSize][1]
+            squareMarginTop = squareMarginTopMap[boardSize][1]
         }
 
         return (
@@ -174,15 +189,13 @@ class CrosswordBoardApp extends Component {
                             <div key={i} style={{height : rowPx}}>
                                 {row.map( (square, j) => 
                                     <div key={j} className={"crossword-square"} onClick={() => { this.props.boardSquareClicked(square) }}
-                                            style={{width : squarePx, height : squarePx, 
-                                                backgroundColor : this.getSquareBackgroundColor(square, selection, highlightedSquares, referencedSquares)}}>
+                                            style={this.getSquareStyle(squarePx, grid, square, selection, highlightedSquares, referencedSquares)}>
                                         <div className="board-square-number" style={squareNumberStyle}>
                                             {grid[i][j].number > 0 ? grid[i][j].number : ""}</div>
                                         <div className="board-square-value" 
-                                            style={{width: squarePx, height: squarePx/2, marginTop: squarePx*3/10,
+                                            style={{width: squarePx, height: squarePx/2, marginTop: squareMarginTop,
                                                 color: this.getSquareValueColor(square),
-                                                fontSize: `${boardSize > 15 ? `${boardPx > 700 ? "20pt" : "13pt"}` : 
-                                                    `${boardSize > 10 ? `${boardPx > 700 ? "24pt" : "17pt"}` : `${boardPx > 700 ? "64pt" : "44pt"}`}`}`}}>
+                                                fontSize: squareValueSize}}>
                                             {square.value === "" || square.value === '_' ? '' : square.value}
                                         </div>
                                         <CrosswordSquareSlash 
@@ -194,22 +207,22 @@ class CrosswordBoardApp extends Component {
 
                         )}
                     </div>
-                    <div className="crossword-clue-section" style={{width : clueWidthPx, height : boardPx}}>
-                        <CrosswordClueScroll 
-                            listTitle={"Across"}
-                            clueList={this.acrossClues}
-                            selectedClue={acrossClue}
-                            isMatchingDirection={selection.direction === 'Across'}
-                            clueClicked={this.props.clueClicked}
-                            settings={this.props.settings}/>
-                        <CrosswordClueScroll 
-                            listTitle={"Down"}
-                            clueList={this.downClues}
-                            selectedClue={downClue}
-                            isMatchingDirection={selection.direction === 'Down'}
-                            clueClicked={this.props.clueClicked}
-                            settings={this.props.settings}/>
-                    </div>
+                    { this.props.generating ? null :
+                        <div className="crossword-clue-section" style={{width : clueWidthPx, height : boardPx}}>
+                            <CrosswordClueScroll 
+                                listTitle={"Across"}
+                                clueList={this.acrossClues}
+                                selectedClue={acrossClue}
+                                isMatchingDirection={selection.direction === 'Across'}
+                                clueClicked={this.props.clueClicked}/>
+                            <CrosswordClueScroll 
+                                listTitle={"Down"}
+                                clueList={this.downClues}
+                                selectedClue={downClue}
+                                isMatchingDirection={selection.direction === 'Down'}
+                                clueClicked={this.props.clueClicked}/>
+                        </div>
+                    }
                 </div>
             </Fragment>
         )
@@ -217,15 +230,15 @@ class CrosswordBoardApp extends Component {
 }
 
 CrosswordBoardApp.propTypes = {
-    crossword: PropTypes.object.isRequired,
+    board: PropTypes.object.isRequired,
+    generating: PropTypes.bool,
+    acrossClues: PropTypes.array.isRequired,
+    downClues: PropTypes.array.isRequired,
+    clueRefMap: PropTypes.object.isRequired,
     boardSquareClicked: PropTypes.func.isRequired,
     clueClicked: PropTypes.func.isRequired,
-    typingDisabled: PropTypes.bool.isRequired,
     boardWidthPx: PropTypes.number.isRequired,
-    windowWidthPx: PropTypes.number.isRequired,
-    settings: PropTypes.object.isRequired,
-    crosswordFinished: PropTypes.func.isRequired,
-    crosswordUnfinished: PropTypes.func.isRequired
+    windowWidthPx: PropTypes.number.isRequired
 }
 
 export default CrosswordBoardApp

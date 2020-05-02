@@ -10,7 +10,7 @@ class Timer extends Component {
             elapsed: this.props.startingValue
         }
     }
-
+    
     componentDidMount () {
         this.timerInterval = setInterval(() => {
             if (!this.props.isPaused) {
@@ -18,6 +18,12 @@ class Timer extends Component {
                     elapsed: elapsed + 1
                 }))
                 this.props.getValue(this.state.elapsed)
+            }
+            if (this.props.startingValue === 0) {
+                this.setState({
+                    elapsed: 0
+                })
+                this.props.getValue(this.state.elapsed);
             }
         }, 1000)
     }

@@ -11,22 +11,11 @@
 
 .crossword-page-wrapper {
     margin: 20px 80px 40px 80px;
-    height: 850px;
+    height: 1000px;
 }
 
 .btn:hover {
     cursor: pointer;
-}
-
-.crossword-page-back-button {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 1em;
-    font-weight: 600;
-}
-
-.crossword-page-back-button:hover {
-    background-color: #F0F0F0;
 }
 
 .crossword-page-heading {
@@ -36,8 +25,7 @@
 
 .crossword-page-title {
     margin: 30px 0px 10px 0px;
-    font-size: 20pt;
-    font-weight: 500;
+    font-size: 22pt;
 }
 
 .crossword-page-controls {
@@ -63,23 +51,7 @@
 }
 
 .crossword-settings:hover {
-    background-color: #F0F0F0;
-}
-
-.crossword-help {
-    float: left;
-    width: 70px;
-    height: 50px;
-    height: 100%;
-    text-align: center;
-}
-
-.crossword-help-button {
-    height: 50px;
-    font-size: 28pt;
-}
-
-.crossword-help:hover {
+    cursor: pointer;
     background-color: #F0F0F0;
 }
 
@@ -96,9 +68,9 @@
 }
 
 .crossword-timer-pause-wrapper {
-    width: calc(100% - 480px);
+    width: calc(100% - 414px);
     height: 100%;
-    margin-right: 76px;
+    margin-right: 50px;
     float: left;
     text-align: center;
 }
@@ -121,11 +93,41 @@
 }
 
 .crossword-dropdowns {
-    width: 264px;
+    width: 294px;
     float: left;
 }
 
-#crossword-check-dropdown, #crossword-reveal-dropdown, #crossword-clear-dropdown {
+.crossword-reset-button {
+    width: 80px;
+    height: 50px;
+    line-height: 50px;
+    margin-left: 38px;
+    font-size: 16pt;
+    color: white;
+    text-align: center;
+    float: right;
+    border: none;
+    outline: none;
+}
+
+.crossword-reset-button:hover {
+    cursor: pointer;
+}
+
+.crossword-reset-button-overlay {
+    position: fixed;
+    height: 50px;
+    width: 80px;
+    background-color: black;
+    opacity: 0%;
+}
+
+.crossword-reset-button-overlay:hover {
+    cursor: pointer;
+    opacity: 15%;
+}
+
+#crossword-check-dropdown, #crossword-reveal-dropdown {
     width: 80px;
     height: 50px;
     margin-left: 8px;
@@ -137,7 +139,7 @@
     outline: none;
 }
 
-#crossword-check-dropdown:hover, #crossword-reveal-dropdown:hover, #crossword-clear-dropdown:hover {
+#crossword-check-dropdown:hover, #crossword-reveal-dropdown:hover {
     cursor: pointer;
     background-color: #F0F0F0;
 }

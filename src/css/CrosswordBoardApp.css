@@ -18,6 +18,14 @@
     border-bottom-width: 1px;
     border-right-style: solid;
     border-right-width: 1px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.crossword-square:hover {
+    cursor: default;
 }
 
 .board-square-number {
@@ -29,13 +37,10 @@
 
 .board-square-value {
     position: absolute;
-}
-
-.board-square-slash {
-    position: absolute;
-    font-size: 40pt;
-    margin-left: 15px;
-    color: red;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .crossword-clue-section {
@@ -65,7 +70,7 @@
     overflow: scroll;
 }
 
-@media only screen and (max-width: 1240px), (min-width: 1600px) and (max-width: 1900px) {
+@media only screen and (max-width: 1350px), (min-width: 1600px) and (max-width: 1900px) {
     .crossword-clue-list {
         height: 49%;
         width: 93%;

@@ -15,8 +15,8 @@
 }
 
 .message-modal-body {
-    margin: 60px 15% 40px 15%;
-    height: 100px;
+    margin: 60px 15% 60px 15%;
+    min-height: 80px;
     width: 70%;
     font-size: 24pt;
 }
@@ -26,7 +26,7 @@
     height: 130;
 }
 
-.message-modal-button {
+.message-modal-button-primary {
     height: 70px;
     width: 140px;
     margin: 0 15px;
@@ -34,13 +34,32 @@
     font-size: 16pt;
     font-weight: 800;
     border-radius: 1.5em;
-    color: white;
     background-color: #3f84fb;
+    color: white;
     outline: none;
     box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
-.message-modal-button:hover {
+.message-modal-button-primary:hover {
     cursor: pointer;
     background-color: #1f64db;
+}
+
+.message-modal-button-secondary {
+    height: 70px;
+    width: 140px;
+    margin: 0 15px;
+    display: inline-block;
+    font-size: 16pt;
+    font-weight: 800;
+    border-radius: 1.5em;
+    background-color: #CCCCCC;
+    color: black;
+    outline: none;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.message-modal-button-secondary:hover {
+    cursor: pointer;
+    background-color: #AAAAAA;
 }
