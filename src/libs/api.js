@@ -6,8 +6,6 @@ const axiosInstance = axios.create({
     timeout: 3000
 })
 class api {
-    
-
     /* USER APIS */
     createUser (email, user, pass) {
         return axiosInstance.post('/user/create', {email: email, username: user, password: pass})
@@ -31,13 +29,17 @@ class api {
         return axiosInstance.post('/user/validate', {token: token})
     }
 
-    /* CROSSWORDS APIS */
-    getAllCrosswords () {
-        return axiosInstance.get('/crossword/all')
+    changePassword (email, oldPassword, newPassword) {
+        return axiosInstance.put('/user/password', {email: email, password: oldPassword, newPassword: newPassword})
     }
 
-    getCrossword (id, userid) {
-        return axiosInstance.get(`/crossword/${id}/${userid}`)
+    resetPassword (email) {
+        return axiosInstance.put('/user/password/reset', {email: email})
+    }
+
+    /* CROSSWORDS APIS */
+    getAllCrosswords (userid) {
+        return axiosInstance.get(`/crossword/${userid}/all`)
     }
 
     updateCrossword (id, userid, board) {
@@ -73,15 +75,27 @@ class api {
     }
 
     clearCrosswordPuzzle (id, userid, board) {
-        return axiosInstance.put(`/crossword/${id}/${userid}/clear/puzzle`, board)
+        return axiosInstance.put(`/crossword/${id}/${userid}/reset`, board)
     }
 
     /* MINI APIS */
-    generateMini (size, difficulty) {
-        return axiosInstance.get(`/mini/${size}/${difficulty}/generate`, {timeout: 10000})
+    generateMini (userid, size, difficulty) {
+        return axiosInstance.get(`/mini/${userid}/${size}/${difficulty}/generate`, {timeout: 12000})
     }
 
+    miniCompleted (userid, size, difficulty, seconds, checked, revealed) {
+        return axiosInstance.post(`/mini/${userid}/completed`, {
+            size: size, 
+            difficulty: difficulty, 
+            seconds: seconds,
+            checked: checked,
+            revealed: revealed
+        })
+    }
 
+    getMiniStats (userid) {
+        return axiosInstance.get(`/mini/${userid}/stats`)
+    }
 }
 
 export default new api()

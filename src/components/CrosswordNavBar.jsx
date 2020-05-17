@@ -19,16 +19,20 @@ class CrosswordNavBar extends Component {
 
         this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this)
         this.linkAccount = this.linkAccount.bind(this)
+        this.loginExisting = this.loginExisting.bind(this)
+        this.manageAccount = this.manageAccount.bind(this)
         this.logout = this.logout.bind(this)
     }
 
-    componentDidMount () {
-        if (this.props.location.pathname === "/") {
+    async componentDidMount () {
+        if (this.props.location.pathname === "/" 
+                || this.props.location.pathname === "/crosswords" 
+                || this.props.location.pathname === "/stats") {
             return
         }
         console.log("Validating user from nav bar")
-        let user = UserValidation.validateUser()
-        let validated = user.token !== null && user.email !== null && user.username !== null
+        let user = await UserValidation.validateUser()
+        let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
         if (validated) {
             if (this.props.loggedIn) this.props.loggedIn()
         } else {
@@ -44,6 +48,16 @@ class CrosswordNavBar extends Component {
 
     linkAccount () {
         localStorage.setItem('link', 'true')
+        this.props.history.push('/')
+    }
+
+    loginExisting () {
+        localStorage.setItem('logout', 'true')
+        this.props.history.push('/')
+    }
+
+    manageAccount () {
+        localStorage.setItem('manage', 'true')
         this.props.history.push('/')
     }
 
@@ -70,6 +84,9 @@ class CrosswordNavBar extends Component {
                     <div className="nav-minis-button nav-button" onClick={() => this.props.history.push('/minis')}>
                         Minis
                     </div>
+                    <div className="nav-stats-button nav-button" onClick={() => this.props.history.push('/stats')}>
+                        Stats
+                    </div>
                     <DropdownButton id="nav-account-dropdown"
                         title={<FontAwesomeIcon style={{color: "white"}} icon={faUser} />}
                         onToggle={(isOpen, event, metadata) => { this.toggleDropdownOpen(isOpen) }}>
@@ -83,12 +100,16 @@ class CrosswordNavBar extends Component {
                                     <div className="nav-account-dropdown-profile-body">
                                         <div>You are not signed in.</div>
                                         <div className="nav-account-dropdown-link" onClick={() => this.linkAccount()}>
-                                            Create an account to sync your progress.
+                                            Create an account to sync your progress
+                                        </div>
+                                        <div className="nav-account-dropdown-link bottom-link" onClick={() => this.loginExisting()}>
+                                            Login to an existing account
                                         </div>
                                     </div> :
                                     <div className="nav-account-dropdown-profile-body">
                                         <div>Email: {User.email}</div>
-                                        <div className="nav-account-dropdown-link" onClick={() => this.logout()}>Log out.</div>
+                                        <div className="nav-account-dropdown-link" onClick={() => this.manageAccount()}>Change password</div>
+                                        <div className="nav-account-dropdown-link bottom-link" onClick={() => this.logout()}>Log out</div>
                                     </div>
                                 }
                             </div>

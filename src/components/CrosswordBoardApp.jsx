@@ -29,7 +29,7 @@ class CrosswordBoardApp extends Component {
 
     getSelectedSquares (selection) {
         if (this.props.generating) return []
-        let boardSquare = this.props.board.grid[selection.rowCoord][selection.colCoord]
+        let boardSquare = this.props.grid[selection.rowCoord][selection.colCoord]
         let selectedCoordList = []
         if (selection.direction === "Across") {
             let clue = this.props.acrossClues.find(clue => clue.number === boardSquare.acrossClueNum)
@@ -45,7 +45,7 @@ class CrosswordBoardApp extends Component {
         if (this.props.generating) return []
         let selectedCoordList = []
         if (selection.direction === "Across") {
-            let clueNum = this.props.board.grid[selection.rowCoord][selection.colCoord].acrossClueNum
+            let clueNum = this.props.grid[selection.rowCoord][selection.colCoord].acrossClueNum
             let clueKey = "A" + clueNum
             if (clueKey in this.clueRefMap) {
                 for (let key of this.clueRefMap[clueKey]) {
@@ -59,7 +59,7 @@ class CrosswordBoardApp extends Component {
                 }
             }
         } else {
-            let clueNum = this.props.board.grid[selection.rowCoord][selection.colCoord].downClueNum
+            let clueNum = this.props.grid[selection.rowCoord][selection.colCoord].downClueNum
             let clueKey = "D" + clueNum
             if (clueKey in this.clueRefMap) {
                 for (let key of this.clueRefMap[clueKey]) {
@@ -129,10 +129,11 @@ class CrosswordBoardApp extends Component {
     }
 
     render () {
-        const selection = this.props.board.selection
-        const grid = this.props.board.grid
 
-        let clueWidthPx = "" + (this.props.windowWidthPx - (this.props.boardWidthPx + 300) - 1) + "px"
+        const selection = this.props.selection
+        const grid = this.props.grid
+
+        let clueWidthPx = "" + (this.props.windowWidthPx - (this.props.boardWidthPx + 160) - 1) + "px"
 
         const boardPx = this.props.boardWidthPx
         const boardSize = grid.length
@@ -145,40 +146,57 @@ class CrosswordBoardApp extends Component {
         const acrossClue = this.props.generating ? null : this.acrossClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].acrossClueNum)
         const downClue = this.props.generating ? null : this.downClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].downClueNum)
 
+        let squareNumberFontSizeMap = {
+            5: ["21px", "22px", "26px"],
+            6: ["20px", "21px", "25px"],
+            7: ["16px", "20px", "24px"],
+            8: ["17px", "19px", "23px"],
+            9: ["15px", "18px", "22px"],
+            15: ["12px", "12px", "14px"],
+            21: ["8px", "8px", "10px"]
+        }
+
         let squareNumberStyle = {
-            fontSize: boardSize > 15 ? "6pt" : `${boardSize > 9 ? "9pt" : `${boardSize > 6 ? "15pt" : "16pt"}`}`,
-            marginLeft: boardSize <= 9 ? "5px" : "",
-            marginTop: boardSize <= 9 ? "4px" : ""
+            fontSize: squareNumberFontSizeMap[boardSize][0],
+            marginLeft: boardSize >= 15 ? "1px" : "5px",
+            marginTop: boardSize >= 15 ? "0px" : "4px"
         }
 
         let squareFontSizeMap = {
-            5: ["68px", "76px"],
-            6: ["58px", "66px"],
-            7: ["52px", "60px"],
-            8: ["43px", "50px"],
-            9: ["40px", "45px"],
-            15: ["22px", "28px"],
-            21: ["17px", "21px"]
+            5: ["60px", "68px", "76px"],
+            6: ["50px", "58px", "66px"],
+            7: ["44px", "52px", "60px"],
+            8: ["36px", "43px", "50px"],
+            9: ["32px", "40px", "45px"],
+            15: ["22px", "22px", "28px"],
+            21: ["17px", "17px", "21px"]
         }
 
         let squareMarginTopMap = {
-            5: [squarePx*3/10, squarePx*35/100],
-            6: [squarePx*35/100, squarePx*35/100],
-            7: [squarePx*3/10, squarePx*3/10],
-            8: [squarePx*35/100, squarePx*35/100],
-            9: [squarePx*3/10, squarePx*35/100],
-            15: [squarePx*4/10, squarePx*35/100],
-            21: [squarePx*33/100, squarePx*3/10]
+            5: [squarePx*3/10, squarePx*3/10, squarePx*35/100],
+            6: [squarePx*3/10, squarePx*35/100, squarePx*35/100],
+            7: [squarePx*3/10, squarePx*3/10, squarePx*3/10],
+            8: [squarePx*35/100, squarePx*35/100, squarePx*35/100],
+            9: [squarePx*35/100, squarePx*32/100, squarePx*35/100],
+            15: [squarePx*4/10, squarePx*4/10, squarePx*35/100],
+            21: [squarePx*33/100, squarePx*33/100, squarePx*3/10]
         }
 
-        let squareValueSize = squareFontSizeMap[boardSize][0]
-        let squareMarginTop = squareMarginTopMap[boardSize][0]
+        let squareValueSize
+        let squareMarginTop
 
-        if (boardPx > 700) {
-            // handle bigger board on large screens
-            squareNumberStyle["fontSize"] = `${boardSize > 15 ? "8pt" : `${boardSize > 10 ? "12pt" : "22pt"}`}`
+        if (boardPx < 580) {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][0]
+            squareValueSize = squareFontSizeMap[boardSize][0]
+            squareMarginTop = squareMarginTopMap[boardSize][0]
+        } else if (boardPx < 700) {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][1]
             squareValueSize = squareFontSizeMap[boardSize][1]
             squareMarginTop = squareMarginTopMap[boardSize][1]
+        } else {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][2]
+            squareValueSize = squareFontSizeMap[boardSize][2]
+            squareMarginTop = squareMarginTopMap[boardSize][2]
         }
 
         return (
@@ -230,7 +248,8 @@ class CrosswordBoardApp extends Component {
 }
 
 CrosswordBoardApp.propTypes = {
-    board: PropTypes.object.isRequired,
+    grid: PropTypes.array.isRequired,
+    selection: PropTypes.object,
     generating: PropTypes.bool,
     acrossClues: PropTypes.array.isRequired,
     downClues: PropTypes.array.isRequired,

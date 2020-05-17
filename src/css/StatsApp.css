@@ -1,0 +1,31 @@
+.stats-page-wrapper {
+    margin: 50px 150px;
+}
+
+.stats-page-options-bar {
+    width: 100%;
+    border-bottom: solid #D5D5D5 2px;
+}
+
+.stats-page-option {
+    width: calc(33.3% - 1px);
+    font-size: 20pt;
+    display: inline-block;
+    padding: 15px 0 10px 0;
+    text-align: center;
+    border-bottom: solid white 5px;
+}
+
+.stats-page-option:hover {
+    cursor: pointer;
+    background-color: #F5F5F5;
+    border-bottom-color: #F5F5F5;
+}
+
+.option-left {
+    border-right: solid#D5D5D5 1px;
+}
+
+.option-right {
+    border-left: solid #D5D5D5 1px;
+}

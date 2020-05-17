@@ -1,0 +1,31 @@
+.mini-stats-page-wrapper {
+    height: 1000px;
+    margin: 50px 0;
+}
+
+.mini-stats-chart-tabs-section {
+    width: 160px;
+    float: left;
+    height: 500px;
+    margin-right: 40px;
+}
+
+.mini-stats-chart-tab {
+    height: 98px;
+    float: left;
+    width: 100%;
+    line-height: 98px;
+    text-align: center;
+}
+
+.mini-stats-chart-tab:hover {
+    background-color: #EAEAEA;
+    cursor: pointer;
+}
+
+.mini-stats-chart-section {
+    width: calc(100% - 202px);
+    height: 520px;
+    margin-top: -20px;
+    float: left;
+}

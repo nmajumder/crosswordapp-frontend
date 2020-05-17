@@ -34,13 +34,14 @@
 .login-modal-create:hover {
     color: #306acf;
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .login-modal {
     margin-top: 10px;
     width: 100%;
     height: auto;
-    min-height: 260px;
+    min-height: 280px;
 }
 
 .login-label {
@@ -66,6 +67,24 @@
 
 .login-input:focus {
     background-color: #D5D5D5;
+}
+
+.login-change-password-field {
+    font-size: 14pt;
+    margin: 5px 0;
+}
+
+.login-change-password-header {
+    width: 100px;
+    text-align: right;
+    display: inline-block;
+    margin-right: 10px;
+    font-style: italic;
+}
+
+.login-change-password-prompt {
+    font-weight: 600;
+    margin: 20px 0 10px 0;
 }
 
 .login-error-message {
@@ -106,6 +125,7 @@
 .login-forgot-info:hover {
     color: #306acf;
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .login-footer {

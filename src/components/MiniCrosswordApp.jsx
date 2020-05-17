@@ -13,6 +13,8 @@ import '../css/MiniCrosswordApp.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faPause, faTimes } from '@fortawesome/free-solid-svg-icons'
 import api from '../libs/api.js'
+import User from '../libs/User.js'
+import MiniStatsService from '../libs/MiniStatsService.js'
 
 class Square {
     constructor(val) {
@@ -67,6 +69,10 @@ class MiniCrosswordApp extends Component {
 
         this.acrossClues = []
         this.downClues = []
+        this.timerKey = (new Date()).getTime()
+        this.timerVal = 0
+        this.checked = false
+        this.revealed = false
 
         this.state = {
             size: 5,
@@ -78,8 +84,8 @@ class MiniCrosswordApp extends Component {
             settings: Settings,
             modalInfo: [],
             generating: false,
+            generateDisabled: true,
             generationError: false,
-            timerElapsed: 0,
             settingsClicked: false,
             windowSize: window.innerWidth
         }
@@ -97,9 +103,9 @@ class MiniCrosswordApp extends Component {
         this.crosswordUnfinished = this.crosswordUnfinished.bind(this)
         this.getTimerValue = this.getTimerValue.bind(this)
         this.checkForCompletion = this.checkForCompletion.bind(this)
-        this.crosswordIsComplete = this.crosswordIsComplete.bind(this)
         this.getSelectedSquare = this.getSelectedSquare.bind(this)
         this.loadSettings = this.loadSettings.bind(this)
+        this.recordStats = this.recordStats.bind(this)
 
         this.checkSquare = this.checkSquare.bind(this)
         this.checkSquareClicked = this.checkSquareClicked.bind(this)
@@ -131,7 +137,6 @@ class MiniCrosswordApp extends Component {
         document.addEventListener("keydown", this.onKeyDown, false)
         document.addEventListener('mousemove', this.idleReset)
         document.addEventListener('click', this.idleReset)
-        this.topRef.current.scrollIntoView()
         this.animationInterval = setInterval(() => {
             if (this.state.animationTimer > 0) {
                 this.state.board.setRandomGrid()
@@ -182,9 +187,8 @@ class MiniCrosswordApp extends Component {
     }
 
     getTimerValue (value) {
-        this.setState({
-            timerElapsed: value
-        })
+        console.log("Timer passing back value " + value)
+        this.timerVal = value
     }
 
     toggleDropdownVisibility (isOpen, which) {
@@ -222,13 +226,15 @@ class MiniCrosswordApp extends Component {
     }
 
     loadSettings() {
+        console.log("Callback to mini crossword app was hit with login notice")
         this.setState({
-            settings: Settings
+            settings: Settings,
+            generateDisabled: false
         })
     }
 
     pauseClicked () {
-        if (this.crosswordIsComplete()) return
+        if (this.state.complete || this.state.mini === null || this.state.generating) return
 
         this.setState({
             modalInfo: this.modalInfos["pauseManual"]
@@ -253,9 +259,6 @@ class MiniCrosswordApp extends Component {
                 }
             }
         }
-        this.setState({
-            complete: true
-        })
         this.crosswordFinished()
     }
 
@@ -264,6 +267,24 @@ class MiniCrosswordApp extends Component {
             modalInfo: this.modalInfos["puzzleCorrect"],
             complete: true
         })
+        this.recordStats()
+    }
+
+    async recordStats () {
+        let response
+        let requestSuccess
+        try {
+            response = await api.miniCompleted(User.token, this.state.mini.board.grid.length, this.state.mini.difficulty, this.timerVal, this.checked, this.revealed)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (requestSuccess) {
+            MiniStatsService.updateMiniStats(response.data)
+        } else {
+            console.log("Unable to save mini stats for completed game")
+        }
     }
 
     crosswordUnfinished () {
@@ -274,7 +295,6 @@ class MiniCrosswordApp extends Component {
     }
 
     onKeyDown (event) {
-        console.log(event)
         this.idleReset()
         // if special key pressed, allow default action
         if (event.ctrlKey || event.altKey || event.metaKey) {
@@ -286,47 +306,53 @@ class MiniCrosswordApp extends Component {
             return
         }
         let mini = this.state.mini
+        let grid = mini.board.grid
+        let selection = mini.board.selection
         let selectedStatus = this.getSelectedSquare().status
         if (event.which === 13 || event.which === 9) {
             // enter or tab
-            CrosswordKeyActions.tabOrEnter(mini.board, event.shiftKey, mini.acrossClues, mini.downClues)
+            CrosswordKeyActions.tabOrEnter(grid, selection, event.shiftKey, mini.acrossClues, mini.downClues)
         } else if (event.which === 8) {
             // delete
-            CrosswordKeyActions.delete(mini.board)
+            CrosswordKeyActions.delete(grid, selection)
+        } else if (event.which === 32) {
+            // space bar
+            selection.direction = selection.direction === "Across" ? "Down" : "Across"
         } else if (event.which === 37) {
             // left arrow
-            CrosswordKeyActions.leftArrow(mini.board)
+            CrosswordKeyActions.leftArrow(grid, selection)
         } else if (event.which === 38) {
             // up arrow
-            CrosswordKeyActions.upArrow(mini.board)
+            CrosswordKeyActions.upArrow(grid, selection)
         } else if (event.which === 39) {
             // right arrow
-            CrosswordKeyActions.rightArrow(mini.board)
+            CrosswordKeyActions.rightArrow(grid, selection)
         } else if (event.which === 40) {
             // down arrow
-            CrosswordKeyActions.downArrow(mini.board)
+            CrosswordKeyActions.downArrow(grid, selection)
         } else {
-            let gridWasFull = CrosswordKeyActions.gridIsFull(mini.board.grid)
+            let gridWasFull = CrosswordKeyActions.gridIsFull(grid)
             console.log("Grid is full? " + gridWasFull)
             if (event.which >= 65 && event.which <= 90) {
                 // a to z
-                CrosswordKeyActions.alphaNumeric(mini.board, event.key.toUpperCase())
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key.toUpperCase())
             } else if (event.which >= 48 && event.which <= 57) {
                 // 0 to 9 or the symbols on the same keys
-                CrosswordKeyActions.alphaNumeric(mini.board, event.key)
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key)
             } else if (event.which >= 186 && event.which <= 222) {
                 // various symbols that we want to allow in case of special themed puzzle
                 // disallow the underscore because it is reserved for black squares
                 if (event.key === "_") {
                     return
                 }
-                CrosswordKeyActions.alphaNumeric(mini.board, event.key)
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key)
             }
-            if (CrosswordKeyActions.gridIsFull(mini.board.grid) && this.state.complete !== true) {
-                console.log("Grid is full")
+            if (CrosswordKeyActions.gridIsFull(grid) && this.state.complete !== true) {
                 this.checkForCompletion(mini.board, !gridWasFull)
             }
         }
+        mini.board.grid = grid
+        mini.board.selection = selection
         this.setState({
             mini: mini
         })
@@ -365,11 +391,6 @@ class MiniCrosswordApp extends Component {
         })
     }
 
-    crosswordIsComplete () {
-        if (this.state.mini === null) return false
-        return this.state.complete === true
-    }
-
     getSelectedSquare () {
         let mini = this.state.mini
         return mini.board.grid[mini.board.selection.rowCoord][mini.board.selection.colCoord]
@@ -392,23 +413,27 @@ class MiniCrosswordApp extends Component {
     async generateMini () {
         this.acrossClues = []
         this.downClues = []
+        this.timerKey = (new Date()).getTime()
+        this.checked = false
+        this.revealed = false
         this.setState({
             mini: null,
             complete: false,
             generating: true,
-            generationError: false,
-            timerElapsed: 0
+            generationError: false
         })
 
         this.scrollRef.current.scrollIntoView()
         this.startBoardAnimation()
 
+        let size = this.state.size
+        let diff = this.state.difficulty
+
         let response
         let requestSuccess
         try {
-            response = await api.generateMini(this.state.size, this.state.difficulty)
-            console.log(response)
-            requestSuccess = true
+            response = await api.generateMini(User.token, size, diff)
+            requestSuccess = response.status === 200
         } catch(error) {
             requestSuccess = false
         }
@@ -417,6 +442,7 @@ class MiniCrosswordApp extends Component {
             this.setState({
                 mini: response.data
             })
+            MiniStatsService.addStartedGame(User.token, size, diff)
         } else {
             this.setState({
                 generating: false
@@ -517,7 +543,9 @@ class MiniCrosswordApp extends Component {
     }
 
     checkClicked (type) {
-        if (this.state.complete) return
+        if (this.state.complete || this.state.mini === null) return
+
+        this.checked = true
         
         if (type === "Square") {
             this.checkSquareClicked()
@@ -585,8 +613,11 @@ class MiniCrosswordApp extends Component {
     }
 
     revealClicked (type) {
-        if (this.state.complete) return
+        if (this.state.complete || this.state.mini === null) return
         
+        let gridWasFull = CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)
+        this.revealed = true
+
         if (type === "Square") {
             this.revealSquareClicked()
         } else if (type === "Word") {
@@ -594,10 +625,14 @@ class MiniCrosswordApp extends Component {
         } else {
             this.revealPuzzleClicked()
         }
+
+        if (CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)) {
+            this.checkForCompletion(this.state.mini.board, !gridWasFull)
+        }
     }
 
     resetPuzzleClicked () {
-        if (this.state.complete) {
+        if (this.state.complete || this.state.mini === null) {
             return
         }
         this.setState({
@@ -620,16 +655,17 @@ class MiniCrosswordApp extends Component {
     }
 
     render() {
-        const { size, difficulty, mini, board, complete, settings, modalInfo, generating, generationError, timerElapsed, settingsClicked, windowSize } = this.state
+        const { size, difficulty, mini, board, complete, settings, modalInfo, generating, generateDisabled, generationError, settingsClicked, windowSize } = this.state
 
         const modalOpen = settingsClicked || modalInfo.length > 0
         const colorScheme = settings.colorScheme
         const boardSize = size
-        const baseBoardPx = windowSize < 1600 ? 630 : 630 * 1.2
+        const baseBoardPx = windowSize < 1100 ? 500 : windowSize < 1600 ? 630 : 630 * 1.2
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
         const wrapperHeightPx = `${boardPx + 420}px`
 
         const selectedStyle = {borderColor: "black", backgroundColor: "#F0F0F0"}
+        const generatingStyle = {backgroundColor: "gray", pointerEvents: "none"}
 
         let modalButtonAction
         if (modalInfo[1] === "Reset") {
@@ -677,13 +713,13 @@ class MiniCrosswordApp extends Component {
                             <div className="crossword-mini-app-option" style={difficulty === "Hard" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Hard")}>Difficult</div>
                         </div>
                         <div className="crossword-mini-app-generate">
-                            <div className="crossword-mini-app-generate-button" style={{backgroundColor: generating ? "gray" : ""}}
+                            <div className="crossword-mini-app-generate-button" style={generating || generateDisabled ? generatingStyle : {}}
                                 onClick={() => this.generateMini()}>Generate</div>
                         </div>
                     </div>
                     <div className="crossword-mini-generation-error" style={{display: generationError === true ? "block" : "none"}}>
                         <FontAwesomeIcon className="login-error-x" icon={faTimes} onClick={() => this.setState({generationError: false})}/>
-                        There was an error generating the puzzle. This might happen occasionally, just hit generate again.
+                        Failed to generate a puzzle of the desired specifications. This might happen occasionally, just hit generate again.
                     </div>
                     <div ref={this.scrollRef}>
                         <div className="crossword-page-controls">
@@ -692,9 +728,8 @@ class MiniCrosswordApp extends Component {
                             </div>
                             <div className="crossword-timer-pause-wrapper">
                                 <div className="crossword-timer-pause">
-                                    <Timer isPaused={modalInfo.length > 0 || this.crosswordIsComplete() || generating || mini === null ? true : false} 
-                                    startingValue={timerElapsed} 
-                                    getValue={this.getTimerValue}/>
+                                    <Timer isPaused={modalInfo.length > 0 || complete || generating || mini === null ? true : false} 
+                                    getValue={this.getTimerValue} key={this.timerKey}/>
                                     <div className="btn crossword-pause-button" onClick={() => this.pauseClicked()}>
                                         <FontAwesomeIcon style={{color: colorScheme.colors[3]}} icon={faPause} />
                                     </div>
@@ -703,7 +738,6 @@ class MiniCrosswordApp extends Component {
                             <div className="crossword-dropdowns">
                                 <div className="crossword-reset-button" style={{backgroundColor: colorScheme.colors[3]}}
                                     onClick={() => this.resetPuzzleClicked()}>
-                                    <div className="crossword-reset-button-overlay"></div>
                                     Reset
                                 </div>
                                 <DropdownButton id="crossword-check-dropdown" 
@@ -723,7 +757,8 @@ class MiniCrosswordApp extends Component {
                             </div>
                         </div>
                         <CrosswordBoardApp
-                            board={mini === null || generating ? board : mini.board}
+                            grid={mini === null || generating ? board.grid : mini.board.grid}
+                            selection={mini === null || generating ? null : mini.board.selection}
                             generating={mini === null || generating}
                             acrossClues={this.acrossClues}
                             downClues={this.downClues}

@@ -2,6 +2,24 @@
   text-align: center;
 }
 
+.screen-width-error-msg {
+  margin: 20% 20%;
+  width: 60%;
+  font-size: 18pt;
+}
+
+@media only screen and (min-width: 1000px) {
+  .screen-width-error-msg {
+    display: none
+  }
+}
+
+@media only screen and (max-width: 999px) {
+  .app-wrapper {
+    display: none;
+  }
+}
+
 /*.App-logo {
   height: 40vmin;
   pointer-events: none;

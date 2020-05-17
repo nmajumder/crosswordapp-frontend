@@ -59,7 +59,7 @@ class SettingsModal extends Component {
         try {
             let colorSchemeInd = ColorSchemeList.findIndexByKey(Settings.colorScheme.key)
             response = await api.saveSettings(User.token, colorSchemeInd, Settings.timerInactivity, Settings.playSound)
-            requestSuccess = true
+            requestSuccess = response.status === 200
         } catch(error) {
             requestSuccess = false
         }

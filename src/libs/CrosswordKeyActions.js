@@ -1,20 +1,18 @@
 class CrosswordKeyActions {
-    alphaNumeric (board, key) {
-        let grid = board.grid
-        let selection = board.selection
+    alphaNumeric (grid, selection, key) {
         let [r, c] = [selection.rowCoord, selection.colCoord]
         let boardSize = grid.length
         let wasEmpty = grid[r][c].value === ""
         if (this.canBeChanged(grid[r][c])) {
             grid[r][c].value = key
             if (grid[r][c].status === "CheckedFalse") {
-                grid[r][c].status = "Unchecked"
+                grid[r][c].status = "PrevChecked"
             }
         }
         if (selection.direction === "Across") {
             if (wasEmpty || c+1 === boardSize || grid[r][c+1].value === "_") {
                 // find next open square in the word with wrapping
-                let newCoords = this.getNextEmptySpaceWrapping(board)
+                let newCoords = this.getNextEmptySpaceWrapping(grid, selection)
                 if (newCoords !== null) {
                     selection.rowCoord = newCoords[0]
                     selection.colCoord = newCoords[1]
@@ -26,7 +24,7 @@ class CrosswordKeyActions {
         } else {
             if (wasEmpty || r+1 === boardSize || grid[r+1][c].value === "_") {
                 // find next open square in the word with wrapping
-                let newCoords = this.getNextEmptySpaceWrapping(board)
+                let newCoords = this.getNextEmptySpaceWrapping(grid, selection)
                 if (newCoords !== null) {
                     selection.rowCoord = newCoords[0]
                     selection.colCoord = newCoords[1]
@@ -38,9 +36,7 @@ class CrosswordKeyActions {
         }
     }
 
-    delete (board) {
-        let grid = board.grid
-        let selection = board.selection
+    delete (grid, selection) {
         let [r, c] = [selection.rowCoord, selection.colCoord]
         let moveAndDelete = grid[r][c].value === "" || !this.canBeChanged(grid[r][c])
         if (selection.direction === "Across" && moveAndDelete && c-1 >= 0 && grid[r][c-1].value !== "_") {
@@ -62,13 +58,11 @@ class CrosswordKeyActions {
             }
         }
         if (grid[selection.rowCoord][selection.colCoord].status === "CheckedFalse") {
-            grid[selection.rowCoord][selection.colCoord].status = "Unchecked"
+            grid[selection.rowCoord][selection.colCoord].status = "PrevChecked"
         }
     }
 
-    tabOrEnter (board, shiftKey, acrossClues, downClues) {
-        let grid = board.grid
-        let selection = board.selection
+    tabOrEnter (grid, selection, shiftKey, acrossClues, downClues) {
         let allClues = acrossClues.concat(downClues)
         let clueInd = allClues.findIndex(c => selection.direction === "Across"
                 ? grid[selection.rowCoord][selection.colCoord].acrossClueNum === c.number && c.direction === "Across"
@@ -128,9 +122,7 @@ class CrosswordKeyActions {
         selection.direction = newDirection
     }
 
-    leftArrow (board) {
-        let grid = board.grid
-        let selection = board.selection
+    leftArrow (grid, selection) {
         if (selection.direction === "Down") {
             selection.direction = "Across"
         } else {
@@ -159,9 +151,7 @@ class CrosswordKeyActions {
         }
     }
 
-    upArrow (board) {
-        let grid = board.grid
-        let selection = board.selection
+    upArrow (grid, selection) {
         if (selection.direction === "Across") {
             selection.direction = "Down"
         } else {
@@ -190,9 +180,7 @@ class CrosswordKeyActions {
         }
     }
 
-    rightArrow (board) {
-        let grid = board.grid
-        let selection = board.selection
+    rightArrow (grid, selection) {
         if (selection.direction === "Down") {
             selection.direction = "Across"
         } else {
@@ -221,9 +209,7 @@ class CrosswordKeyActions {
         }
     }
 
-    downArrow (board) {
-        let grid = board.grid
-        let selection = board.selection
+    downArrow (grid, selection) {
         if (selection.direction === "Across") {
             selection.direction = "Down"
         } else {
@@ -286,9 +272,7 @@ class CrosswordKeyActions {
         return null
     }
 
-    getNextEmptySpaceWrapping (board) {
-        let grid = board.grid
-        let selection = board.selection 
+    getNextEmptySpaceWrapping (grid, selection) {
         let [r, c] = [selection.rowCoord, selection.colCoord]
         if (selection.direction === "Across") {
             do {

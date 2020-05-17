@@ -114,19 +114,6 @@
     cursor: pointer;
 }
 
-.crossword-reset-button-overlay {
-    position: fixed;
-    height: 50px;
-    width: 80px;
-    background-color: black;
-    opacity: 0%;
-}
-
-.crossword-reset-button-overlay:hover {
-    cursor: pointer;
-    opacity: 15%;
-}
-
 #crossword-check-dropdown, #crossword-reveal-dropdown {
     width: 80px;
     height: 50px;

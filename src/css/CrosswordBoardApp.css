@@ -32,7 +32,6 @@
     position: absolute;
     padding-left: 2px;
     padding-top: .5px;
-    font-size: 6pt;
 }
 
 .board-square-value {
@@ -55,6 +54,11 @@
     margin-bottom: 10px;
     border-bottom: solid;
     border-width: 1px;
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .crossword-clue-list {
@@ -99,6 +103,11 @@
     border-left-style: solid;
     border-left-width: 10px;
     border-left-color: white;
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .crossword-clue-row:hover {

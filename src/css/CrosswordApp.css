@@ -29,6 +29,120 @@
     }
 }
 
+.full-sized-themer-box {
+    float: left;
+    position: relative;
+    width: calc(40% - 20px);
+    min-width: 300px;
+    padding: 20px 10px;
+    margin: 0 calc(5% - 4px);
+}
+
+.full-sized-themer-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 6em;
+    box-shadow: 5px 15px 15px 5px rgba(0, 0, 0, 0.4), 0 10px 30px 0 rgba(0, 0, 0, 0.2);
+}
+
+.full-sized-themer-icon-overlay {
+    position: absolute;
+    z-index: 10;
+    top: 20px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 40px);
+    border-radius: 6em;
+    background-color: black;
+    opacity: 0;
+}
+
+.full-sized-themer-icon-overlay:hover {
+    cursor: pointer;
+    opacity: .2;
+}
+
+.generated-mini-box {
+    float: left;
+    position: relative;
+    width: calc(40% - 20px);
+    min-width: 300px;
+    padding: 20px 10px;
+    margin: 0 calc(5% - 4px)
+}
+
+.auto-icon-img {
+    width: 45%;
+    height: 45%;
+    top: 0px;
+    left: 50px;
+    z-index: 0;
+    transform: rotate(-10deg);
+}
+
+.generated-icon-img {
+    width: 65%;
+    height: 65%;
+    z-index: 2;
+    top: 120px;
+    left: 170px;
+    transform: rotate(5deg);
+}
+
+.minis-icon-img {
+    width: 50%;
+    height: 50%;
+    z-index: 4;
+    top: 290px;
+    left: 120px;
+    transform: rotate(-3deg);
+}
+
+.overlap-icon {
+    position: absolute;
+    border-radius: 2em;
+    box-shadow: 5px 15px 15px 5px rgba(0, 0, 0, 0.4), 0 10px 30px 0 rgba(0, 0, 0, 0.2);
+}
+
+.auto-icon-overlay {
+    width: 45%;
+    height: 45%;
+    top: 0px;
+    left: 50px;
+    z-index: 1;
+    transform: rotate(-10deg);
+}
+
+.generated-icon-overlay {
+    width: 65%;
+    height: 65%;
+    z-index: 3;
+    top: 120px;
+    left: 170px;
+    transform: rotate(5deg);
+}
+
+.minis-icon-overlay {
+    width: 50%;
+    height: 50%;
+    z-index: 5;
+    top: 290px;
+    left: 120px;
+    transform: rotate(-3deg);
+}
+
+.overlap-icon-overlay {
+    position: absolute;
+    border-radius: 2em;
+    background-color: black;
+    opacity: 0;
+}
+
+.overlap-icon-overlay:hover {
+    cursor: pointer;
+}
+
 .crossword-app-option {
     width: 40%;
     height: 80%;

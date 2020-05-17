@@ -5,6 +5,8 @@ import CrosswordHeaderPage from './CrosswordHeaderPage.jsx'
 import CrosswordNavBar from './CrosswordNavBar.jsx'
 import api from '../libs/api.js'
 import UserValidation from '../libs/UserValidation.js'
+import User from '../libs/User.js'
+import CrosswordService from '../libs/CrosswordService.js'
 
 class FullCrosswordApp extends Component {
     constructor(props) {
@@ -15,13 +17,22 @@ class FullCrosswordApp extends Component {
             selectedCrossword: null,
         }
 
-        this.loadCrosswords = this.loadCrosswords.bind(this)
         this.crosswordSelected = this.crosswordSelected.bind(this)
-        this.crosswordDeselected = this.crosswordDeselected.bind(this)
     }
 
-    componentDidMount () {
-        this.loadCrosswords()
+    async componentDidMount () {
+        console.log("Validating user from crosswords page")
+        let user = await UserValidation.validateUser()
+        let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
+
+        if (!validated) {
+            this.props.history.push('/')
+        } else {
+            let crosswords = await CrosswordService.getAllCrosswords(User.token)
+            this.setState({
+                crosswords: crosswords
+            })
+        }
     }
 
     componentWillReceiveProps (props) {
@@ -32,36 +43,10 @@ class FullCrosswordApp extends Component {
         }
     }
 
-    async loadCrosswords () {
-        let response
-        let requestSuccess = false
-        try {
-            console.log('Getting all crosswords...')
-            response = await api.getAllCrosswords()
-            console.log(response)
-            requestSuccess = response.status === 200
-        } catch (error) {
-            requestSuccess = false
-        }
-
-        if (requestSuccess) {
-            let crosswords = response.data.sort((a, b) => (a.date < b.date) ? 1 : -1)
-            this.setState({
-                crosswords: crosswords
-            })
-        }
-    }
-
     crosswordSelected (crosswordId) {
-        let selectedCrossword = this.state.crosswords.find(c => c.id === crosswordId)
+        let selectedCrossword = CrosswordService.getCrosswordById(crosswordId)
         this.setState({
             selectedCrossword: selectedCrossword
-        })
-    }
-
-    crosswordDeselected () {
-        this.setState({
-            selectedCrossword: null
         })
     }
 

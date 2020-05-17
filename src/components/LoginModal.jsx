@@ -15,14 +15,17 @@ class LoginModal extends Component {
             username: "",
             password: "",
             email: "",
-            newAccount: true,
+            newAccount: false,
             forgotInfo: false,
-            errorMessage: null
+            errorMessage: null,
+            newPassword: "",
+            sentEmail: false
         }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this)
         this.handlePasswordChange = this.handlePasswordChange.bind(this)
         this.handleEmailChange = this.handleEmailChange.bind(this)
+        this.handleNewPasswordChange = this.handleNewPasswordChange.bind(this)
 
         this.emailIsValid = this.emailIsValid.bind(this)
         this.passwordIsValid = this.passwordIsValid.bind(this)
@@ -32,6 +35,7 @@ class LoginModal extends Component {
         this.skipClicked = this.skipClicked.bind(this)
         this.createAccount = this.createAccount.bind(this)
         this.loginToAccount = this.loginToAccount.bind(this)
+        this.sendRecoveryEmail = this.sendRecoveryEmail.bind(this)
 
         this.cleanupStateAndLogin = this.cleanupStateAndLogin.bind(this)
     }
@@ -52,6 +56,16 @@ class LoginModal extends Component {
         if (this.state.password.trim().length < 6) {
             this.setState({
                 errorMessage: "Password must be at least 6 characters"
+            })
+            return false
+        }
+        return true
+    }
+
+    newPasswordIsValid () {
+        if (this.state.newPassword.trim().length < 6) {
+            this.setState({
+                errorMessage: "New password must be at least 6 characters"
             })
             return false
         }
@@ -86,23 +100,35 @@ class LoginModal extends Component {
         })
     }
 
+    handleNewPasswordChange (event) {
+        this.setState({
+            newPassword: event.target.value
+        })
+    }
+
     flipAccountFlag () {
         this.setState({
             newAccount: !this.state.newAccount,
             forgotInfo: false,
-            errorMessage: null
+            errorMessage: null,
+            sentEmail: false
         })
     }
 
     forgotInfo () {
         this.setState({
-            forgotInfo: !this.state.forgotInfo
+            forgotInfo: !this.state.forgotInfo,
+            sentEmail: false
         })
     }
 
     loginClicked () {
         if (this.state.forgotInfo) {
             this.sendRecoveryEmail()
+        } else if (this.props.manage) {
+            if (this.newPasswordIsValid()) {
+                this.changePassword()
+            }
         } else {
             if (this.state.newAccount) {
                 if (this.emailIsValid() && this.passwordIsValid() && this.usernameIsValid()) {
@@ -114,17 +140,20 @@ class LoginModal extends Component {
         }
     }
 
-    skipClicked () {
+    async skipClicked () {
         if (this.props.linking) {
-            console.log("cancelling linking")
             this.cleanupStateAndLogin()
         } else {
-            console.log("not cancelling linking")
-            let rand4Digit = Math.floor(1000 + (Math.random() * 9000))
-            let email = "guest" + rand4Digit + "@guest.com"
-            let username = "Guest"
-            let password = "guest" + rand4Digit
-            this.createAccount(email, username, password)
+            let currentUser = await UserValidation.validateUser()
+            if (currentUser !== null && currentUser.token !== null && currentUser.email !== null && currentUser.password !== null) {
+                this.cleanupStateAndLogin()
+            } else {
+                let rand4Digit = Math.floor(1000 + (Math.random() * 9000))
+                let email = "guest" + rand4Digit + "@guest.com"
+                let username = "Guest"
+                let password = "guest" + rand4Digit
+                this.createAccount(email, username, password)
+            }
         }
     }
 
@@ -150,77 +179,210 @@ class LoginModal extends Component {
         }
     }
 
+    async changePassword () {
+        let error = await UserValidation.changePassword(this.state.password, this.state.newPassword)
+        if (error === "") {
+            this.cleanupStateAndLogin()
+        } else {
+            this.setState({
+                errorMessage: error
+            })
+        }
+    }
+
+    async sendRecoveryEmail () {
+        let error = await UserValidation.resetPassword(this.state.email)
+        if (error === "") {
+            this.setState({
+                sentEmail: true
+            })
+        } else {
+            this.setState({
+                errorMessage: error
+            })
+        }
+    }
+
     cleanupStateAndLogin () {
         this.setState({
             username: "",
             password: "",
             email: "",
-            newAccount: true,
+            newAccount: false,
             forgotInfo: false,
-            errorMessage: null
+            errorMessage: null,
+            newPassword: "",
+            sentEmail: false
         })
         this.props.onLogin(User)
     }
 
     render () {
-        const { username, password, email, newAccount, forgotInfo, errorMessage } = this.state
+        const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, sentEmail } = this.state
 
         if (this.props.shouldShow) {
-            return (
-                <Fragment>
-                    <div className="login-modal-wrapper">
-                        <div className="login-header-top">
-                            {newAccount ? "Create an account" : "Sign in"}
-                        </div>
-                        <div className="login-header-bottom">
-                            { this.props.linking ? "Link your current games to an account to save progress across devices and customize settings." :
-                                `${newAccount ? 
-                                "Save your progress across devices and customize your settings." 
-                                : "Get back to puzzling."}`
-                            }
-                        </div>
-                        {this.props.linking ? <div className="login-modal-create"></div> :
-                            <div className="login-modal-create" onClick={() => this.flipAccountFlag()}>
-                                {newAccount ? "I already have an account." : "I need to create an account."}
+            if (this.props.linking) {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Create an account</div>
+                            <div className="login-header-bottom">
+                                Link your current games to an account to save progress across devices and customize settings.
                             </div>
-                        }
-                        <div className="login-modal">
-                            <div className="login-forgot-info-prompt" style={{display: forgotInfo ? "" : "none"}}>
-                                Enter your email to retrieve your info.
+                            <div className="login-modal-create"></div>
+                            <div className="login-modal">
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
+                                </div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
                             </div>
-                            <div className="login-label">
-                                <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
-                            </div>
-                            <div className="login-label" style={{display: newAccount && !forgotInfo ? "" : "none"}}>
-                                <input className="login-input" type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
-                            </div>
-                            <div className="login-label" style={{display: forgotInfo ? "none" : ""}}>
-                                <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
-                            </div>
-                            <div className="login-forgot-info" style={{display: newAccount ? "none" : ""}}
-                                onClick={() => this.forgotInfo()}>
-                                {forgotInfo ? "Nevermind, I remember." : "I forget my info."}
-                            </div>
-                            <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
-                                <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
-                                    icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
-                                {errorMessage}
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Create</div>
+                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Cancel</div>
                             </div>
                         </div>
-                        <div className="login-footer">
-                            <div className="login-footer-button-submit footer-btn" 
-                                style={{width: forgotInfo ? "60%" : "", margin: forgotInfo ? "0 20%" : ""}} 
-                                onClick={() => this.loginClicked()}>
-                                {forgotInfo ? "Send email" : `${newAccount ? "Create" : "Login"}`}
+                    </Fragment>
+                )
+            } else if (this.props.manage) {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Change password</div>
+                            <div className="login-modal">
+                                <div className="login-change-password-field">
+                                    <span className="login-change-password-header">Email:</span><span>{User.email}</span>
+                                </div>
+                                <div className="login-change-password-field">
+                                    <span className="login-change-password-header">Username:</span><span>{User.username}</span>
+                                </div>
+                                <div className="login-change-password-prompt">
+                                    Please enter your current password and the password you wish to use.
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="password" placeholder="current password" value={password} onChange={this.handlePasswordChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="password" placeholder="new password" value={newPassword} onChange={this.handleNewPasswordChange} />
+                                </div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
                             </div>
-                            <div className="login-footer-button-skip footer-btn" 
-                                style={{display: forgotInfo ? "none" : ""}} onClick={() => this.skipClicked()}>
-                                {this.props.linking ? "Cancel" : "Skip it"}
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Confirm</div>
+                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Cancel</div>
                             </div>
                         </div>
-                    </div>
-                </Fragment>
-            )
+                    </Fragment>
+                )
+            } else if (forgotInfo) {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Sign in</div>
+                            <div className="login-header-bottom">Get back to puzzling.</div>
+                            <div className="login-modal-create" onClick={() => this.flipAccountFlag()}>I need to create an account.</div>
+                            <div className="login-modal">
+                                <div className="login-forgot-info-prompt">Enter your email to retrieve your info.</div>
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
+                                </div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "block" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
+                                <div className="login-error-message" style={{display: sentEmail ? "block" : "none", color: "green"}}>
+                                    Success, check your email for a temporary passcode.
+                                </div>
+                                <div className="login-forgot-info" onClick={() => this.forgotInfo()}>
+                                    {sentEmail ? "Back to login" : "Nevermind, I remember."}
+                                </div>
+                            </div>
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" 
+                                    style={{width: "60%", margin: "0 20%"}} onClick={() => this.loginClicked()}>
+                                    Send email
+                                </div>
+                            </div>
+                        </div>
+                    </Fragment>
+                )
+            } else if (newAccount) {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Create an account</div>
+                            <div className="login-header-bottom">Save your progress across devices and customize your settings.</div>
+                            <div className="login-modal-create" onClick={() => this.flipAccountFlag()}>I already have an account.</div>
+                            <div className="login-modal">
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
+                                </div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
+                            </div>
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Create</div>
+                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Skip it</div>
+                            </div>
+                        </div>
+                    </Fragment>
+                )
+            } else {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Sign in</div>
+                            <div className="login-header-bottom">Get back to puzzling.</div>
+                            <div className="login-modal-create" onClick={() => this.flipAccountFlag()}>I need to create an account</div>
+                            <div className="login-modal">
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
+                                </div>
+                                <div className="login-forgot-info" onClick={() => this.forgotInfo()}>I forget my info.</div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
+                            </div>
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>
+                                    Login
+                                </div>
+                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>
+                                    Skip it
+                                </div>
+                            </div>
+                        </div>
+                    </Fragment>
+                )
+            }
         } else {
             return null
         }
@@ -230,6 +392,7 @@ class LoginModal extends Component {
 LoginModal.propTypes = {
     shouldShow: PropTypes.bool.isRequired,
     linking: PropTypes.bool.isRequired,
+    manage: PropTypes.bool.isRequired,
     onLogin: PropTypes.func.isRequired
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment, StrictMode } from 'react'
 import './App.css'
 import {
   BrowserRouter as Router,
@@ -8,17 +8,27 @@ import {
 import CrosswordApp from './components/CrosswordApp.jsx'
 import FullCrosswordApp from './components/FullCrosswordApp.jsx'
 import MiniCrosswordApp from './components/MiniCrosswordApp.jsx'
+import StatsApp from './components/StatsApp.jsx'
 
 function App() {
 
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={CrosswordApp} />
-        <Route path="/crosswords" component={FullCrosswordApp} />
-        <Route path="/minis" component={MiniCrosswordApp} />
-      </Switch>
-    </Router>
+    <StrictMode>
+      <div className="screen-width-error-msg">
+        Sorry, you need a larger device to access the puzzles on this site. 
+        The solve feature won't work on mobile devices, try again on any standard size computer.
+      </div>
+      <div className="app-wrapper">
+        <Router>
+          <Switch>
+            <Route exact path="/" component={CrosswordApp} />
+            <Route path="/crosswords" component={FullCrosswordApp} />
+            <Route path="/minis" component={MiniCrosswordApp} />
+            <Route path="/stats" component={StatsApp} />
+          </Switch>
+        </Router>
+      </div>
+    </StrictMode>
   );
 }
 

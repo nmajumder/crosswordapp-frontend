@@ -1,14 +1,23 @@
 import React, { StrictMode, Component } from 'react'
+import ReactDOM from 'react-dom'
 import CrosswordNavBar from './CrosswordNavBar.jsx'
 import LoginModal from './LoginModal.jsx'
 import User from '../libs/User.js'
 import api from '../libs/api.js'
 import '../css/CrosswordApp.css'
 import UserValidation from '../libs/UserValidation.js'
+import fullSizedThemers from '../images/fullSizedThemers2.png'
+import auto from '../images/auto.png'
+import generated from '../images/generated.png'
+import minis from '../images/minis.png'
 
 class CrosswordApp extends Component {
     constructor (props) {
         super(props)
+
+        this.overlayRef1 = React.createRef()
+        this.overlayRef2 = React.createRef()
+        this.overlayRef3 = React.createRef()
 
         this.state = {
             loggedIn: false
@@ -18,12 +27,15 @@ class CrosswordApp extends Component {
         this.fullPageSelected = this.fullPageSelected.bind(this)
         this.onLogin = this.onLogin.bind(this)
         this.toHomeScreen = this.toHomeScreen.bind(this)
+
+        this.overlayHover = this.overlayHover.bind(this)
+        this.overlayUnhover = this.overlayUnhover.bind(this)
     }
 
-    componentDidMount () {
+    async componentDidMount () {
         console.log("Validating user from crossword app home page")
-        let user = UserValidation.validateUser()
-        let validated = user.token !== null && user.email !== null && user.username !== null
+        let user = await UserValidation.validateUser()
+        let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
 
         this.setState({
             loggedIn: validated
@@ -53,11 +65,24 @@ class CrosswordApp extends Component {
         User.token = user.token
         localStorage.setItem('user-token', user.token)
         localStorage.removeItem('link')
+        localStorage.removeItem('manage')
         localStorage.removeItem('logout')
 
         this.setState({
             loggedIn: true
         })
+    }
+
+    overlayHover () {
+        this.overlayRef1.current.style.opacity = '.2'
+        this.overlayRef2.current.style.opacity = '.2'
+        this.overlayRef3.current.style.opacity = '.2'
+    }
+
+    overlayUnhover () {
+        this.overlayRef1.current.style.opacity = '0'
+        this.overlayRef2.current.style.opacity = '0'
+        this.overlayRef3.current.style.opacity = '0'
     }
 
     render () {
@@ -66,34 +91,36 @@ class CrosswordApp extends Component {
         let linkFlag = localStorage.getItem('link')
         const linking = linkFlag === 'true'
 
+        let manageFlag = localStorage.getItem('manage')
+        const manage = manageFlag === 'true'
+
         let logoutFlag = localStorage.getItem('logout')
         const loggedOut = logoutFlag === 'true'
 
-        let loginOpen = !loggedIn || linking || loggedOut
+        let loginOpen = !loggedIn || linking || manage || loggedOut
 
         return (
             <StrictMode>
-                <LoginModal shouldShow={loginOpen} linking={linking} onLogin={this.onLogin} />
+                <LoginModal shouldShow={loginOpen} linking={linking} manage={manage} onLogin={this.onLogin} />
                 <CrosswordNavBar blurred={loginOpen}/>
                 <div className="crossword-app-overlay"
                     style={{display: `${loginOpen ? "" : "none"}`}}></div>
                 <div className="crossword-app-wrapper" 
                     style={{filter: `${loginOpen ? "blur(5px)" : "none"}`}}>
-                    <div className="crossword-app-option" onClick={() => this.fullPageSelected()}>
-                        <div className="crossword-app-header">
-                            Full-sized themers
-                        </div>
-                        <div className="crossword-app-body">
-                            Solve some of the full-sized crosswords I've created, in both 15 x 15 (daily size) and 21 x 21 (Sunday size).
-                        </div>
+                    <div className="full-sized-themer-box">
+                        <img className="full-sized-themer-icon" src={fullSizedThemers} alt="Full Sized Themers" />
+                        <div className="full-sized-themer-icon-overlay"></div>
                     </div>
-                    <div className="crossword-app-option" onClick={() => this.miniPageSelected()}>
-                        <div className="crossword-app-header">
-                            Generated minis
-                        </div>
-                        <div className="crossword-app-body">
-                            Solve an unlimited supply of minis of varying sizes, with the fill and clues automatically generated anew each time.
-                        </div>
+                    <div className="generated-mini-box" style={{height: window.innerWidth * .3}}>
+                        <img className="auto-icon-img overlap-icon" src={auto} />
+                        <img className="generated-icon-img overlap-icon" src={generated} />
+                        <img className="minis-icon-img overlap-icon" src={minis} />
+                        <div className="auto-icon-overlay overlap-icon-overlay" ref={this.overlayRef1} 
+                            onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
+                        <div className="generated-icon-overlay overlap-icon-overlay" ref={this.overlayRef2} 
+                            onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
+                        <div className="minis-icon-overlay overlap-icon-overlay" ref={this.overlayRef3} 
+                            onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
             </StrictMode>
