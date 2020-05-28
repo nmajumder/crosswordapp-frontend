@@ -1,9 +1,9 @@
 class CrosswordKeyActions {
-    alphaNumeric (grid, selection, key) {
+    alphaNumeric (grid, selection, key, completed) {
         let [r, c] = [selection.rowCoord, selection.colCoord]
         let boardSize = grid.length
         let wasEmpty = grid[r][c].value === ""
-        if (this.canBeChanged(grid[r][c])) {
+        if (!completed && this.canBeChanged(grid[r][c])) {
             grid[r][c].value = key
             if (grid[r][c].status === "CheckedFalse") {
                 grid[r][c].status = "PrevChecked"
@@ -36,24 +36,24 @@ class CrosswordKeyActions {
         }
     }
 
-    delete (grid, selection) {
+    delete (grid, selection, completed) {
         let [r, c] = [selection.rowCoord, selection.colCoord]
-        let moveAndDelete = grid[r][c].value === "" || !this.canBeChanged(grid[r][c])
+        let moveAndDelete = completed || grid[r][c].value === "" || !this.canBeChanged(grid[r][c])
         if (selection.direction === "Across" && moveAndDelete && c-1 >= 0 && grid[r][c-1].value !== "_") {
             // move left a square and delete if able
-            if (this.canBeChanged(grid[r][c-1])) {
+            if (!completed && this.canBeChanged(grid[r][c-1])) {
                 grid[r][c-1].value = ""
             }
             selection.colCoord = c-1
         } else if (selection.direction === "Down" && moveAndDelete && r-1 >= 0 && grid[r-1][c].value !== "_") {
             // move up a square and delete if able
-            if (this.canBeChanged(grid[r-1][c])) {
+            if (!completed && this.canBeChanged(grid[r-1][c])) {
                 grid[r-1][c].value = ""
             }
             selection.rowCoord = r-1
         } else {
             // delete this square if able and stay put
-            if (this.canBeChanged(grid[r][c])) {
+            if (!completed && this.canBeChanged(grid[r][c])) {
                 grid[r][c].value = ""
             }
         }
@@ -62,7 +62,7 @@ class CrosswordKeyActions {
         }
     }
 
-    tabOrEnter (grid, selection, shiftKey, acrossClues, downClues) {
+    tabOrEnter (grid, selection, shiftKey, acrossClues, downClues, completed) {
         let allClues = acrossClues.concat(downClues)
         let clueInd = allClues.findIndex(c => selection.direction === "Across"
                 ? grid[selection.rowCoord][selection.colCoord].acrossClueNum === c.number && c.direction === "Across"
@@ -71,7 +71,7 @@ class CrosswordKeyActions {
         let newDirection = null
         if (shiftKey) {
             // going backwards
-            if (this.gridIsFull(grid)) {
+            if (completed || this.gridIsFull(grid)) {
                 // return beginning of prev word
                 clueInd--
                 if (clueInd < 0) {
@@ -96,7 +96,7 @@ class CrosswordKeyActions {
             }
         } else {
             // going forwards
-            if (this.gridIsFull(grid)) {
+            if (completed || this.gridIsFull(grid)) {
                 clueInd++
                 if (clueInd >= allClues.length) {
                     clueInd -= allClues.length
@@ -239,7 +239,7 @@ class CrosswordKeyActions {
     }
 
     canBeChanged (square) {
-        return square.status !== "Revealed" && square.status !== "CheckedTrue" && square.status !== "Complete"
+        return square.status !== "Revealed" && square.status !== "CheckedTrue"
     }
 
     gridIsFull (grid) {

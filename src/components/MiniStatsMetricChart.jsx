@@ -22,7 +22,7 @@ class MiniStatsMetricChart extends Component {
                 options={{
                     title: title, titleTextStyle: {fontSize: '20'},
                     animation: {duration: 500, startup: true},
-                    vAxis: { title: yAxisTitle, gridlines: {interval: [1]}, maxValue: this.props.max,
+                    vAxis: { title: yAxisTitle, gridlines: {interval: [1]}, minValue: 0, maxValue: this.props.max,
                                 titleTextStyle: {fontSize: '20', bold: true, italic: false}},
                     hAxis: { title: 'Grid size', gridlines: {interval: [1]}, textStyle: {fontSize: '20'},
                                 titleTextStyle: {fontSize: '20', bold: true, italic: false}},

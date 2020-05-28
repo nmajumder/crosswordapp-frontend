@@ -1,5 +1,12 @@
 .stats-page-wrapper {
     margin: 50px 150px;
+    overflow: auto;
+}
+
+@media only screen and (max-width: 1200px) {
+    .stats-page-wrapper {
+        margin: 50px 50px;
+    }
 }
 
 .stats-page-options-bar {

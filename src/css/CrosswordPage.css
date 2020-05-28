@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 11;
     background-color: black;
     opacity: 40%;
   }
@@ -19,13 +19,92 @@
 }
 
 .crossword-page-heading {
-    height: 80px;
+    width: 100%;
+    height: 100px;
+    position: relative;
+}
+
+.crossword-page-title-heading {
+    float: left;
     text-align: center;
+    height: 100%;
 }
 
 .crossword-page-title {
     margin: 30px 0px 10px 0px;
     font-size: 22pt;
+}
+
+.crossword-page-rating-heading {
+    float: left;
+    margin-top: 30px;
+    line-height: 60px;
+    text-align: center;
+}
+
+.crossword-page-rating-button {
+    padding: 0 20px;
+    color: white;
+    background-color: #306acf;
+    width: 180px;
+    font-size: 12pt;
+    font-weight: 600;
+    line-height: 60px;
+    display: inline-block;
+    outline: none;
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+}
+
+.crossword-page-rating-button:hover {
+    cursor: pointer;
+    background-color: #2d59b3;
+    box-shadow: 0 5px 5px 2px rgba(0, 0, 0, 0.2), 0 2px 8px 2px rgba(0, 0, 0, 0.1);
+}
+
+.crossword-page-rating-button:disabled {
+    color: #787878;
+    font-weight: 500;
+    background-color: #EFEFEF;
+    border-color: #787878;
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    cursor: not-allowed;
+}
+
+.crossword-page-my-ratings {
+    line-height: normal;
+    width: 180px;
+    margin-left: calc(50% - 90px);
+    text-align: left;
+}
+
+.crossword-page-my-ratings-header {
+    margin: 0 10px 5px 0;
+    font-size: 14pt;
+    display: inline-block;
+}
+
+#ratings-edit-icon {
+    color: #306acf;
+    font-size: 14pt;
+}
+
+.bold {
+    font-weight: 600;
+}
+
+.crossword-page-my-ratings-line {
+    display: block;
+    line-height: normal;
+}
+
+.crossword-page-my-ratings-line-header {
+    display: inline-block;
+    width: 90px;
+}
+
+#ratings-edit-icon:hover {
+    color: #2d59b3;
+    cursor: pointer;
 }
 
 .crossword-page-controls {

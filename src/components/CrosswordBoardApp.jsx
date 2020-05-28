@@ -232,13 +232,15 @@ class CrosswordBoardApp extends Component {
                                 clueList={this.acrossClues}
                                 selectedClue={acrossClue}
                                 isMatchingDirection={selection.direction === 'Across'}
-                                clueClicked={this.props.clueClicked}/>
+                                clueClicked={this.props.clueClicked}
+                                grid={grid}/>
                             <CrosswordClueScroll 
                                 listTitle={"Down"}
                                 clueList={this.downClues}
                                 selectedClue={downClue}
                                 isMatchingDirection={selection.direction === 'Down'}
-                                clueClicked={this.props.clueClicked}/>
+                                clueClicked={this.props.clueClicked}
+                                grid={grid}/>
                         </div>
                     }
                 </div>

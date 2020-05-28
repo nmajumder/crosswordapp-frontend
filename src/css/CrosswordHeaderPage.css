@@ -1,5 +1,13 @@
+.crossword-background-image {
+    z-index: -5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
 .crossword-header-page-wrapper {
-    margin: 50px 150px;
+    margin: 50px 80px;
 }
 
 .crossword-header-page-intro-header {
@@ -7,6 +15,122 @@
 }
 
 .crossword-header-page-intro-body {
-    margin: 20px 0 30px 0;
+    margin: 20px 0;
     font-size: 17pt;
+}
+
+.crossword-header-page-intro-stats {
+    width: 100%;
+    height: 120px;
+    margin: 40px 0;
+}
+
+.crossword-header-page-stats-box {
+    width: calc((100% - 6px) / 3);
+    height: 100%;
+    float: left;
+    text-align: center;
+}
+
+.crossword-header-page-stats-box-number {
+    width: 100%;
+    font-size: 17pt;
+    padding-top: 30px;
+}
+
+.crossword-header-page-stats-box-title {
+    width: 100%;
+    padding-top: 10px;
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+.crossword-header-page-stats-box-divider {
+    float: left;
+    height: 100%;
+    border-right: solid #676767 2px;
+}
+
+.crossword-header-page-list {
+    position: relative;
+    overflow: auto;
+}
+
+.crossword-header-page-sort-by {
+    float: left;
+}
+
+.crossword-header-page-dropdown-title {
+    font-weight: bold;
+    font-size: 13pt;
+}
+
+#sort-type-caret-icon {
+    margin-left: 8px;
+    margin-top: 2px;
+    font-size: 13pt;
+}
+
+#crossword-header-page-sort-order-icon {
+    font-size: 15pt;
+    margin-left: 5px;
+    margin-top: -2px;
+    padding: 2px 5px;
+    border: solid white 1px;
+}
+
+#crossword-header-page-sort-order-icon:hover {
+    cursor: pointer;
+    border-color: #CDCDCD;
+    
+}
+
+.crossword-header-page-sort-dropdown-section {
+    display: inline-block;
+    width: 100%;
+    height: 50px;
+    font-size: 14pt;
+}
+
+#crossword-header-page-sort-dropdown {
+    float: left;
+    outline: none;
+    background: none;
+    margin: -2px 5px 0 5px;
+}
+
+#crossword-header-page-sort-order-icon {
+    float: left;
+}
+
+.crossword-header-page-dropdown-item-section {
+    border: solid black 1px;
+    height: 30px;
+    margin: -1px 0 0 1px;
+    border-radius: .5em;
+    border-top-left-radius: 0;
+    overflow: hidden;
+}
+
+.crossword-header-page-dropdown-item {
+    font-size: 12pt;
+    font-weight: 600;
+    height: 100%;
+    color: black;
+    border: none;
+    outline: none;
+    float: left;
+}
+
+.crossword-header-page-dropdown-item:hover {
+    cursor: pointer;
+    background-color: #EAEAEA;
+}
+
+.crossword-header-page-dropdown-item-divider {
+    float: left;
+    width: 0px;
+    height: 20px; 
+    margin-top: 5px; 
+    border-right: solid black 1px;
 }

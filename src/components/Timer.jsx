@@ -7,7 +7,17 @@ class Timer extends Component {
         super(props)
 
         this.state = {
-            elapsed: 0
+            elapsed: this.props.startingValue === undefined ? 0 : this.props.startingValue
+        }
+    }
+
+    componentWillReceiveProps (props) {
+        console.log(props)
+        console.log(props.startingValue)
+        if (props.startingValue !== undefined) {
+            this.setState({
+                elapsed: props.startingValue
+            })
         }
     }
     
@@ -57,7 +67,8 @@ class Timer extends Component {
 
 Timer.propTypes = {
     isPaused: PropTypes.bool.isRequired,
-    getValue: PropTypes.func.isRequired
+    getValue: PropTypes.func.isRequired,
+    startingValue: PropTypes.number
 }
 
 export default Timer

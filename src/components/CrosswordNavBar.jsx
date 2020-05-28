@@ -69,23 +69,45 @@ class CrosswordNavBar extends Component {
     }
 
     render () {
+        const homePage = "/"
+        const crosswordsPage = "/crosswords"
+        const minisPage = "/minis"
+        const statsPage = "/stats"
+        const leaderboardPage = "/leaderboard"
+
+        const curPage = this.props.location.pathname
+
+        const selectedStyle = {backgroundColor: "#306acf"}
+
         return (
             <Fragment>
                 <div className="nav-full-page-overlay" style={{display: this.state.dropdownOpen ? "" : "none"}}></div>
                 <div className="crossword-nav-bar" 
                     style={{display: `${this.props.hidden ? "none" : ""}`, filter: `${this.props.blurred ? "blur(5px)" : "none"}`}}>
-                    <div className="nav-home-button nav-button" onClick={() => this.props.history.push('/')}>
+                    <div className="nav-home-button nav-button" 
+                        style={curPage === homePage ? selectedStyle : {}}
+                        onClick={() => this.props.history.push(homePage)}>
                         Home
                     </div>
-                    <div className="nav-crosswords-button nav-button" 
-                        onClick={() => this.props.history.push({pathname: '/crosswords', home: true})}>
+                    <div className="nav-crosswords-button nav-button nav-wide-button" 
+                        style={curPage === crosswordsPage ? selectedStyle : {}}
+                        onClick={() => this.props.history.push({pathname: crosswordsPage, home: true})}>
                         Crosswords
                     </div>
-                    <div className="nav-minis-button nav-button" onClick={() => this.props.history.push('/minis')}>
+                    <div className="nav-minis-button nav-button nav-narrow-button" 
+                        style={curPage === minisPage ? selectedStyle : {}}
+                        onClick={() => this.props.history.push(minisPage)}>
                         Minis
                     </div>
-                    <div className="nav-stats-button nav-button" onClick={() => this.props.history.push('/stats')}>
+                    <div className="nav-stats-button nav-button nav-narrow-button" 
+                        style={curPage === statsPage ? selectedStyle : {}}
+                        onClick={() => this.props.history.push(statsPage)}>
                         Stats
+                    </div>
+                    <div className="nav-leaderboard-button nav-button nav-wide-button" 
+                        style={curPage === leaderboardPage ? selectedStyle : {}}
+                        onClick={() => this.props.history.push(leaderboardPage)}>
+                        Leaderboard
                     </div>
                     <DropdownButton id="nav-account-dropdown"
                         title={<FontAwesomeIcon style={{color: "white"}} icon={faUser} />}

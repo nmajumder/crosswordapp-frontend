@@ -42,6 +42,14 @@ class api {
         return axiosInstance.get(`/crossword/${userid}/all`)
     }
 
+    getAllRatings () {
+        return axiosInstance.get('/crossword/ratings')
+    }
+
+    rateCrossword (id, userid, board) {
+        return axiosInstance.post(`/crossword/${id}/${userid}/rate`, board)
+    }
+
     updateCrossword (id, userid, board) {
         return axiosInstance.put(`/crossword/${id}/${userid}/update`, board)
     }
@@ -83,18 +91,42 @@ class api {
         return axiosInstance.get(`/mini/${userid}/${size}/${difficulty}/generate`, {timeout: 12000})
     }
 
-    miniCompleted (userid, size, difficulty, seconds, checked, revealed) {
-        return axiosInstance.post(`/mini/${userid}/completed`, {
-            size: size, 
-            difficulty: difficulty, 
-            seconds: seconds,
-            checked: checked,
-            revealed: revealed
-        })
+    miniIsComplete (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/isComplete`, board)
     }
 
+    checkMiniSquare (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/check/square`, board)
+    }
+
+    checkMiniWord (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/check/word`, board)
+    }
+
+    checkMiniPuzzle (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/check/puzzle`, board)
+    }
+
+    revealMiniSquare (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/reveal/square`, board)
+    }
+
+    revealMiniWord (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/reveal/word`, board)
+    }
+
+    revealMiniPuzzle (userid, board) {
+        return axiosInstance.put(`/mini/${userid}/reveal/puzzle`, board)
+    }
+
+    /* STATS APIS */
     getMiniStats (userid) {
         return axiosInstance.get(`/mini/${userid}/stats`)
+    }
+
+    /* LEADERBOARD APIS */
+    getLeaderboard (userid) {
+        return axiosInstance.get(`/mini/${userid}/leaderboard`)
     }
 }
 

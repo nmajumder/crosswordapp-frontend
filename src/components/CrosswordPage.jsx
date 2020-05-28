@@ -9,7 +9,7 @@ import Timer from './Timer.jsx'
 import CrosswordKeyActions from '../libs/CrosswordKeyActions.js'
 import '../css/CrosswordPage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog, faPause, faBoxTissue } from '@fortawesome/free-solid-svg-icons'
+import { faCog, faPause, faEdit } from '@fortawesome/free-solid-svg-icons'
 import Settings from '../libs/Settings.js'
 import BoardStatus from '../libs/BoardStatus.js'
 import User from '../libs/User.js'
@@ -23,8 +23,9 @@ class CrosswordPage extends Component {
             "pauseManual":["Your game has been paused", "Resume"],
             "pauseInactive":["Your game has been paused due to inactivity", "Resume"],
             "resetClicked":["Are you sure you want to reset the puzzle? This will clear the board but not the timer.", "Reset", "Cancel"],
-            "puzzleCorrect":["Congratulations, you've successfully solved the puzzle!", "Close"],
-            "puzzleIncorrect":["Oops, there are still one or more errors to fix", "Close"]
+            "puzzleCorrect":["Congratulations, you've successfully solved the puzzle in {}!", "Rate", "Not Now"],
+            "puzzleIncorrect":["Oops, there are still one or more errors to fix", "Close"],
+            "ratePuzzle":["Rate this puzzle on difficulty and enjoyment level:", "Save", "Later"]
         }
 
         this.inactivityTimer = Settings.timerInactivity
@@ -37,7 +38,7 @@ class CrosswordPage extends Component {
             selection: this.props.crossword.board.selection,
             savedBoard: new BoardStatus(this.props.crossword.board),
             settings: Settings,
-            modalInfo: this.modalInfos["startPuzzle"],
+            modalInfo: [],
             settingsClicked: false,
             windowSize: window.innerWidth
         }
@@ -46,6 +47,8 @@ class CrosswordPage extends Component {
         this.saveSettings = this.saveSettings.bind(this)
         this.closeSettings = this.closeSettings.bind(this)
         this.closeModal = this.closeModal.bind(this)
+        this.ratePuzzleClicked = this.ratePuzzleClicked.bind(this)
+        this.ratePuzzle = this.ratePuzzle.bind(this)
         this.pauseClicked = this.pauseClicked.bind(this)
         this.crosswordFinished = this.crosswordFinished.bind(this)
         this.crosswordUnfinished = this.crosswordUnfinished.bind(this)
@@ -99,9 +102,11 @@ class CrosswordPage extends Component {
             }
         }, 1000)
 
-        this.setState({
-            modalInfo: this.modalInfos["startPuzzle"]
-        })
+        if (this.props.crossword.board.completed !== true) {
+            this.setState({
+                modalInfo: this.modalInfos["startPuzzle"]
+            })
+        }
     }
 
     componentWillUnmount () {
@@ -173,6 +178,33 @@ class CrosswordPage extends Component {
             settingsClicked: false,
             modalInfo: []
         })
+    }
+
+    ratePuzzleClicked () {
+        this.setState({
+            modalInfo: this.modalInfos["ratePuzzle"]
+        })
+    }
+
+    async ratePuzzle (difRating, enjRating) {
+        this.board.difficultyRating = difRating
+        this.board.enjoymentRating = enjRating
+
+        let response
+        let requestSuccess
+        try {
+            response = await api.rateCrossword(this.crosswordId, User.token, this.board)
+            requestSuccess = true
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Received an error saving crossword rating")
+        } else {
+            this.board = response.data
+        }
+        this.closeModal()
     }
 
     closeSettings (settings) {
@@ -277,6 +309,8 @@ class CrosswordPage extends Component {
         this.board.grid = this.state.grid
         this.board.selection = this.state.selection
 
+        let gridWasFull = CrosswordKeyActions.gridIsFull(this.board.grid)
+
         let response
         let requestSuccess = false
         try {
@@ -293,6 +327,9 @@ class CrosswordPage extends Component {
                 grid: response.data.grid,
                 selection: response.data.selection
             })
+            if (CrosswordKeyActions.gridIsFull(this.state.grid)) {
+                this.checkForCompletion(!gridWasFull)
+            }
         }
     }
 
@@ -301,6 +338,8 @@ class CrosswordPage extends Component {
         
         this.board.grid = this.state.grid
         this.board.selection = this.state.selection
+
+        let gridWasFull = CrosswordKeyActions.gridIsFull(this.board.grid)
 
         let response
         let requestSuccess = false
@@ -318,6 +357,9 @@ class CrosswordPage extends Component {
                 grid: response.data.grid,
                 selection: response.data.selection
             })
+            if (CrosswordKeyActions.gridIsFull(this.state.grid)) {
+                this.checkForCompletion(!gridWasFull)
+            }
         }
     }
 
@@ -326,6 +368,8 @@ class CrosswordPage extends Component {
         
         this.board.grid = this.state.grid
         this.board.selection = this.state.selection
+
+        let gridWasFull = CrosswordKeyActions.gridIsFull(this.board.grid)
 
         let response
         let requestSuccess = false
@@ -343,21 +387,23 @@ class CrosswordPage extends Component {
                 grid: response.data.grid,
                 selection: response.data.selection
             })
+            if (CrosswordKeyActions.gridIsFull(this.state.grid)) {
+                this.checkForCompletion(!gridWasFull)
+            }
         }
     }
 
     resetPuzzleClicked () {
+        if (this.crosswordIsComplete()) {
+            this.closeModal()
+            return
+        }
         this.setState({
             modalInfo: this.modalInfos["resetClicked"]
         })
     }
 
     async resetPuzzle () {
-        if (this.crosswordIsComplete()) {
-            this.closeModal()
-            return
-        }
-        
         this.board.grid = this.state.grid
         this.board.selection = this.state.selection
 
@@ -396,9 +442,10 @@ class CrosswordPage extends Component {
 
         if (requestSuccess) {
             this.setState({
-                board: response.data
+                grid: response.data.grid
             })
-            if (this.getSelectedSquare().status === "Complete") {
+            console.log(response.data)
+            if (response.data.completed === true) {
                 this.crosswordFinished()
             } else {
                 if (showNotComplete) {
@@ -409,12 +456,32 @@ class CrosswordPage extends Component {
     }
 
     crosswordFinished () {
+        this.board.completed = true
+        let doneMsg = this.modalInfos["puzzleCorrect"]
+        let s = this.board.numSeconds
+        let h = Math.floor(s / 3600)
+        if (h > 0) s -= h * 3600
+        let m = Math.floor(s / 60)
+        if (m > 0) s -= m * 60
+
+        let secondStr = s < 10 ? "0" + s : "" + s
+        let minuteStr = "" + m
+        if (h > 0) {
+            minuteStr = m < 10 ? "0" + m : "" + m
+        }
+        let hourStr = "" + h
+        let timeStr = ""
+        if (h > 0) timeStr += hourStr + ":"
+        timeStr += minuteStr + ":" + secondStr
+
+        doneMsg[0] = doneMsg[0].replace('{}',timeStr)
         this.setState({
-            modalInfo: this.modalInfos["puzzleCorrect"]
+            modalInfo: doneMsg
         })
     }
 
     crosswordUnfinished () {
+        this.board.completed = false
         this.setState({
             modalInfo: this.modalInfos["puzzleIncorrect"]
         })
@@ -427,19 +494,28 @@ class CrosswordPage extends Component {
             return
         }
         event.preventDefault()
-        let modalOpen = this.state.settingsClicked || this.state.helpClicked || this.state.modalInfo.length > 0
+        let modalOpen = this.state.settingsClicked || this.state.modalInfo.length > 0
         if (modalOpen) {
+            if (this.state.modalInfo.length > 0 && this.state.modalInfo[0] !== "resetClicked") {
+                if (event.which === 13 || event.which === 27) {
+                    // allow enter/esc keys to close modal (except resetting puzzle requires click)
+                    this.closeModal()
+                }
+            } else if (this.state.settingsClicked && event.which === 27) {
+                // allow esc key to close settings
+                this.closeModal()
+            }
             return
         }
         let grid = this.state.grid
         let selection = this.state.selection
-        let selectedStatus = this.getSelectedSquare().status
         if (event.which === 13 || event.which === 9) {
             // enter or tab
-            CrosswordKeyActions.tabOrEnter(grid, selection, event.shiftKey, this.props.crossword.acrossClues, this.props.crossword.downClues)
+            CrosswordKeyActions.tabOrEnter(grid, selection, event.shiftKey, 
+                this.props.crossword.acrossClues, this.props.crossword.downClues, this.board.completed)
         } else if (event.which === 8) {
             // delete
-            CrosswordKeyActions.delete(grid, selection)
+            CrosswordKeyActions.delete(grid, selection, this.board.completed)
         } else if (event.which === 32) {
             // space bar
             selection.direction = selection.direction === "Across" ? "Down" : "Across"
@@ -457,21 +533,25 @@ class CrosswordPage extends Component {
             CrosswordKeyActions.downArrow(grid, selection)
         } else {
             let gridWasFull = CrosswordKeyActions.gridIsFull(grid)
+            console.log("Grid was full? " + gridWasFull)
             if (event.which >= 65 && event.which <= 90) {
                 // a to z
-                CrosswordKeyActions.alphaNumeric(grid, selection, event.key.toUpperCase())
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key.toUpperCase(), this.board.completed)
             } else if (event.which >= 48 && event.which <= 57) {
                 // 0 to 9 or the symbols on the same keys
-                CrosswordKeyActions.alphaNumeric(grid, selection, event.key)
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key, this.board.completed)
             } else if (event.which >= 186 && event.which <= 222) {
                 // various symbols that we want to allow in case of special themed puzzle
                 // disallow the underscore because it is reserved for black squares
                 if (event.key === "_") {
                     return
                 }
-                CrosswordKeyActions.alphaNumeric(grid, selection, event.key)
+                CrosswordKeyActions.alphaNumeric(grid, selection, event.key, this.board.completed)
             }
-            if (CrosswordKeyActions.gridIsFull(grid) && this.getSelectedSquare().status !== "Complete") {
+            console.log("Grid is now full? " + CrosswordKeyActions.gridIsFull(grid))
+            console.log("Board was prev completed")
+            if (CrosswordKeyActions.gridIsFull(grid) && this.board.completed !== true) {
+                console.log("Checking for completion")
                 this.checkForCompletion(!gridWasFull)
             }
         }
@@ -512,7 +592,7 @@ class CrosswordPage extends Component {
     }
 
     crosswordIsComplete () {
-        return this.getSelectedSquare().status === "Complete"
+        return this.board.completed
     }
 
     getSelectedSquare () {
@@ -539,13 +619,42 @@ class CrosswordPage extends Component {
                 <MessageModal 
                     message={modalInfo.length > 0 ? modalInfo[0] : ""} 
                     buttonText1={modalInfo.length > 0 ? modalInfo[1] : ""} 
-                    buttonAction1={modalInfo[1] === "Reset" ? this.resetPuzzle : this.closeModal}
+                    buttonAction1={modalInfo[1] === "Reset" ? this.resetPuzzle : 
+                        modalInfo[1] === "Rate" ? this.ratePuzzleClicked : 
+                        modalInfo[1] === "Save" ? this.ratePuzzle : this.closeModal}
                     buttonText2={modalInfo.length > 2 ? modalInfo[2] : ""}
-                    buttonAction2={this.closeModal} />
+                    buttonAction2={this.closeModal} 
+                    board={this.board} />
                 <div style={{filter: `${modalOpen ? "blur(5px)" : "none"}`}} className="crossword-page-wrapper">
-                    <div className="crossword-page-heading" style={{ width : boardPx }}>
-                        <div className="crossword-page-title">{this.props.crossword.title}</div>
-                        <div className="crossword-page-author">By Nathan Majumder</div>
+                    <div className="crossword-page-heading">
+                        <div className="crossword-page-title-heading" style={{ width : boardPx }}>
+                            <div className="crossword-page-title">{this.props.crossword.title}</div>
+                            <div className="crossword-page-author">By Nathan Majumder</div>
+                        </div>
+                        <div className="crossword-page-rating-heading" style={{width: `calc(100% - ${boardPx}px)`}}>
+                            { this.board.difficultyRating > 0 || this.board.enjoymentRating > 0 ?
+                                <div className="crossword-page-my-ratings">
+                                    <div className="crossword-page-my-ratings-header bold">My Ratings</div>
+                                    <FontAwesomeIcon id="ratings-edit-icon" icon={faEdit} onClick={() => this.ratePuzzleClicked()} />
+                                    <div className="crossword-page-my-ratings-line">
+                                        <span className="crossword-page-my-ratings-line-header">Difficulty:</span>
+                                        <span className="bold">
+                                            {this.board.difficultyRating > 0 ? this.board.difficultyRating + " / 10" : "Not Rated"}
+                                        </span></div>
+                                    <div className="crossword-page-my-ratings-line">
+                                        <span className="crossword-page-my-ratings-line-header">Enjoyment:</span>
+                                        <span className="bold">
+                                            {this.board.enjoymentRating > 0 ? this.board.enjoymentRating + " / 10" : "Not Rated"}
+                                        </span></div>
+                                </div>
+                                :
+                                <button disabled={this.crosswordIsComplete() ? false : true} 
+                                    title={this.crosswordIsComplete() ? "" : "Finish the puzzle first"} 
+                                    className="crossword-page-rating-button" onClick={() => this.ratePuzzleClicked()}>
+                                    Rate this puzzle!
+                                </button>
+                            }
+                        </div>
                     </div>
                     <div className="crossword-page-controls">
                         <div className="crossword-settings" onClick={() => { this.settingsClicked() }}>

@@ -24,12 +24,17 @@ class CrosswordService {
         }
     }
 
+    logoutCrosswords () {
+        this.crosswords = null
+    }
+
     getAllLoadedCrosswords () {
         return this.crosswords
     }
 
     getCrosswordById (id) {
-        return this.crosswords.find(c => c.id === id)
+        let crossword = this.crosswords.find(c => c.id === id)
+        return crossword
     }
 
     getCrosswordAttributesById (id) {
@@ -39,15 +44,13 @@ class CrosswordService {
         let filled = 0
         let checked = false
         let revealed = false
-        let complete = false
+        let complete = board.completed
         for (let r = 0; r < grid.length; r++) {
             for (let c = 0; c < grid[0].length; c++) {
                 if (grid[r][c].value !== "_") {
-                    if (grid[r][c].status === "Complete") {
-                        complete = true
-                    } else if (grid[r][c].status === "CheckedTrue" 
-                                || grid[r][c].status === "PrevChecked"
-                                || grid[r][c].status === "CheckedFalse") {
+                    if (grid[r][c].status === "CheckedTrue" 
+                            || grid[r][c].status === "PrevChecked"
+                            || grid[r][c].status === "CheckedFalse") {
                         checked = true
                     } else if (grid[r][c].status === "Revealed") {
                         revealed = true

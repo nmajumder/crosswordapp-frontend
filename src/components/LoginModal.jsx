@@ -38,6 +38,16 @@ class LoginModal extends Component {
         this.sendRecoveryEmail = this.sendRecoveryEmail.bind(this)
 
         this.cleanupStateAndLogin = this.cleanupStateAndLogin.bind(this)
+
+        this.onKeyDown = this.onKeyDown.bind(this)
+    }
+
+    componentDidMount () {
+        document.addEventListener("keydown", this.onKeyDown, false)
+    }
+
+    componentWillUnmount () {
+        document.removeEventListener("keydown", this.onKeyDown, false)
     }
 
     emailIsValid () {
@@ -129,14 +139,12 @@ class LoginModal extends Component {
             if (this.newPasswordIsValid()) {
                 this.changePassword()
             }
-        } else {
-            if (this.state.newAccount) {
-                if (this.emailIsValid() && this.passwordIsValid() && this.usernameIsValid()) {
-                    this.createAccount(this.state.email, this.state.username, this.state.password)
-                }
-            } else {
-                this.loginToAccount()
+        } else if (this.props.linking || this.state.newAccount) {
+            if (this.emailIsValid() && this.passwordIsValid() && this.usernameIsValid()) {
+                this.createAccount(this.state.email, this.state.username, this.state.password)
             }
+        } else {
+            this.loginToAccount()
         }
     }
 
@@ -150,7 +158,7 @@ class LoginModal extends Component {
             } else {
                 let rand4Digit = Math.floor(1000 + (Math.random() * 9000))
                 let email = "guest" + rand4Digit + "@guest.com"
-                let username = "Guest"
+                let username = "Guest" + rand4Digit
                 let password = "guest" + rand4Digit
                 this.createAccount(email, username, password)
             }
@@ -217,6 +225,13 @@ class LoginModal extends Component {
         this.props.onLogin(User)
     }
 
+    onKeyDown (event) {
+        if (event.which === 13) {
+            event.preventDefault()
+            this.loginClicked()
+        }
+    }
+
     render () {
         const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, sentEmail } = this.state
 
@@ -263,7 +278,7 @@ class LoginModal extends Component {
                                     <span className="login-change-password-header">Email:</span><span>{User.email}</span>
                                 </div>
                                 <div className="login-change-password-field">
-                                    <span className="login-change-password-header">Username:</span><span>{User.username}</span>
+                                    <span className="login-change-password-header">User:</span><span>{User.username}</span>
                                 </div>
                                 <div className="login-change-password-prompt">
                                     Please enter your current password and the password you wish to use.

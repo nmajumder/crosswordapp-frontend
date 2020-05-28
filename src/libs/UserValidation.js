@@ -1,6 +1,8 @@
 import User from './User.js'
 import Settings from './Settings.js'
 import api from './api.js'
+import CrosswordService from './CrosswordService.js'
+import MiniStatsService from './MiniStatsService.js'
 
 class UserValidation {
     async validateUser() {
@@ -32,10 +34,7 @@ class UserValidation {
         }
 
         if (requestSuccess && response.data.success) {
-            User.email = response.data.user.email
-            User.username = response.data.user.username
-            User.token = response.data.user.token
-            Settings.setSettingsFromUserCall(response.data.user.settings)
+            this.setLoggedInUserData(response.data.user)
             return User
         } else {
             return null
@@ -62,10 +61,7 @@ class UserValidation {
                 return "Incorrect password for this account."
             }
         } else {
-            User.email = response.data.user.email
-            User.username = response.data.user.username
-            User.token = response.data.user.token
-            Settings.setSettingsFromUserCall(response.data.user.settings)
+            this.setLoggedInUserData(response.data.user)
             return ""
         }
     }
@@ -95,10 +91,7 @@ class UserValidation {
                 return "There was an error linking your guest account to your new info."
             }
         } else {
-            User.email = response.data.user.email
-            User.username = response.data.user.username
-            User.token = response.data.user.token
-            Settings.setSettingsFromUserCall(response.data.user.settings)
+            this.setLoggedInUserData(response.data.user)
             return ""
         }
     }
@@ -142,6 +135,14 @@ class UserValidation {
         }
     }
 
+    setLoggedInUserData (user) {
+        User.email = user.email
+        User.username = user.username
+        User.token = user.token
+        Settings.setSettingsFromUserCall(user.settings)
+        CrosswordService.logoutCrosswords()
+        MiniStatsService.logoutStats()
+    }
 }
 
 export default new UserValidation()

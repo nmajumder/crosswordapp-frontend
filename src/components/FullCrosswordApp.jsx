@@ -1,4 +1,4 @@
-import React, { StrictMode, Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import PropTypes from 'prop-types'
 import CrosswordPage from './CrosswordPage.jsx'
 import CrosswordHeaderPage from './CrosswordHeaderPage.jsx'
@@ -7,6 +7,7 @@ import api from '../libs/api.js'
 import UserValidation from '../libs/UserValidation.js'
 import User from '../libs/User.js'
 import CrosswordService from '../libs/CrosswordService.js'
+import RatingsService from '../libs/RatingsService.js'
 
 class FullCrosswordApp extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ class FullCrosswordApp extends Component {
 
         this.state = {
             crosswords: [],
+            ratings: [],
             selectedCrossword: null,
         }
 
@@ -29,8 +31,12 @@ class FullCrosswordApp extends Component {
             this.props.history.push('/')
         } else {
             let crosswords = await CrosswordService.getAllCrosswords(User.token)
+            let ratings = await RatingsService.getRatings()
+            console.log(crosswords)
+            console.log(ratings)
             this.setState({
-                crosswords: crosswords
+                crosswords: crosswords,
+                ratings: ratings
             })
         }
     }
@@ -51,22 +57,23 @@ class FullCrosswordApp extends Component {
     }
 
     render () {
-        let { crosswords, selectedCrossword } = this.state
+        let { crosswords, ratings, selectedCrossword } = this.state
 
         if (selectedCrossword) {
             return (
-                <StrictMode>
+                <Fragment>
                     <CrosswordPage 
                         crossword={selectedCrossword} />
-                </StrictMode>
+                </Fragment>
             )
         } else {
             return (
-                <StrictMode>
+                <Fragment>
                     <CrosswordHeaderPage 
                         crosswords={crosswords}
+                        ratings={ratings}
                         crosswordSelected={this.crosswordSelected} />
-                </StrictMode>
+                </Fragment>
             )
         }
     }

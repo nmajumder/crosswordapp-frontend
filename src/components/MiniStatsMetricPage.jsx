@@ -88,13 +88,20 @@ class MiniStatsMetricPage extends Component {
         }
 
         let selectedTabStyle = {
-            border: "black solid 2px",
-            borderRight: "white",
-            backgroundColor: "#e6f4ff"
+            backgroundColor: "white",
+            zIndex: "10"
+        }
+        if (selectedTab === 0) {
+            selectedTabStyle["boxShadow"] = "-5px -1px 5px 0px rgb(0,0,0,.5)"
+        } else if (selectedTab === 4) {
+            selectedTabStyle["boxShadow"] = "-5px 1px 5px 0px rgb(0,0,0,.5)"
+        } else {
+            selectedTabStyle["boxShadow"] = "-5px 0px 5px 0px rgb(0,0,0,.5)"
         }
 
-        let otherTabStyle = {
-            borderRight: "black solid 2px"
+        let chartTitle = this.titles[selectedTab][0]
+        if (selectedTab === 1) {
+            chartTitle += " (without check or reveal)"
         }
 
         return (
@@ -103,28 +110,28 @@ class MiniStatsMetricPage extends Component {
                     <div className="mini-stats-section-header">Metric Stats</div>
                     <div className="mini-stats-chart-tabs-section">
                         <div className="mini-stats-chart-tab" onClick={() => this.tabClicked(0)} 
-                            style={selectedTab === 0 ? selectedTabStyle : otherTabStyle}>
-                            Completed Games
+                            style={selectedTab === 0 ? selectedTabStyle : {}}>
+                            Completed Puzzles
                         </div>
                         <div className="mini-stats-chart-tab" onClick={() => this.tabClicked(1)}
-                            style={selectedTab === 1 ? selectedTabStyle : otherTabStyle}>
+                            style={selectedTab === 1 ? selectedTabStyle : {}}>
                             Best Times
                         </div>
                         <div className="mini-stats-chart-tab" onClick={() => this.tabClicked(2)} 
-                            style={selectedTab === 2 ? selectedTabStyle : otherTabStyle}>
+                            style={selectedTab === 2 ? selectedTabStyle : {}}>
                             Average Times
                         </div>
                         <div className="mini-stats-chart-tab" onClick={() => this.tabClicked(3)} 
-                            style={selectedTab === 3 ? selectedTabStyle : otherTabStyle}>
+                            style={selectedTab === 3 ? selectedTabStyle : {}}>
                             Check Percent
                         </div>
                         <div className="mini-stats-chart-tab" onClick={() => this.tabClicked(4)} 
-                            style={selectedTab === 4 ? selectedTabStyle : otherTabStyle}>
+                            style={selectedTab === 4 ? selectedTabStyle : {}}>
                             Reveal Percent
                         </div>
                     </div>
                     <div className="mini-stats-chart-section">
-                        <MiniStatsMetricChart title={this.titles[selectedTab][0]} yAxisTitle={this.titles[selectedTab][1]} data={data} max={chartMax}/>
+                        <MiniStatsMetricChart title={chartTitle} yAxisTitle={this.titles[selectedTab][1]} data={data} max={chartMax}/>
                     </div>
                 </div>
             </Fragment>

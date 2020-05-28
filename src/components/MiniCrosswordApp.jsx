@@ -1,4 +1,4 @@
-import React, { StrictMode, Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import CrosswordNavBar from './CrosswordNavBar.jsx'
@@ -63,7 +63,7 @@ class MiniCrosswordApp extends Component {
             "pauseManual":["Your game has been paused", "Resume"],
             "pauseInactive":["Your game has been paused due to inactivity", "Resume"],
             "resetClicked":["Are you sure you want to reset the puzzle? This will clear the board but not the timer.", "Reset", "Cancel"],
-            "puzzleCorrect":["Congrats, you've solved the puzzle! Want to play another?", "Let's do it", "Not yet"],
+            "puzzleCorrect":["Congratulations, you've solved the puzzle in {}! Want to play another?", "Let's do it", "Not yet"],
             "puzzleIncorrect":["Oops, there are still one or more errors to fix", "Close"]
         }
 
@@ -71,8 +71,6 @@ class MiniCrosswordApp extends Component {
         this.downClues = []
         this.timerKey = (new Date()).getTime()
         this.timerVal = 0
-        this.checked = false
-        this.revealed = false
 
         this.state = {
             size: 5,
@@ -105,14 +103,11 @@ class MiniCrosswordApp extends Component {
         this.checkForCompletion = this.checkForCompletion.bind(this)
         this.getSelectedSquare = this.getSelectedSquare.bind(this)
         this.loadSettings = this.loadSettings.bind(this)
-        this.recordStats = this.recordStats.bind(this)
 
-        this.checkSquare = this.checkSquare.bind(this)
         this.checkSquareClicked = this.checkSquareClicked.bind(this)
         this.checkWordClicked = this.checkWordClicked.bind(this)
         this.checkPuzzleClicked = this.checkPuzzleClicked.bind(this)
 
-        this.revealSquare = this.revealSquare.bind(this)
         this.revealSquareClicked = this.revealSquareClicked.bind(this)
         this.revealWordClicked = this.revealWordClicked.bind(this)
         this.revealPuzzleClicked = this.revealPuzzleClicked.bind(this)
@@ -247,44 +242,58 @@ class MiniCrosswordApp extends Component {
         })
     }
 
-    checkForCompletion (board, showNotComplete) {
-        console.log(`Checking for completion and ${showNotComplete ? "" : "not "}showing if not complete`)
-        for (let r = 0; r < board.grid.length; r++) {
-            for (let c = 0; c < board.grid.length; c++) {
-                if (board.solution[r][c] !== board.grid[r][c].value) {
-                    if (showNotComplete) {
-                        this.crosswordUnfinished()
-                    }
-                    return
-                }
-            }
-        }
-        this.crosswordFinished()
-    }
+    async checkForCompletion (showNotComplete) {
+        let mini = this.state.mini
+        mini.board.numSeconds = this.timerVal
 
-    crosswordFinished () {
-        this.setState({
-            modalInfo: this.modalInfos["puzzleCorrect"],
-            complete: true
-        })
-        this.recordStats()
-    }
-
-    async recordStats () {
         let response
-        let requestSuccess
+        let requestSuccess = false
         try {
-            response = await api.miniCompleted(User.token, this.state.mini.board.grid.length, this.state.mini.difficulty, this.timerVal, this.checked, this.revealed)
+            response = await api.miniIsComplete(User.token, mini.board)
             requestSuccess = response.status === 200
         } catch (error) {
             requestSuccess = false
         }
 
         if (requestSuccess) {
-            MiniStatsService.updateMiniStats(response.data)
-        } else {
-            console.log("Unable to save mini stats for completed game")
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
+            if (response.data.completed === true) {
+                this.crosswordFinished()
+            } else {
+                if (showNotComplete) {
+                    this.crosswordUnfinished()
+                }
+            }
         }
+    }
+
+    crosswordFinished () {
+        let doneMsg = this.modalInfos["puzzleCorrect"]
+        let s = this.timerVal
+        let h = Math.floor(s / 3600)
+        if (h > 0) s -= h * 3600
+        let m = Math.floor(s / 60)
+        if (m > 0) s -= m * 60
+
+        let secondStr = s < 10 ? "0" + s : "" + s
+        let minuteStr = "" + m
+        if (h > 0) {
+            minuteStr = m < 10 ? "0" + m : "" + m
+        }
+        let hourStr = "" + h
+        let timeStr = ""
+        if (h > 0) timeStr += hourStr + ":"
+        timeStr += minuteStr + ":" + secondStr
+
+        doneMsg[0] = doneMsg[0].replace('{}',timeStr)
+        this.setState({
+            modalInfo: doneMsg,
+            complete: true
+        })
+        MiniStatsService.refreshMiniStats(User.token)
     }
 
     crosswordUnfinished () {
@@ -301,8 +310,20 @@ class MiniCrosswordApp extends Component {
             return
         }
         event.preventDefault()
+        if (this.state.complete) {
+            return
+        }
         let modalOpen = this.state.settingsClicked || this.state.modalInfo.length > 0
-        if (modalOpen || this.state.complete) {
+        if (modalOpen) {
+            if (this.state.modalInfo.length > 0 && this.state.modalInfo[0] !== "resetClicked") {
+                if (event.which === 13 || event.which === 27) {
+                    // allow enter/esc keys to close modal (except resetting puzzle requires click)
+                    this.closeModal()
+                }
+            } else if (this.state.settingsClicked && event.which === 27) {
+                // allow esc key to close settings
+                this.closeModal()
+            }
             return
         }
         let mini = this.state.mini
@@ -348,7 +369,7 @@ class MiniCrosswordApp extends Component {
                 CrosswordKeyActions.alphaNumeric(grid, selection, event.key)
             }
             if (CrosswordKeyActions.gridIsFull(grid) && this.state.complete !== true) {
-                this.checkForCompletion(mini.board, !gridWasFull)
+                this.checkForCompletion(!gridWasFull)
             }
         }
         mini.board.grid = grid
@@ -414,8 +435,6 @@ class MiniCrosswordApp extends Component {
         this.acrossClues = []
         this.downClues = []
         this.timerKey = (new Date()).getTime()
-        this.checked = false
-        this.revealed = false
         this.setState({
             mini: null,
             complete: false,
@@ -485,67 +504,74 @@ class MiniCrosswordApp extends Component {
         console.log(this.state.mini)
     }
 
-    checkSquare (square, solution) {
-        if (square.value === "" || square.value === "_" || square.status === "Revealed") {
-            return;
-        } else if (square.value === solution[square.rowCoord][square.colCoord]) {
-            square.status = "CheckedTrue"
+    async checkSquareClicked () {
+        let mini = this.state.mini
+
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.checkMiniSquare(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Received an error checking mini square")
         } else {
-            square.status = "CheckedFalse"
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
         }
     }
 
-    checkSquareClicked () {
+    async checkWordClicked () {
         let mini = this.state.mini
-        let selection = mini.board.selection
-        let square = mini.board.grid[selection.rowCoord][selection.colCoord]
-        this.checkSquare(square, mini.board.solution)
-        this.setState({
-            mini: mini
-        })
-    }
 
-    checkWordClicked () {
-        let mini = this.state.mini
-        let r = mini.board.selection.rowCoord
-        let c = mini.board.selection.colCoord
-        let dir = mini.board.selection.direction
-        if (dir === "Across") {
-            let ind = mini.board.grid[r][c].acrossWordIndex
-            let x = c - ind
-            while (x < mini.board.grid.length && mini.board.grid[r][x].value !== "_") {
-                this.checkSquare(mini.board.grid[r][x], mini.board.solution)
-                x++
-            }
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.checkMiniWord(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Received an error checking mini word")
         } else {
-            let ind = mini.board.grid[r][c].downWordIndex
-            let y = r - ind
-            while (y < mini.board.grid.length && mini.board.grid[y][c].value !== "_") {
-                this.checkSquare(mini.board.grid[y][c], mini.board.solution)
-                y++
-            }
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
         }
-        this.setState({
-            mini: mini
-        })
     }
 
-    checkPuzzleClicked () {
+    async checkPuzzleClicked () {
         let mini = this.state.mini
-        for (let r = 0; r < mini.board.grid.length; r++) {
-            for (let c = 0; c < mini.board.grid.length; c++) {
-                this.checkSquare(mini.board.grid[r][c], mini.board.solution)
-            }
+
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.checkMiniPuzzle(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
         }
-        this.setState({
-            mini: mini
-        })
+
+        if (!requestSuccess) {
+            console.log("Received an error checking mini puzzle")
+        } else {
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
+        }
     }
 
     checkClicked (type) {
         if (this.state.complete || this.state.mini === null) return
-
-        this.checked = true
         
         if (type === "Square") {
             this.checkSquareClicked()
@@ -556,67 +582,89 @@ class MiniCrosswordApp extends Component {
         }
     }
 
-    revealSquare (square, solution) {
-        if (square.value === "_" || square.status === "CheckedTrue") {
-            return
+    async revealSquareClicked () {
+        let mini = this.state.mini
+
+        let gridWasFull = CrosswordKeyActions.gridIsFull(mini.board.grid)
+
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.revealMiniSquare(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
         }
-        square.value = solution[square.rowCoord][square.colCoord]
-        square.status = "Revealed"
-    }
 
-    revealSquareClicked () {
-        let mini = this.state.mini
-        let selection = mini.board.selection
-        let square = mini.board.grid[selection.rowCoord][selection.colCoord]
-        this.revealSquare(square, mini.board.solution)
-        this.setState({
-            mini: mini
-        })
-    }
-
-    revealWordClicked () {
-        let mini = this.state.mini
-        let r = mini.board.selection.rowCoord
-        let c = mini.board.selection.colCoord
-        let dir = mini.board.selection.direction
-        if (dir === "Across") {
-            let ind = mini.board.grid[r][c].acrossWordIndex
-            let x = c - ind
-            while (x < mini.board.grid.length && mini.board.grid[r][x].value !== "_") {
-                this.revealSquare(mini.board.grid[r][x], mini.board.solution)
-                x++
-            }
+        if (!requestSuccess) {
+            console.log("Received an error revealing mini square")
         } else {
-            let ind = mini.board.grid[r][c].downWordIndex
-            let y = r - ind
-            while (y < mini.board.grid.length && mini.board.grid[y][c].value !== "_") {
-                this.revealSquare(mini.board.grid[y][c], mini.board.solution)
-                y++
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
+            if (CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)) {
+                this.checkForCompletion(!gridWasFull)
             }
         }
-        this.setState({
-            mini: mini
-        })
     }
 
-    revealPuzzleClicked () {
+    async revealWordClicked () {
         let mini = this.state.mini
-        for (let r = 0; r < mini.board.grid.length; r++) {
-            for (let c = 0; c < mini.board.grid.length; c++) {
-                this.revealSquare(mini.board.grid[r][c], mini.board.solution)
+
+        let gridWasFull = CrosswordKeyActions.gridIsFull(mini.board.grid)
+
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.revealMiniWord(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Received an error revealing mini word")
+        } else {
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
+            if (CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)) {
+                this.checkForCompletion(!gridWasFull)
             }
         }
-        this.setState({
-            mini: mini
-        })
-        this.crosswordFinished()
+    }
+
+    async revealPuzzleClicked () {
+        let mini = this.state.mini
+
+        let gridWasFull = CrosswordKeyActions.gridIsFull(mini.board.grid)
+
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.revealMiniPuzzle(User.token, mini.board)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Received an error revealing mini puzzle")
+        } else {
+            mini.board = response.data
+            this.setState({
+                mini: mini
+            })
+            if (CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)) {
+                this.checkForCompletion(!gridWasFull)
+            }
+        }
     }
 
     revealClicked (type) {
         if (this.state.complete || this.state.mini === null) return
-        
-        let gridWasFull = CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)
-        this.revealed = true
 
         if (type === "Square") {
             this.revealSquareClicked()
@@ -624,10 +672,6 @@ class MiniCrosswordApp extends Component {
             this.revealWordClicked()
         } else {
             this.revealPuzzleClicked()
-        }
-
-        if (CrosswordKeyActions.gridIsFull(this.state.mini.board.grid)) {
-            this.checkForCompletion(this.state.mini.board, !gridWasFull)
         }
     }
 
@@ -677,7 +721,7 @@ class MiniCrosswordApp extends Component {
         }
 
         return (
-            <StrictMode>
+            <Fragment>
                 <CrosswordNavBar blurred={modalOpen} loggedIn={this.loadSettings}/>
                 <div className="crossword-overlay" style={{display: `${modalOpen ? "" : "none"}`}}></div>
                 <SettingsModal
@@ -769,7 +813,7 @@ class MiniCrosswordApp extends Component {
                             windowWidthPx={windowSize} />
                     </div>
                 </div>
-            </StrictMode>
+            </Fragment>
         )
     }
 }

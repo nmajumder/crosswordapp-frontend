@@ -10,7 +10,7 @@
 }
 
 .crossword-app-wrapper {
-    top: 80px;
+    top: 60px;
     left: 0;
     position: fixed;
     padding: 80px 10%;
@@ -29,13 +29,16 @@
     }
 }
 
+.crossword-app-welcome {
+    font-size: 18pt;
+    margin-bottom: 80px;
+    text-align: center;
+}
+
 .full-sized-themer-box {
     float: left;
     position: relative;
-    width: calc(40% - 20px);
-    min-width: 300px;
     padding: 20px 10px;
-    margin: 0 calc(5% - 4px);
 }
 
 .full-sized-themer-icon {
@@ -66,17 +69,14 @@
 .generated-mini-box {
     float: left;
     position: relative;
-    width: calc(40% - 20px);
-    min-width: 300px;
     padding: 20px 10px;
-    margin: 0 calc(5% - 4px)
 }
 
 .auto-icon-img {
     width: 45%;
     height: 45%;
-    top: 0px;
-    left: 50px;
+    top: 0%;
+    left: 9.3%;
     z-index: 0;
     transform: rotate(-10deg);
 }
@@ -85,8 +85,8 @@
     width: 65%;
     height: 65%;
     z-index: 2;
-    top: 120px;
-    left: 170px;
+    top: 21.5%;
+    left: 31.7%;
     transform: rotate(5deg);
 }
 
@@ -94,8 +94,8 @@
     width: 50%;
     height: 50%;
     z-index: 4;
-    top: 290px;
-    left: 120px;
+    top: 52%;
+    left: 22.3%;
     transform: rotate(-3deg);
 }
 
@@ -108,8 +108,8 @@
 .auto-icon-overlay {
     width: 45%;
     height: 45%;
-    top: 0px;
-    left: 50px;
+    top: 0%;
+    left: 9.3%;
     z-index: 1;
     transform: rotate(-10deg);
 }
@@ -118,8 +118,8 @@
     width: 65%;
     height: 65%;
     z-index: 3;
-    top: 120px;
-    left: 170px;
+    top: 21.5%;
+    left: 31.7%;
     transform: rotate(5deg);
 }
 
@@ -127,8 +127,8 @@
     width: 50%;
     height: 50%;
     z-index: 5;
-    top: 290px;
-    left: 120px;
+    top: 52%;
+    left: 22.3%;
     transform: rotate(-3deg);
 }
 

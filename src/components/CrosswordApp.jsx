@@ -1,4 +1,4 @@
-import React, { StrictMode, Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import ReactDOM from 'react-dom'
 import CrosswordNavBar from './CrosswordNavBar.jsx'
 import LoginModal from './LoginModal.jsx'
@@ -20,7 +20,8 @@ class CrosswordApp extends Component {
         this.overlayRef3 = React.createRef()
 
         this.state = {
-            loggedIn: false
+            loggedIn: false,
+            windowWid: window.innerWidth
         }
 
         this.miniPageSelected = this.miniPageSelected.bind(this)
@@ -30,15 +31,28 @@ class CrosswordApp extends Component {
 
         this.overlayHover = this.overlayHover.bind(this)
         this.overlayUnhover = this.overlayUnhover.bind(this)
+
+        this.handleResize = this.handleResize.bind(this)
     }
 
     async componentDidMount () {
+        window.addEventListener('resize', this.handleResize)
         console.log("Validating user from crossword app home page")
         let user = await UserValidation.validateUser()
         let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
 
         this.setState({
             loggedIn: validated
+        })
+    }
+
+    componentWillUnmount () {
+        window.removeEventListener('resize', this.handleResize)
+    }
+
+    handleResize () {
+        this.setState({
+            windowWid: window.innerWidth
         })
     }
 
@@ -86,7 +100,7 @@ class CrosswordApp extends Component {
     }
 
     render () {
-        const { loggedIn } = this.state
+        const { loggedIn, windowWid } = this.state
 
         let linkFlag = localStorage.getItem('link')
         const linking = linkFlag === 'true'
@@ -99,31 +113,40 @@ class CrosswordApp extends Component {
 
         let loginOpen = !loggedIn || linking || manage || loggedOut
 
+        let boxWid = (windowWid * .3) - 20
+        let boxMarg = (windowWid * .05) - 4
+
         return (
-            <StrictMode>
+            <Fragment>
                 <LoginModal shouldShow={loginOpen} linking={linking} manage={manage} onLogin={this.onLogin} />
                 <CrosswordNavBar blurred={loginOpen}/>
                 <div className="crossword-app-overlay"
                     style={{display: `${loginOpen ? "" : "none"}`}}></div>
                 <div className="crossword-app-wrapper" 
                     style={{filter: `${loginOpen ? "blur(5px)" : "none"}`}}>
-                    <div className="full-sized-themer-box">
-                        <img className="full-sized-themer-icon" src={fullSizedThemers} alt="Full Sized Themers" />
-                        <div className="full-sized-themer-icon-overlay"></div>
+                    <div className="crossword-app-welcome">
+                        Welcome to the only online crossword site where you can complete unlimited puzzles! 
+                        Try your hand at some full-sized, themed puzzles or binge minis of varying sizes. 
+                        The mini puzzles are generated <span style={{fontStyle: "italic"}}>on the fly</span>, so you can solve to your heart's desire.
+                        Visit the stats page to see lots of metrics on your performance, and then go back and beat your best time!
                     </div>
-                    <div className="generated-mini-box" style={{height: window.innerWidth * .3}}>
+                    <div className="full-sized-themer-box" style={{height: boxWid, width: boxWid, marginLeft: boxMarg, marginRight: boxMarg}}>
+                        <img className="full-sized-themer-icon" src={fullSizedThemers} alt="Full Sized Themers" />
+                        <div className="full-sized-themer-icon-overlay" onClick={() => this.fullPageSelected()}></div>
+                    </div>
+                    <div className="generated-mini-box" style={{height: boxWid, width: boxWid, marginLeft: boxMarg, marginRight: boxMarg}}>
                         <img className="auto-icon-img overlap-icon" src={auto} />
                         <img className="generated-icon-img overlap-icon" src={generated} />
                         <img className="minis-icon-img overlap-icon" src={minis} />
-                        <div className="auto-icon-overlay overlap-icon-overlay" ref={this.overlayRef1} 
+                        <div className="auto-icon-overlay overlap-icon-overlay" ref={this.overlayRef1} onClick={() => this.miniPageSelected()}
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
-                        <div className="generated-icon-overlay overlap-icon-overlay" ref={this.overlayRef2} 
+                        <div className="generated-icon-overlay overlap-icon-overlay" ref={this.overlayRef2} onClick={() => this.miniPageSelected()}
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
-                        <div className="minis-icon-overlay overlap-icon-overlay" ref={this.overlayRef3} 
+                        <div className="minis-icon-overlay overlap-icon-overlay" ref={this.overlayRef3} onClick={() => this.miniPageSelected()}
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
-            </StrictMode>
+            </Fragment>
         )
     }
 }

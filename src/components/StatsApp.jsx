@@ -1,4 +1,4 @@
-import React, { StrictMode, Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import '../css/StatsApp.css'
 import User from '../libs/User.js'
 import UserValidation from '../libs/UserValidation.js'
@@ -52,7 +52,7 @@ class StatsApp extends Component {
         let selectedStyle = {borderBottomColor: "#3f84fb"}
 
         return (
-            <StrictMode>
+            <Fragment>
                 <CrosswordNavBar/>
                 <div className="stats-page-wrapper">
                     <div className="stats-page-options-bar">
@@ -76,7 +76,7 @@ class StatsApp extends Component {
                         <MiniStatsMetricPage />
                     }
                 </div>
-            </StrictMode>
+            </Fragment>
         )
     }
 }

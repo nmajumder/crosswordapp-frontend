@@ -24,6 +24,15 @@ class MiniStatsService {
         }
     }
 
+    refreshMiniStats (userid) {
+        this.logoutStats()
+        this.getMiniStats(userid)
+    }
+
+    logoutStats() {
+        this.ministats = null
+    }
+
     getLoadedMiniStats () {
         return this.ministats
     }

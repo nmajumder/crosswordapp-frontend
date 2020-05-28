@@ -14,6 +14,7 @@ class CrosswordClueScroll extends Component {
         }
         this.getClueBackgroundColor = this.getClueBackgroundColor.bind(this)
         this.getClueBorderColor = this.getClueBorderColor.bind(this)
+        this.getClueTextColor = this.getClueTextColor.bind(this)
     }
 
     componentDidUpdate() {
@@ -44,6 +45,24 @@ class CrosswordClueScroll extends Component {
         return "white"
     }
 
+    getClueTextColor (clue, grid) {
+        let r = clue.rowCoord
+        let c = clue.colCoord
+        let len = clue.answerLength
+        for (let i = 0; i < len; i++) {
+            if (clue.direction === "Across") {
+                if (grid[r][c+i].value === "") {
+                    return "black"
+                }
+            } else {
+                if (grid[r+i][c].value === "") {
+                    return "black"
+                }
+            }
+        }
+        return "#808080"
+    } 
+
     render () {
         return (
             <div className="crossword-clue-list">
@@ -53,7 +72,9 @@ class CrosswordClueScroll extends Component {
                 <div className="crossword-clue-scroll" ref={this.scrollRef}>
                     {this.props.clueList.map( (clue,i) =>
                         <div key={i} ref={this.clueRefs[i]} className="crossword-clue-row" onClick={() => { this.props.clueClicked(clue) }}
-                            style={{backgroundColor : this.getClueBackgroundColor(clue), borderLeftColor : this.getClueBorderColor(clue)}}>
+                            style={{backgroundColor : this.getClueBackgroundColor(clue), 
+                                    borderLeftColor : this.getClueBorderColor(clue),
+                                    color: this.getClueTextColor(clue, this.props.grid)}}>
                             <div className="crossword-clue-row-number">{clue.number}</div>
                             <div className="crossword-clue-row-text">{clue.text}</div>
                         </div>
@@ -69,7 +90,8 @@ CrosswordClueScroll.propTypes = {
     clueList: PropTypes.array.isRequired,
     selectedClue: PropTypes.object.isRequired,
     isMatchingDirection: PropTypes.bool.isRequired,
-    clueClicked: PropTypes.func.isRequired
+    clueClicked: PropTypes.func.isRequired,
+    grid: PropTypes.array.isRequired
 }
 
 export default CrosswordClueScroll
