@@ -4,6 +4,7 @@ class CrosswordService {
 
     async getAllCrosswords (userid) {
         if (this.crosswords === null || this.crosswords === undefined) {
+            console.log("Querying all crosswords because list is null")
             let response
             let requestSuccess = false
             try {
@@ -20,11 +21,13 @@ class CrosswordService {
                 return this.crosswords
             }
         } else {
+            console.log("Returning pre populated list of crosswords")
             return this.crosswords
         }
     }
 
     logoutCrosswords () {
+        console.log("Logging out crosswords")
         this.crosswords = null
     }
 

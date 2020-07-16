@@ -5,9 +5,7 @@ import DateUtils from '../libs/DateUtils.js'
 import CrosswordService from '../libs/CrosswordService'
 import CrosswordHeaderProgressBar from './CrosswordHeaderProgressBar'
 import crosswordImages from '../libs/CrosswordImageList.js'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar } from '@fortawesome/free-regular-svg-icons'
 import { faInfoCircle, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
 
 class CrosswordHeader extends Component {
@@ -87,7 +85,7 @@ class CrosswordHeader extends Component {
         let crosswordInd = parseInt(this.props.id, 10)
         let image = crosswordImages[crosswordInd-1]["src"]
         let backgroundImageStyle = {
-            background: `url(${image})`, 
+            backgroundImage: `url(${image})`, 
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover"

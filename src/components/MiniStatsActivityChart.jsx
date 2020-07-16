@@ -74,48 +74,38 @@ class MiniStatsActivityChart extends Component {
 
 
     render () {
-        let activityMap = this.props.activityMap
-        if (activityMap === null || activityMap === undefined) return null
+        let stats = this.props.stats
+        if (stats === null || stats === undefined) return null
 
-        let index = this.props.index
-        let indexList = []
-        if (index !== null) {
-            if (index >= 15) {
-                let sizeNum = index % 5
-                indexList.push(sizeNum * 3)
-                indexList.push((sizeNum*3) + 1)
-                indexList.push((sizeNum*3) + 2)
-            } else {
-                indexList.push(index)
-            }
-        }        
-        console.log(indexList)
+        let size = this.props.size
+        let difficulty = this.props.difficulty
 
         let maxColumns = this.props.maxColumns
         if (maxColumns === null || maxColumns === undefined) {
             maxColumns = 15
         }
 
-        let minDate = null
-        for (let dateStr in activityMap) {
-            console.log(dateStr)
-            let date = new Date(dateStr + ' 00:00:00 EDT')
-            if (indexList.length > 0) {
-                let indexActivity = 0
-                for (let ind of indexList) {
-                    if (activityMap[dateStr][ind] !== null && activityMap[dateStr][ind] !== undefined) {
-                        indexActivity += activityMap[dateStr][ind]
-                    }
-                }
-                if (indexActivity === null || indexActivity === undefined || indexActivity === 0) {
-                    continue
-                }
-            }
-            if (minDate === null || date < minDate) {
-                minDate = date
+        let indexList = []
+        for (let i = 0; i < stats.categoryStats.length; i++) {
+            let category = stats.categoryStats[i]
+            if (size === null || (category.gridSize === size && (difficulty === null || category.difficulty === difficulty))) {
+                indexList.push(i)
             }
         }
-        if (minDate === null) return null
+
+        let dateStrList = []
+        for (let i of indexList) {
+            for (let dateStr in stats.categoryStats[i].activityMap) {
+                if (!dateStrList.includes(dateStr)) {
+                    dateStrList.push(dateStr)
+                }
+            }
+        }
+        if (dateStrList.length === 0) {
+            return null;
+        }
+        dateStrList.sort()
+        let minDate = new Date(dateStrList[0] + ' 00:00:00 EDT')
 
         let daySpread = Math.floor((new Date() - minDate) / (1000 * 3600 * 24))
 
@@ -136,36 +126,21 @@ class MiniStatsActivityChart extends Component {
 
         let dates = {}
         let dateLabels = []
-        for (let dateStr in activityMap) {
-            let date = new Date(dateStr + ' 00:00:00 EDT')
+        for (let dateStr of dateStrList) {
+            let date = new Date(dateStr.split('-').join('/') + ' 00:00:00 EDT')
             let groupedDate = groupingFunc(date)
-            if (index === null) {
-                let total = 0
-                for (let val of activityMap[dateStr]) {
-                    if (val !== null)
-                        total += val
-                }
-                console.log("adding total " + total + " for grouped date " + groupedDate)
-                if (dates[groupedDate] === null || dates[groupedDate] === undefined) {
-                    dates[groupedDate] = total
-                } else {
-                    dates[groupedDate] += total
-                }
-                dateLabels.push(labelFunc(groupedDate))
-            } else {
-                let indexTotal = 0
-                for (let ind of indexList) {
-                    if (activityMap[dateStr][ind] !== null && activityMap[dateStr][ind] !== undefined) {
-                        indexTotal += activityMap[dateStr][ind]
-                    }
-                }
-                console.log(activityMap[dateStr])
-                console.log(indexTotal)
-                if (indexTotal !== null && indexTotal !== undefined && indexTotal > 0) {
-                    dates[groupedDate] = indexTotal
-                    dateLabels.push(labelFunc(groupedDate))
+            let total = 0
+            for (let i of indexList) {
+                if (stats.categoryStats[i].activityMap[dateStr] !== undefined) {
+                    total += stats.categoryStats[i].activityMap[dateStr]
                 }
             }
+            if (dates[groupedDate] === null || dates[groupedDate] === undefined) {
+                dates[groupedDate] = total
+            } else {
+                dates[groupedDate] += total
+            }
+            dateLabels.push(labelFunc(groupedDate))
         }
         
         let groupDate = groupingFunc(minDate)
@@ -189,9 +164,9 @@ class MiniStatsActivityChart extends Component {
         if (group === 'Months') axisFormat = 'MMM yyyy'
         else if (group === 'Years') axisFormat = 'yyyy'
 
-        let title = index === null ? "Total puzzles completed over time" : "Puzzles completed over time"
+        let title = size === null ? "Total puzzles completed over time" : "Puzzles completed over time"
         let height = this.props.chartHeight === null || this.props.chartHeight === undefined ? "350px" : this.props.chartHeight
-        let animationTime = index === null ? 500 : 1000
+        let animationTime = size === null ? 500 : 1000
 
         return (
             <Chart
@@ -212,8 +187,9 @@ class MiniStatsActivityChart extends Component {
 }
 
 MiniStatsActivityChart.propTypes = {
-    activityMap: PropTypes.object.isRequired,
-    index: PropTypes.number,
+    stats: PropTypes.object.isRequired,
+    size: PropTypes.number,
+    difficulty: PropTypes.string,
     chartHeight: PropTypes.number,
     maxColumns: PropTypes.number
 }

@@ -44,8 +44,9 @@
 
 .crossword-page-rating-button {
     padding: 0 20px;
-    color: white;
-    background-color: #306acf;
+    color: black;
+    background-color: #f8f5f5;
+    border-color: black;
     width: 180px;
     font-size: 12pt;
     font-weight: 600;
@@ -57,15 +58,15 @@
 
 .crossword-page-rating-button:hover {
     cursor: pointer;
-    background-color: #2d59b3;
-    box-shadow: 0 5px 5px 2px rgba(0, 0, 0, 0.2), 0 2px 8px 2px rgba(0, 0, 0, 0.1);
+    background-color: #f5eeee;
+    box-shadow: 0 5px 5px 2px rgba(0, 0, 0, 0.3), 0 2px 8px 2px rgba(0, 0, 0, 0.2);
 }
 
 .crossword-page-rating-button:disabled {
     color: #787878;
     font-weight: 500;
     background-color: #EFEFEF;
-    border-color: #787878;
+    border-color: #BCBCBC;
     box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     cursor: not-allowed;
 }
@@ -202,6 +203,7 @@
     text-align: center;
     float: right;
     border: none;
+    background-color: white;
     outline: none;
 }
 

@@ -10,10 +10,9 @@
 }
 
 .crossword-app-wrapper {
-    top: 60px;
-    left: 0;
-    position: fixed;
-    padding: 80px 10%;
+    float: left;
+    margin-top: 60px;
+    padding: 0 10%;
     z-index: -1;
 }
 
@@ -30,7 +29,7 @@
 }
 
 .crossword-app-welcome {
-    font-size: 18pt;
+    font-size: 20pt;
     margin-bottom: 80px;
     text-align: center;
 }

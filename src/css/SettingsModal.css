@@ -1,7 +1,7 @@
 .settings-modal-wrapper {
     float: left;
     height: 90%;
-    max-height: 725px;
+    max-height: 700px;
     min-height: 600px;
     width: 600px;
     top: 5%;
@@ -52,7 +52,7 @@
 .color-scheme-row-scroll {
     margin-bottom: 20px;
     padding: 10px 3px;
-    height: calc(100% - 230px);
+    height: calc(100% - 180px);
     overflow: scroll;
 }
 

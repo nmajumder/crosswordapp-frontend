@@ -14,6 +14,8 @@ import Settings from '../libs/Settings.js'
 import BoardStatus from '../libs/BoardStatus.js'
 import User from '../libs/User.js'
 import api from '../libs/api.js'
+import RatingsService from '../libs/RatingsService.js'
+import Footer from './Footer.jsx'
 
 class CrosswordPage extends Component {
     constructor (props) {
@@ -25,7 +27,7 @@ class CrosswordPage extends Component {
             "resetClicked":["Are you sure you want to reset the puzzle? This will clear the board but not the timer.", "Reset", "Cancel"],
             "puzzleCorrect":["Congratulations, you've successfully solved the puzzle in {}!", "Rate", "Not Now"],
             "puzzleIncorrect":["Oops, there are still one or more errors to fix", "Close"],
-            "ratePuzzle":["Rate this puzzle on difficulty and enjoyment level:", "Save", "Later"]
+            "ratePuzzle":["Rate this puzzle on difficulty and enjoyment level:", "Save", "Cancel"]
         }
 
         this.inactivityTimer = Settings.timerInactivity
@@ -202,6 +204,7 @@ class CrosswordPage extends Component {
         if (!requestSuccess) {
             console.log("Received an error saving crossword rating")
         } else {
+            RatingsService.refreshRatings()
             this.board = response.data
         }
         this.closeModal()
@@ -702,6 +705,7 @@ class CrosswordPage extends Component {
                         boardWidthPx={boardPx}
                         windowWidthPx={windowSize} />
                 </div>
+                <Footer blur={modalOpen} />
             </Fragment>
         )
     }

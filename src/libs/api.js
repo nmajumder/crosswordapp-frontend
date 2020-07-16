@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:8080'
+const baseUrl = 'http://ec2-18-218-75-146.us-east-2.compute.amazonaws.com/'
 const axiosInstance = axios.create({
     baseURL: `${baseUrl}/api`,
-    timeout: 3000
+    timeout: 4000
 })
 class api {
     /* USER APIS */
@@ -15,9 +15,9 @@ class api {
         return axiosInstance.put('/user/link', {token: token, newAccount: {email: email, username: user, password: pass}})
     }
 
-    saveSettings(token, colorScheme, inactivityTimer, playSound) {
+    saveSettings(token, colorScheme, inactivityTimer) {
         return axiosInstance.put('/user/settings', 
-            {userToken: token, settings: {colorScheme: colorScheme, inactivityTimer: inactivityTimer, playSound: playSound}}
+            {userToken: token, settings: {colorScheme: colorScheme, inactivityTimer: inactivityTimer}}
         )
     }
 
@@ -35,6 +35,11 @@ class api {
 
     resetPassword (email) {
         return axiosInstance.put('/user/password/reset', {email: email})
+    }
+    
+    /* USER COMMENTS APIS */
+    submitComment (userid, type, comment) {
+        return axiosInstance.post(`/user/comment`, {userId: userid, type: type, text: comment})
     }
 
     /* CROSSWORDS APIS */

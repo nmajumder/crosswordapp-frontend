@@ -4,6 +4,7 @@ class MiniStatsService {
     
     async getMiniStats (userid) {
         if (this.ministats === null || this.ministats === undefined) {
+            console.log("Getting new list of ministats bc found null")
             let response
             let requestSuccess = false
             try {
@@ -20,6 +21,7 @@ class MiniStatsService {
                 return this.ministats
             }
         } else {
+            console.log("Returning pre populated list of ministats")
             return this.ministats
         }
     }
@@ -49,10 +51,8 @@ class MiniStatsService {
         } else {
             // if ministats is non-null, we can just increment on client side and
             // count will be sync'd with next completed game
-            let ind = (size-5)*3
-            if (diff === "Moderate") ind++
-            else if (diff === "Hard") ind++
-            this.ministats.startedGames[ind] = this.ministats.startedGames[ind] + 1
+            let category = this.ministats.categoryStats.find(category => category.gridSize === size && category.difficulty === diff)
+            category.started = category.started + 1
         }
     }
 }

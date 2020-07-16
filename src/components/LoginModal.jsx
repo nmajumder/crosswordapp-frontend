@@ -19,7 +19,8 @@ class LoginModal extends Component {
             forgotInfo: false,
             errorMessage: null,
             newPassword: "",
-            sentEmail: false
+            sentEmail: false,
+            loading: false
         }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this)
@@ -88,6 +89,11 @@ class LoginModal extends Component {
                 errorMessage: "Username cannot be empty"
             })
             return false
+        } else if (this.state.username.length < 6) {
+            this.setState({
+                errorMessage: "Username must be at least 6 characters"
+            })
+            return false
         }
         return true
     }
@@ -133,6 +139,9 @@ class LoginModal extends Component {
     }
 
     loginClicked () {
+        this.setState({
+            errorMessage: null
+        })
         if (this.state.forgotInfo) {
             this.sendRecoveryEmail()
         } else if (this.props.manage) {
@@ -166,6 +175,9 @@ class LoginModal extends Component {
     }
 
     async createAccount (email, username, password) {
+        this.setState({
+            loading: true
+        })
         let error = await UserValidation.createAccount(email, username, password, this.props.linking)
         if (error === "") {
             this.cleanupStateAndLogin()
@@ -174,9 +186,15 @@ class LoginModal extends Component {
                 errorMessage: error
             })
         }
+        this.setState({
+            loading: false
+        })
     }
 
     async loginToAccount () {
+        this.setState({
+            loading: true
+        })
         let error = await UserValidation.loginToAccount(this.state.email, this.state.password)
         if (error === "") {
             this.cleanupStateAndLogin()
@@ -185,9 +203,15 @@ class LoginModal extends Component {
                 errorMessage: error
             })
         }
+        this.setState({
+            loading: false
+        })
     }
 
     async changePassword () {
+        this.setState({
+            loading: true
+        })
         let error = await UserValidation.changePassword(this.state.password, this.state.newPassword)
         if (error === "") {
             this.cleanupStateAndLogin()
@@ -196,9 +220,15 @@ class LoginModal extends Component {
                 errorMessage: error
             })
         }
+        this.setState({
+            loading: false
+        })
     }
 
     async sendRecoveryEmail () {
+        this.setState({
+            loading: true
+        })
         let error = await UserValidation.resetPassword(this.state.email)
         if (error === "") {
             this.setState({
@@ -209,6 +239,9 @@ class LoginModal extends Component {
                 errorMessage: error
             })
         }
+        this.setState({
+            loading: false
+        })
     }
 
     cleanupStateAndLogin () {
@@ -233,7 +266,7 @@ class LoginModal extends Component {
     }
 
     render () {
-        const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, sentEmail } = this.state
+        const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, sentEmail, loading } = this.state
 
         if (this.props.shouldShow) {
             if (this.props.linking) {
@@ -260,10 +293,13 @@ class LoginModal extends Component {
                                         icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
                                     {errorMessage}
                                 </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
                             </div>
                             <div className="login-footer">
-                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Create</div>
-                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Cancel</div>
+                                <div className="login-footer-button-submit footer-btn" disabled={loading} onClick={() => this.loginClicked()}>Create</div>
+                                <div className="login-footer-button-skip footer-btn" disabled={loading} onClick={() => this.skipClicked()}>Cancel</div>
                             </div>
                         </div>
                     </Fragment>
@@ -294,10 +330,13 @@ class LoginModal extends Component {
                                         icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
                                     {errorMessage}
                                 </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
                             </div>
                             <div className="login-footer">
-                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Confirm</div>
-                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Cancel</div>
+                                <div className="login-footer-button-submit footer-btn" disabled={loading} onClick={() => this.loginClicked()}>Confirm</div>
+                                <div className="login-footer-button-skip footer-btn" disabled={loading} onClick={() => this.skipClicked()}>Cancel</div>
                             </div>
                         </div>
                     </Fragment>
@@ -325,10 +364,13 @@ class LoginModal extends Component {
                                 <div className="login-forgot-info" onClick={() => this.forgotInfo()}>
                                     {sentEmail ? "Back to login" : "Nevermind, I remember."}
                                 </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
                             </div>
                             <div className="login-footer">
                                 <div className="login-footer-button-submit footer-btn" 
-                                    style={{width: "60%", margin: "0 20%"}} onClick={() => this.loginClicked()}>
+                                    style={{width: "60%", margin: "0 20%"}} disabled={loading} onClick={() => this.loginClicked()}>
                                     Send email
                                 </div>
                             </div>
@@ -347,7 +389,7 @@ class LoginModal extends Component {
                                     <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
                                 </div>
                                 <div className="login-label">
-                                    <input className="login-input" type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+                                    <input className="login-input" type="text" placeholder="public username" value={username} onChange={this.handleUsernameChange} />
                                 </div>
                                 <div className="login-label">
                                     <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
@@ -357,10 +399,13 @@ class LoginModal extends Component {
                                         icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
                                     {errorMessage}
                                 </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
                             </div>
                             <div className="login-footer">
-                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>Create</div>
-                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>Skip it</div>
+                                <div className="login-footer-button-submit footer-btn" disabled={loading} onClick={() => this.loginClicked()}>Create</div>
+                                <div className="login-footer-button-skip footer-btn" disabled={loading} onClick={() => this.skipClicked()}>Skip it</div>
                             </div>
                         </div>
                     </Fragment>
@@ -385,12 +430,15 @@ class LoginModal extends Component {
                                         icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
                                     {errorMessage}
                                 </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
                             </div>
                             <div className="login-footer">
-                                <div className="login-footer-button-submit footer-btn" onClick={() => this.loginClicked()}>
+                                <div className="login-footer-button-submit footer-btn" disabled={loading} onClick={() => this.loginClicked()}>
                                     Login
                                 </div>
-                                <div className="login-footer-button-skip footer-btn" onClick={() => this.skipClicked()}>
+                                <div className="login-footer-button-skip footer-btn" disabled={loading}onClick={() => this.skipClicked()}>
                                     Skip it
                                 </div>
                             </div>

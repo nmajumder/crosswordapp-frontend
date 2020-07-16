@@ -9,6 +9,7 @@ import FullStatsPage from './FullStatsPage.jsx'
 import MiniStatsSummaryPage from './MiniStatsSummaryPage.jsx'
 import MiniStatsCategoryPage from './MiniStatsCategoryPage.jsx'
 import MiniStatsMetricPage from './MiniStatsMetricPage.jsx'
+import Footer from './Footer'
 
 class StatsApp extends Component {
     constructor (props) {
@@ -69,13 +70,19 @@ class StatsApp extends Component {
                             View by Individual Metric
                         </div>
                     </div>
-                    { selected === 0 ? 
-                        <MiniStatsSummaryPage /> :
-                        selected === 1 ?
-                        <MiniStatsCategoryPage /> :
-                        <MiniStatsMetricPage />
+                    { ministats === null ? 
+                        <div style={{width: "100%", marginTop: "100px", textAlign: "center", fontSize: "24pt", fontFamily: "Arial", fontWeight: "bold", opacity: "0.7"}}>
+                            Loading Statistics...
+                        </div> :
+                        selected === 0 ? 
+                            <MiniStatsSummaryPage /> :
+                            selected === 1 ?
+                                <MiniStatsCategoryPage /> :
+                                <MiniStatsMetricPage />
+                    
                     }
                 </div>
+                <Footer />
             </Fragment>
         )
     }

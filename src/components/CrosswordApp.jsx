@@ -10,6 +10,7 @@ import fullSizedThemers from '../images/fullSizedThemers2.png'
 import auto from '../images/auto.png'
 import generated from '../images/generated.png'
 import minis from '../images/minis.png'
+import Footer from './Footer.jsx'
 
 class CrosswordApp extends Component {
     constructor (props) {
@@ -123,12 +124,13 @@ class CrosswordApp extends Component {
                 <div className="crossword-app-overlay"
                     style={{display: `${loginOpen ? "" : "none"}`}}></div>
                 <div className="crossword-app-wrapper" 
-                    style={{filter: `${loginOpen ? "blur(5px)" : "none"}`}}>
+                    style={{filter: `${loginOpen ? "blur(5px)" : "none"}`, pointerEvents: `${loginOpen ? "none" : ""}`}}>
                     <div className="crossword-app-welcome">
-                        Welcome to the only online crossword site where you can complete unlimited puzzles! 
+                        Welcome to CrosswordInfinity.com the only online crossword site where you can complete unlimited puzzles! 
                         Try your hand at some full-sized, themed puzzles or binge minis of varying sizes. 
                         The mini puzzles are generated <span style={{fontStyle: "italic"}}>on the fly</span>, so you can solve to your heart's desire.
-                        Visit the stats page to see lots of metrics on your performance, and then go back and beat your best time!
+                        Check out the stats page to see detailed views on your performance, or visit the leaderboard to see how you stack up against other users.
+                        Then go back and beat your best time!
                     </div>
                     <div className="full-sized-themer-box" style={{height: boxWid, width: boxWid, marginLeft: boxMarg, marginRight: boxMarg}}>
                         <img className="full-sized-themer-icon" src={fullSizedThemers} alt="Full Sized Themers" />
@@ -146,6 +148,7 @@ class CrosswordApp extends Component {
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
+                <Footer blur={loginOpen}/>
             </Fragment>
         )
     }

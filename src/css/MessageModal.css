@@ -86,12 +86,17 @@
     background-color: #3f84fb;
     color: white;
     outline: none;
+    border: solid #CDCDCD 1px;
     box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
 .message-modal-button-primary:hover {
     cursor: pointer;
     background-color: #1f64db;
+}
+
+.message-modal-button-primary:active {
+    color: white;
 }
 
 .message-modal-button-secondary {
@@ -105,10 +110,15 @@
     background-color: #CCCCCC;
     color: black;
     outline: none;
+    border: solid #CDCDCD 1px;
     box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.3), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
 .message-modal-button-secondary:hover {
     cursor: pointer;
     background-color: #AAAAAA;
+}
+
+.message-modal-button-secondary:active {
+    color: black
 }

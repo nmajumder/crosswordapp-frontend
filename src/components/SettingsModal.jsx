@@ -16,7 +16,6 @@ class SettingsModal extends Component {
 
         this.colorSchemeClicked = this.colorSchemeClicked.bind(this)
         this.inactivityOptionClicked = this.inactivityOptionClicked.bind(this)
-        this.soundOptionClicked = this.soundOptionClicked.bind(this)
         this.settingsRestored = this.settingsRestored.bind(this)
         this.saveAndClose = this.saveAndClose.bind(this)
     }
@@ -45,20 +44,12 @@ class SettingsModal extends Component {
         this.props.settingsSave(Settings)
     }
 
-    soundOptionClicked (yesNo) {
-        if (yesNo === Settings.playSound) {
-            return
-        }
-        Settings.playSound = yesNo
-        this.props.settingsSave(Settings)
-    }
-
     async saveAndClose () {
         let response
         let requestSuccess
         try {
             let colorSchemeInd = ColorSchemeList.findIndexByKey(Settings.colorScheme.key)
-            response = await api.saveSettings(User.token, colorSchemeInd, Settings.timerInactivity, Settings.playSound)
+            response = api.saveSettings(User.token, colorSchemeInd, Settings.timerInactivity)
             requestSuccess = response.status === 200
         } catch(error) {
             requestSuccess = false
@@ -110,17 +101,6 @@ class SettingsModal extends Component {
                                 <span className="interaction-settings-option" 
                                     style={{backgroundColor : `${Settings.timerInactivity === 0 ? "#D0D0D0" : ""}`}}
                                     onClick={() => this.inactivityOptionClicked(0)}>Never</span>
-                            </div>
-                        </div>
-                        <div className="settings-interaction-section">
-                            <div className="settings-interaction-header">Play sound on completion?</div>
-                            <div className="settings-interaction-body">
-                                <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${Settings.playSound ? "#D0D0D0" : ""}`}}
-                                    onClick={() => this.soundOptionClicked(true)}>Yes</span>
-                                <span className="interaction-settings-option"
-                                    style={{backgroundColor : `${!Settings.playSound ? "#D0D0D0" : ""}`}}
-                                    onClick={() => this.soundOptionClicked(false)}>No</span>
                             </div>
                         </div>
                     </div>

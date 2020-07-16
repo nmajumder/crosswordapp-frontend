@@ -56,35 +56,39 @@ class MiniStatsMetricPage extends Component {
         let formatFunc
         switch(selectedTab) {
             case 0: 
-                chartMax = Math.max(...stats.completedGames)
-                chartData = stats.completedGames
+                chartData = stats.categoryStats.map(cat => cat.completed)
+                chartMax = Math.max(...chartData)
                 formatFunc = (x) => x
                 break
             case 1: 
-                chartMax = Math.ceil(Math.max(...stats.bestTimes)/60)
-                chartData = stats.bestTimes.map(x => x/60)
+                chartData = stats.categoryStats.map(cat => cat.bestTime / 60)
+                chartMax = Math.ceil(Math.max(...chartData))
                 formatFunc = this.formattedTime
                 break
             case 2: 
-                chartMax = Math.ceil(Math.max(...stats.averageTimes)/60)
-                chartData = stats.averageTimes.map(x => x/60)
+                chartData = stats.categoryStats.map(cat => cat.averageTime / 60)
+                chartMax = Math.ceil(Math.max(...chartData))
                 formatFunc = this.formattedTime
                 break
             case 3: 
+                chartData = stats.categoryStats.map(cat => (cat.checked / cat.completed) * 100)
                 chartMax = 100
-                chartData = stats.checkPercents.map(x => x*100)
                 formatFunc = this.formattedPct
                 break
             case 4: 
+                chartData = stats.categoryStats.map(cat => (cat.revealed / cat.completed) * 100)
                 chartMax = 100
-                chartData = stats.revealPercents.map(x => x*100)
                 formatFunc = this.formattedPct
                 break
         }
 
-        for (let i = 0; i < 15; i++) {
-            let size = Math.floor(i / 3) + 5
-            data[size].push(chartData[i] === 0 ? {v: chartMax / 50, f: 'N/A'} : {v: chartData[i], f: formatFunc(chartData[i])})
+        for (let size = 5; size <= 9; size++) {
+            for (let diff of ["Standard","Difficult","Expert"]) {
+                let i = stats.categoryStats.findIndex(cat => cat.gridSize === size && cat.difficulty === diff)
+                data[size].push(chartData[i] <= 0 ? 
+                    {v: chartMax / 50, f: selectedTab === 1 || selectedTab === 2 ? 'N/A' : formatFunc(chartData[i])} : 
+                    {v: chartData[i], f: formatFunc(chartData[i])})
+            }
         }
 
         let selectedTabStyle = {

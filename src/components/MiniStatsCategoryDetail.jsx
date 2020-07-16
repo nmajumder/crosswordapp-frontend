@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Chart from 'react-google-charts'
 import MiniStatsActivityChart from './MiniStatsActivityChart'
 
-class MiniStatsCategory extends Component {
+class MiniStatsCategoryDetail extends Component {
     constructor (props) {
         super(props)
 
@@ -22,45 +22,47 @@ class MiniStatsCategory extends Component {
     }
 
     render () {
-        if (this.props.index === null || this.props.index == undefined || 
+        if (this.props.size === null || this.props.size == undefined || 
             this.props.ministats === null || this.props.ministats === undefined) {
             return null
         }
 
         const stats = this.props.ministats
-        const index = this.props.index
+        const size = this.props.size
+        const difficulty = this.props.difficulty
         const totals = this.props.totals
-        console.log(stats)
-        console.log(totals)
 
         let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         let bestDate
         let bestTime
         let averageTime
-        if (index < 15) {
-            bestDate = new Date(stats.bestDates[index] + ' 00:00:00 EDT')
-            bestTime = stats.bestTimes[index]
-            averageTime = stats.averageTimes[index]
+        let noData = false
+        let noBestTime = false
+        if (difficulty !== null) {
+            let category = stats.categoryStats.find(cat => cat.gridSize === size && cat.difficulty === difficulty)
+            if (category.completed === null || category.completed <= 0) {
+                noData = true
+            } else if (category.bestTime > 0) {
+                bestDate = new Date(category.bestDate.split('-').join('/') + ' 00:00:00 EDT')
+                bestTime = category.bestTime
+                averageTime = category.averageTime
+            } else {
+                noBestTime = true
+                averageTime = category.averageTime
+            }
         } else {
-            bestDate = new Date(totals[index % 5]["bestDates"] + ' 00:00:00 EDT')
-            bestTime = totals[index%5]["bestTimes"]
-            averageTime = totals[index%5]["averageTimes"]
+            if (totals[size-5]["completedGames"] === null || totals[size-5]["completedGames"] <= 0) {
+                noData = true
+            } else if (totals[size-5]["bestTimes"] > 0) {
+                bestDate = new Date(totals[size-5]["bestDates"].split('-').join('/') + ' 00:00:00 EDT')
+                bestTime = totals[size-5]["bestTimes"]
+                averageTime = totals[size-5]["averageTimes"]
+            } else {
+                noBestTime = true
+                averageTime = totals[size-5]["averageTimes"]
+            }
         }
-        let bestDateStr = months[bestDate.getMonth()] + ' ' + bestDate.getDate() + ', ' + bestDate.getFullYear()
-        let finishTimeData = [['','',{role: 'style'}, {role: 'annotation'}]]
-        finishTimeData.push(["Best", {v: bestTime/60, f: this.formatTime(bestTime)}, 
-            'color: #ffc600', bestDateStr])
-        finishTimeData.push(["Average", {v: averageTime/60, f: this.formatTime(averageTime)}, 
-            'color: #a7d8ff', ''])
 
-        console.log(finishTimeData)
-
-        let screenWid = window.innerWidth
-        let maxCols = 7
-        maxCols += Math.min(Math.round((screenWid - 1000) / (800 / maxCols)), 15)
-
-        let noData = (index < 15 && (stats.completedGames[index] === null || stats.completedGames[index] <= 0)) ||
-                    (index >= 15 && (totals[index%5]["completedGames"] === null || totals[index%5]["completedGames"] <= 0))
         if (noData) {
             return (
                 <Fragment>
@@ -70,6 +72,29 @@ class MiniStatsCategory extends Component {
                 </Fragment>
             )
         }
+
+        let bestDateStr
+        if (!noBestTime) {
+            bestDateStr = months[bestDate.getMonth()] + ' ' + bestDate.getDate() + ', ' + bestDate.getFullYear()
+        } else {
+            bestTime = 0
+            bestDateStr = "N/A"
+        }
+        let timeScale = "Minutes"
+        if (Math.max(bestTime, averageTime) < 120) {
+            timeScale = "Seconds"
+        }
+
+        let finishTimeData = [['','',{role: 'style'}, {role: 'annotation'}]]
+        finishTimeData.push(["Best (Without Help)", {v: timeScale === "Minutes" ? bestTime/60 : bestTime, f: this.formatTime(bestTime)}, 
+            'color: #ffc600', bestDateStr])
+        finishTimeData.push(["Average", {v: timeScale === "Minutes" ? averageTime/60 : averageTime, f: this.formatTime(averageTime)}, 
+            'color: #a7d8ff', ''])
+
+        let screenWid = window.innerWidth
+        let maxCols = 7
+        maxCols += Math.min(Math.round((screenWid - 1000) / (800 / maxCols)), 15)
+
         return (
             <Fragment>
                 <div style={{width: '40%', display: 'inline-block'}}>
@@ -81,23 +106,24 @@ class MiniStatsCategory extends Component {
                         options={{
                             animation: {duration: 1000, startup: true},
                             title: "Completion times", titleTextStyle: {fontSize: '20'},
-                            vAxis: {title: 'Minutes', minValue: 0, titleTextStyle: {fontSize: '18', bold: true, italic: false}},
+                            vAxis: {title: timeScale, minValue: 0, titleTextStyle: {fontSize: '18', bold: true, italic: false}},
                             hAxis: {textStyle: {fontSize: '15', bold: true}},
                             annotations: {textStyle: {bold: true}}, legend: {position: 'none'}
                         }} />
                 </div>
                 <div style={{width: '60%', display: 'inline-block'}}>
-                    <MiniStatsActivityChart activityMap={stats.activityOverTime} index={index} maxColumns={maxCols}/>
+                    <MiniStatsActivityChart stats={stats} size={size} difficulty={difficulty} maxColumns={maxCols}/>
                 </div>
             </Fragment>
         )
     }
 }
 
-MiniStatsCategory.propTypes = {
-    index: PropTypes.number,
+MiniStatsCategoryDetail.propTypes = {
     ministats: PropTypes.object.isRequired,
+    size: PropTypes.number,
+    difficulty: PropTypes.string,
     totals: PropTypes.array
 }
 
-export default MiniStatsCategory
+export default MiniStatsCategoryDetail

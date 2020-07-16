@@ -122,11 +122,18 @@
     margin-top: 46px;
     background: none;
     outline: none;
+    border: solid #CDCDCD 1px;
+    box-shadow: 1px 1px 1px 0px rgb(0,0,0,.1);
     display: inline-block;
 }
 
 #leaderboard-size-dropdown:hover {
-    color: #555555;
+    border-color: #ABABAB;
+    box-shadow: 1px 1px 1px 0px rgb(0,0,0,.3);
+}
+
+#leaderboard-size-dropdown:active {
+    color: black;
 }
 
 .leaderboard-dropdown-item-section {
@@ -142,6 +149,7 @@
     font-size: 12pt;
     font-weight: 600;
     height: 100%;
+    background-color: white;
     color: black;
     border: none;
     outline: none;

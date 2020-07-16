@@ -5,6 +5,7 @@ import { withRouter, useLocation } from 'react-router-dom'
 import '../css/CrosswordNavBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import crosswordinfinityinverted from '../images/crosswordinfinityinverted.png'
 import User from '../libs/User.js'
 import UserValidation from '../libs/UserValidation'
 import Settings from '../libs/Settings'
@@ -74,6 +75,7 @@ class CrosswordNavBar extends Component {
         const minisPage = "/minis"
         const statsPage = "/stats"
         const leaderboardPage = "/leaderboard"
+        const suggestionsPage = "/suggestions"
 
         const curPage = this.props.location.pathname
 
@@ -83,11 +85,12 @@ class CrosswordNavBar extends Component {
             <Fragment>
                 <div className="nav-full-page-overlay" style={{display: this.state.dropdownOpen ? "" : "none"}}></div>
                 <div className="crossword-nav-bar" 
-                    style={{display: `${this.props.hidden ? "none" : ""}`, filter: `${this.props.blurred ? "blur(5px)" : "none"}`}}>
+                    style={{display: `${this.props.hidden ? "none" : ""}`, filter: `${this.props.blurred ? "blur(5px)" : "none"}`,
+                            pointerEvents: `${this.props.blurred ? "none" : ""}`}}>
                     <div className="nav-home-button nav-button" 
                         style={curPage === homePage ? selectedStyle : {}}
                         onClick={() => this.props.history.push(homePage)}>
-                        Home
+                        <img className="nav-home-logo" src={crosswordinfinityinverted} />
                     </div>
                     <div className="nav-crosswords-button nav-button nav-wide-button" 
                         style={curPage === crosswordsPage ? selectedStyle : {}}
@@ -149,10 +152,6 @@ class CrosswordNavBar extends Component {
                                     <div className="nav-account-dropdown-settings-row">
                                         <span className="nav-account-dropdown-settings-row-title">Inactivity Timer: </span>
                                         <span style={{fontWeight: "700"}}>{Settings.timerInactivity === 0 ? "Off" : Settings.timerInactivity + " seconds"}</span>
-                                    </div>
-                                    <div className="nav-account-dropdown-settings-row">
-                                        <span className="nav-account-dropdown-settings-row-title">Play Sound: </span>
-                                        <span style={{fontWeight: "700"}}>{Settings.playSound ? "On" : "Off"}</span>
                                     </div>
                                 </div>
                             </div>

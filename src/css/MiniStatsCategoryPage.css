@@ -1,5 +1,5 @@
 .mini-stats-page-wrapper {
-    margin: 50px 0;
+    margin-top: 50px;
     overflow: auto;
     position: relative;
 }
@@ -109,7 +109,7 @@
 .mini-stats-table-section {
     width: 100%;
     height: 506px;
-    margin-bottom: 80px;
+    margin-bottom: 20px;
 }
 
 .mini-stats-table-row {

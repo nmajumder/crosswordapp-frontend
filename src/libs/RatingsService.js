@@ -1,24 +1,28 @@
 import api from "./api.js"
 
 class RatingsService {
-    async getRatings () {
+    async getRatings() {
         if (this.ratings === null || this.ratings === undefined) {
-            let response
-            let requestSuccess
-            try {
-                response = await api.getAllRatings()
-                requestSuccess = true
-            } catch (error) {
-                requestSuccess = false
-            }
-
-            if (!requestSuccess) {
-                console.log("Failed to get all average ratings of crosswords")
-            } else {
-                this.ratings = response.data
-            }
+            await this.refreshRatings()
         }
         return this.ratings
+    }
+
+    async refreshRatings () {
+        let response
+        let requestSuccess
+        try {
+            response = await api.getAllRatings()
+            requestSuccess = true
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            console.log("Failed to get all average ratings of crosswords")
+        } else {
+            this.ratings = response.data
+        }
     }
 
     getRatingByCrosswordId (id) {

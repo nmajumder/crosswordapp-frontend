@@ -8,6 +8,7 @@ import UserValidation from '../libs/UserValidation.js'
 import User from '../libs/User.js'
 import CrosswordService from '../libs/CrosswordService.js'
 import RatingsService from '../libs/RatingsService.js'
+import Footer from './Footer.jsx'
 
 class FullCrosswordApp extends Component {
     constructor(props) {
@@ -41,10 +42,16 @@ class FullCrosswordApp extends Component {
         }
     }
 
-    componentWillReceiveProps (props) {
+    async componentWillReceiveProps (props) {
+        let ratings = await RatingsService.getRatings()
         if (props.location.home === true) {
             this.setState({
+                ratings: ratings,
                 selectedCrossword: null
+            })
+        } else {
+            this.setState({
+                ratings: ratings
             })
         }
     }
@@ -59,23 +66,18 @@ class FullCrosswordApp extends Component {
     render () {
         let { crosswords, ratings, selectedCrossword } = this.state
 
-        if (selectedCrossword) {
-            return (
-                <Fragment>
+        return (
+            <Fragment>
+                { selectedCrossword ? 
                     <CrosswordPage 
-                        crossword={selectedCrossword} />
-                </Fragment>
-            )
-        } else {
-            return (
-                <Fragment>
+                    crossword={selectedCrossword} /> :
                     <CrosswordHeaderPage 
                         crosswords={crosswords}
                         ratings={ratings}
                         crosswordSelected={this.crosswordSelected} />
-                </Fragment>
-            )
-        }
+                }
+            </Fragment>
+        )
     }
 }
 

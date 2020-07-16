@@ -46,6 +46,7 @@ class LeaderboardChart extends Component {
             if (type === "PCT") datum *= 100
             else if (type === "TIME") datum /= 60
             let formattedDatum = this.formatData(datum, type, units)
+            if (type === "TIME" && units === "Seconds") datum *= 60
             let tooltipLine1 = '<p style="padding: 2px 10px; line-height: 25px; font-family: Arial; font-size: 12pt;">'
                                 + 'User: <span style="font-weight: bold;">' + stat.username + '</span><br>'
                                 + 'Position: <span style="font-weight: bold;">' + place + '</span><br>'

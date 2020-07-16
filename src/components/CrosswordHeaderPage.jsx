@@ -7,13 +7,14 @@ import CrosswordService from '../libs/CrosswordService.js'
 import RatingsService from '../libs/RatingsService.js'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretSquareDown, faCaretSquareRight, faLongArrowAltUp, faLongArrowAltDown } from '@fortawesome/free-solid-svg-icons'
+import { faCaretSquareDown, faCaretSquareRight, faAngleDown, faLongArrowAltUp, faLongArrowAltDown } from '@fortawesome/free-solid-svg-icons'
+import Footer from './Footer.jsx'
 
 class CrosswordHeaderPage extends Component {
     constructor (props) {
         super(props)
 
-        this.sortTypes = ["Date", "Grid Size", "Difficulty", "User Rating"]
+        this.sortTypes = ["Date", "Grid Size", "My Progress", "User Difficulty", "User Rating"]
 
         this.state = {
             sortType: 0,
@@ -66,6 +67,73 @@ class CrosswordHeaderPage extends Component {
             }
         }
 
+        let sortFunc
+        if (sortType === 0) {
+            sortFunc = function(a,b) {
+                if (a.date === b.date) return 0
+                else if (desc && a.date < b.date || !desc && a.date >= b.date) {
+                    return 1
+                } else {
+                    return -1
+                }
+            }
+        } else if (sortType === 1) {
+            sortFunc = function(a,b) {
+                let l1 = a.board.grid.length
+                let l2 = b.board.grid.length
+                if (l1 === l2) return 0
+                else if (desc && l1 < l2 || !desc && l1 >= l2) {
+                    return 1
+                } else {
+                    return -1
+                }
+            }
+        } else if (sortType == 2) {
+            sortFunc = function(a,b) {
+                console.log(a.id)
+                console.log(b.id)
+                let a1 = CrosswordService.getCrosswordAttributesById(a.id)
+                let a2 = CrosswordService.getCrosswordAttributesById(b.id)
+                if (a1["complete"] && a2["complete"]) {
+                    return 0
+                } else if (a1["complete"]) {
+                    return desc ? -1 : 1
+                } else if (a2["complete"]) {
+                    return desc ? 1 : -1
+                } else if (a1["progress"] === a2["progress"]) {
+                    let diff = a1["seconds"] - a2["seconds"]
+                    return desc ? -diff : diff
+                } else {
+                    let diff = a1["progress"] - a2["progress"]
+                    return desc ? -diff : diff
+                }
+            }
+        } else if (sortType == 3) {
+            sortFunc = function(a,b) {
+                let d1 = ratings.find(r => r.crosswordId === a.id).difficultyScore
+                let d2 = ratings.find(r => r.crosswordId === b.id).difficultyScore
+                if (d1 === d2) return 0
+                else if (desc && d1 < d2 || !desc && d1 >= d2) {
+                    return 1
+                } else {
+                    return -1
+                }
+            }
+        } else if (sortType == 4) {
+            sortFunc = function(a,b) {
+                let r1 = ratings.find(r => r.crosswordId === a.id).enjoymentScore
+                let r2 = ratings.find(r => r.crosswordId === b.id).enjoymentScore
+                if (r1 === r2) return 0
+                else if (desc && r1 < r2 || !desc && r1 >= r2) {
+                    return 1
+                } else {
+                    return -1
+                }
+            }
+        }
+
+        crosswords.sort(sortFunc)
+        console.log(crosswords)
         return (
             <Fragment>
                 <CrosswordNavBar />
@@ -95,7 +163,7 @@ class CrosswordHeaderPage extends Component {
                         <div className="crossword-header-page-sort-by">Sort by ... </div>
                         <DropdownButton id="crossword-header-page-sort-dropdown"
                             title={<div><span className="crossword-header-page-dropdown-title">{this.sortTypes[sortType]}</span>
-                                <FontAwesomeIcon id="sort-type-caret-icon" icon={sortTypeOpen ? faCaretSquareDown : faCaretSquareRight} /></div>}
+                                <FontAwesomeIcon id="sort-type-caret-icon" icon={faAngleDown} /></div>}
                             onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen) }}>
                             <div className="crossword-header-page-dropdown-item-section">
                                 <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(0) }}>{this.sortTypes[0]}</Dropdown.Item>
@@ -105,28 +173,35 @@ class CrosswordHeaderPage extends Component {
                                 <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(2) }}>{this.sortTypes[2]}</Dropdown.Item>
                                 <div className="crossword-header-page-dropdown-item-divider"></div>
                                 <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(3) }}>{this.sortTypes[3]}</Dropdown.Item>
+                                <div className="crossword-header-page-dropdown-item-divider"></div>
+                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(4) }}>{this.sortTypes[4]}</Dropdown.Item>
                             </div>
                         </DropdownButton>
                         <FontAwesomeIcon id="crossword-header-page-sort-order-icon" icon={desc ? faLongArrowAltDown : faLongArrowAltUp} 
                             onClick={() => this.sortOrderClicked()}/>
                     </div>
-                    <div className="crossword-header-page-list">
-                        <div className="crossword-background-image"></div>
-                        {crosswords.map( (c,i) =>
-                            <CrosswordHeader 
-                                key={i}
-                                id={c.id}
-                                title={c.title}
-                                date={c.date}
-                                difficulty={c.difficulty}
-                                rating={ratings.find(r => r.crosswordId === c.id)}
-                                height={c.board.grid.length}
-                                width={c.board.grid[0].length}
-                                crosswordSelected={this.props.crosswordSelected}
-                            />
-                        )}
-                    </div>
+                    { crosswords === null || crosswords.length === 0 ? 
+                        <div style={{width: "100%", margin: "50px 0 150px 0", textAlign: "center", fontSize: "24pt", fontFamily: "Arial", fontWeight: "bold", opacity: "0.7"}}>
+                            Loading Crosswords...
+                        </div> :
+                        <div className="crossword-header-page-list">
+                            {crosswords.map( (c,i) =>
+                                <CrosswordHeader 
+                                    key={i}
+                                    id={c.id}
+                                    title={c.title}
+                                    date={c.date}
+                                    difficulty={c.difficulty}
+                                    rating={ratings.find(r => r.crosswordId === c.id)}
+                                    height={c.board.grid.length}
+                                    width={c.board.grid[0].length}
+                                    crosswordSelected={this.props.crosswordSelected}
+                                />
+                            )}
+                        </div>
+                    }
                 </div>
+                <Footer />
             </Fragment>
         )
     }

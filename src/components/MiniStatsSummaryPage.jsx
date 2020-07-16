@@ -16,12 +16,12 @@ class MiniStatsSummaryPage extends Component {
         if (stats === null || stats === undefined) return null
 
         const longestStreak = stats.longestStreak
-        const currentStreak = stats.currentStreak 
+        const currentStreak = stats.currentStreak
         let totalGames = 0
         let startedGames = 0
         for (let i = 0; i < 15; i++) {
-            totalGames += stats.completedGames[i]
-            startedGames += stats.startedGames[i]
+            totalGames += stats.categoryStats[i].completed
+            startedGames += stats.categoryStats[i].started
         }
         const puzzlesSolved = totalGames
         const solveRate = startedGames === 0 ? 0 : Math.round((totalGames / startedGames) * 1000) / 10
@@ -58,8 +58,13 @@ class MiniStatsSummaryPage extends Component {
                             </div>
                         </div>
                     </div>
-                    <MiniStatsActivityChart activityMap={stats.activityOverTime} index={null} 
-                        chartHeight={450} maxColumns={maxCols}/>
+                    { puzzlesSolved === 0 ? 
+                        <div className="mini-stats-summary-no-data">
+                            You have no completed mini puzzles yet. Go to the minis tab above to get started!
+                        </div> :
+                        <MiniStatsActivityChart stats={stats} size={null} difficulty={null}
+                            chartHeight={450} maxColumns={maxCols}/>
+                    }
                 </div>
             </Fragment>
         )

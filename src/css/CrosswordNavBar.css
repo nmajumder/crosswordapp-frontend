@@ -33,8 +33,14 @@
 
 .nav-home-button {
     margin-left: 80px;
-    width: 150px;
+    width: 130px;
     font-size: 28pt;
+}
+
+.nav-home-logo {
+    height: 60px;
+    width: 100px;
+    margin: 10px 15px;
 }
 
 .nav-button:hover {

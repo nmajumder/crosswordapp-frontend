@@ -1,0 +1,124 @@
+.footer-wrapper {
+    float: left;
+    width: calc(100% - 200px);
+    margin-top: 40px;
+    padding: 20px 100px;
+    border-top: solid #565656 .5px;
+    border-bottom: solid #565656 .5px;
+    background-color: #EFEFEF;
+}
+
+.footer-open-caret {
+    float: left;
+    margin-left: -70px;
+    font-size: 24pt;
+}
+
+.footer-open-caret:hover {
+    cursor: pointer;
+    color: #454545;
+}
+
+.footer-comment-icon {
+    margin-right: 20px;
+    float: left;
+    font-size: 24pt;
+    line-height: 24pt;
+}
+
+.footer-header {
+    float: left;
+    width: calc(100% - 80px);
+    font-size: 18pt;
+    line-height: 24pt;
+    font-weight: 600;
+}
+
+.footer-input-section {
+    float: left;
+    clear: both;
+    width: 100%;
+    padding: 15px 0;
+    margin: 20px 0;
+}
+
+.footer-toggle-describer {
+    font-size: 16pt;
+    float: left;
+    margin-right: 10px;
+    width: 80px;
+}
+
+#footer-toggle-group {
+    float: left;
+    width: 150px;
+}
+
+.footer-toggle-button {
+    float: left;
+    clear: left;
+    font-size: 14pt;
+    margin: 3px 0;
+}
+
+.footer-toggle-button:hover {
+    font-weight: 600;
+}
+
+.footer-input-box {
+    float: left;
+    height: 100px;
+    width: calc(100% - 520px);
+    margin-left: 50px;
+    padding: 10px;
+    font-size: 16pt;
+    font-family: Arial, Helvetica, sans-serif;
+    border: solid gray .5px;
+    border-radius: .5em;
+    outline: none;
+}
+
+.footer-submit-button {
+    float: left;
+    clear: both;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 15pt;
+    padding: 10px;
+    margin: 0 0 10px 290px;
+    border-radius: .5em;
+    background-color: #3f84fb;
+    color: #DFDFDF;
+    font-weight: 600;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3), 0 2px 7px 0 rgba(0, 0, 0, 0.15);
+}
+
+.footer-submit-button:hover {
+    background-color: #306acf;
+    color: #EAEAEA;
+    cursor: pointer;
+}
+
+.footer-submit-button-disabled {
+    background-color: gray;
+    pointer-events: none;
+}
+
+.footer-alert-success {
+    float: left;
+    clear: both;
+    font-size: 15pt;
+    margin: 0 0 10px 290px;
+    color: green;
+}
+
+#footer-alert-success-close {
+    margin-right: 10px;
+}
+
+#footer-alert-success-close:hover {
+    color: darkgreen;
+    cursor: pointer;
+}

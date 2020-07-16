@@ -15,6 +15,7 @@ import { faCog, faPause, faTimes } from '@fortawesome/free-solid-svg-icons'
 import api from '../libs/api.js'
 import User from '../libs/User.js'
 import MiniStatsService from '../libs/MiniStatsService.js'
+import Footer from './Footer.jsx'
 
 class Square {
     constructor(val) {
@@ -74,7 +75,7 @@ class MiniCrosswordApp extends Component {
 
         this.state = {
             size: 5,
-            difficulty: "Easy",
+            difficulty: "Standard",
             mini: null,
             board: new Board(5),
             animationTimer: -1,
@@ -739,7 +740,7 @@ class MiniCrosswordApp extends Component {
                         Customize, generate, solve, repeat.
                     </div>
                     <div className="crossword-mini-app-intro-body">
-                        Experiment with different sizes and difficulty levels of minis. Keep track of your stats and try to beat your best time. If you have trouble with one, just generate another and try again!
+                        Experiment with different sizes and difficulty levels of minis. Keep track of your stats and try to beat your best time, or compete with friends on the leaderboard. If you have trouble with one, just generate another and try again!
                     </div>
                     <div className="crossword-mini-app-divider"></div>
                     <div className="crossword-mini-app-customizations">
@@ -752,9 +753,9 @@ class MiniCrosswordApp extends Component {
                             <div className="crossword-mini-app-option" style={size === 9 ? selectedStyle : {}} onClick={() => this.handleSizeClick(9)}>9 x 9</div>
                         </div>
                         <div className="crossword-mini-app-difficulty">
-                            <div className="crossword-mini-app-option" style={difficulty === "Easy" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Easy")}>Easy</div>
-                            <div className="crossword-mini-app-option" style={difficulty === "Moderate" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Moderate")}>Moderate</div>
-                            <div className="crossword-mini-app-option" style={difficulty === "Hard" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Hard")}>Difficult</div>
+                            <div className="crossword-mini-app-option" style={difficulty === "Standard" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Standard")}>Standard</div>
+                            <div className="crossword-mini-app-option" style={difficulty === "Difficult" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Difficult")}>Difficult</div>
+                            <div className="crossword-mini-app-option" style={difficulty === "Expert" ? selectedStyle : {}} onClick={() => this.handleDifficultyClick("Expert")}>Expert</div>
                         </div>
                         <div className="crossword-mini-app-generate">
                             <div className="crossword-mini-app-generate-button" style={generating || generateDisabled ? generatingStyle : {}}
@@ -813,6 +814,7 @@ class MiniCrosswordApp extends Component {
                             windowWidthPx={windowSize} />
                     </div>
                 </div>
+                <Footer />
             </Fragment>
         )
     }

@@ -11,7 +11,7 @@ class MiniStatsMetricChart extends Component {
         const title = this.props.title
         const yAxisTitle = this.props.yAxisTitle
         const data = this.props.data
-        const labels = ["Size", "Easy", "Moderate", "Difficult"]
+        const labels = ["Size", "Standard", "Difficult", "Expert"]
 
         return (
             <Chart
@@ -22,7 +22,7 @@ class MiniStatsMetricChart extends Component {
                 options={{
                     title: title, titleTextStyle: {fontSize: '20'},
                     animation: {duration: 500, startup: true},
-                    vAxis: { title: yAxisTitle, gridlines: {interval: [1]}, minValue: 0, maxValue: this.props.max,
+                    vAxis: { title: yAxisTitle, gridlines: {interval: [1]}, minValue: 0, maxValue: this.props.max, minValue: 0,
                                 titleTextStyle: {fontSize: '20', bold: true, italic: false}},
                     hAxis: { title: 'Grid size', gridlines: {interval: [1]}, textStyle: {fontSize: '20'},
                                 titleTextStyle: {fontSize: '20', bold: true, italic: false}},

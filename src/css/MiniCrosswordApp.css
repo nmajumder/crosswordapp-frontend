@@ -1,6 +1,6 @@
 .crossword-mini-app-wrapper {
     margin: 50px 80px 120px 80px;
-    overflow: auto;
+    overflow: inherit;
 }
 
 .crossword-mini-app-intro-header {

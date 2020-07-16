@@ -9,24 +9,25 @@ import UserValidation from '../libs/UserValidation'
 import User from '../libs/User'
 import CrosswordNavBar from './CrosswordNavBar'
 import LeaderboardChart from './LeaderboardChart'
+import Footer from './Footer'
 
 class LeaderboardApp extends Component {
     constructor (props) {
         super(props)
 
         this.statTitles = ["Most Completed Puzzles", "Fastest Solve Time", "Highest Completion Percentage", 
-                                "Lowest Reveal Percentage", "Longest Streak"]
+                                "Lowest Reveal Percentage", "Activity Streak"]
         this.axisTitles = [
             ["Total Completed", "Games"],
             ["Best Time", "Minutes"], 
             ["Completion Percentage", "Percent"],
             ["Reveal Percentage", "Percent"],
-            ["Longest Streak", "Days"],
+            ["Activity Streak", "Days"],
         ]
 
         this.chartInfos = [
-            "Most total completed minis, including those with check or reveal features used.",
-            "Fastest completion time by grid size, excluding those with check or reveal features used.",
+            "Most total completed minis overall.",
+            "Fastest completion time by grid size, excluding those with the check or reveal feature used.",
             "Highest completion percentage of generated minis.",
             "Lowest reveal percentage of completed minis (for those with 1 or more completed puzzles).",
             "Most consecutive days completing at least 1 mini puzzle."
@@ -112,7 +113,33 @@ class LeaderboardApp extends Component {
     render () {
         const { leaderboard, selectedStat, selectedSize, sizeDropdownOpen, selectedStreak, streakDropdownOpen } = this.state
         if (leaderboard === null) {
-            return null
+            return (
+                <Fragment>
+                    <CrosswordNavBar />
+                    <div className="leaderboard-wrapper">
+                        <div className="leaderboard-option-section">
+                            <div className="leaderboard-option" style={{backgroundColor: "white", zIndex: "3", boxShadow: "-5px -1px 5px 0px rgb(0,0,0,.5)"}}>
+                                <div className="leaderboard-option-title" style={{filter: "blur(5px)"}}>{this.statTitles[0]}</div>
+                            </div>
+                            <div className="leaderboard-option">
+                                <div className="leaderboard-option-title" style={{filter: "blur(5px)"}}>{this.statTitles[1]}</div>
+                            </div>
+                            <div className="leaderboard-option">
+                                <div className="leaderboard-option-title" style={{filter: "blur(5px)"}}>{this.statTitles[2]}</div>
+                            </div>
+                            <div className="leaderboard-option">
+                                <div className="leaderboard-option-title" style={{filter: "blur(5px)"}}>{this.statTitles[3]}</div>
+                            </div>
+                            <div className="leaderboard-option">
+                                <div className="leaderboard-option-title" style={{filter: "blur(5px)"}}>{this.statTitles[4]}</div>
+                            </div>
+                        </div>
+                        <div className="leaderboard-stat-section">
+                            <div style={{fontSize: "24pt", marginTop: "50px", textAlign: "center", fontFamily: "Arial", fontWeight: "bold", opacity: "0.7"}}>Loading Leaderboard...</div>
+                        </div>
+                    </div>
+                </Fragment>
+            )
         }
 
         let data
@@ -134,6 +161,11 @@ class LeaderboardApp extends Component {
                 data = allDifficultyResults.slice(0, 10)
                 data.sort((a,b) => a.data > b.data ? 1 : -1)
                 type = "TIME"
+                if (data.length > 0 && data[data.length-1].data < 120) {
+                    this.axisTitles[1][1] = "Seconds"
+                } else {
+                    this.axisTitles[1][1] = "Minutes"
+                }
                 break;
             case 2:
                 data = leaderboard.bestCompletionPercent
@@ -229,7 +261,7 @@ class LeaderboardApp extends Component {
                                     <div className="leaderboard-dropdown-item-section">
                                         <Dropdown.Item className="leaderboard-dropdown-item" as="button" onClick={() => { this.streakTypeClicked("Current") }}>Current</Dropdown.Item>
                                         <div className="leaderboard-dropdown-item-divider"></div>
-                                        <Dropdown.Item className="leaderboard-dropdown-item" as="button" onClick={() => { this.streakTypeClicked("Overall") }}>Overall</Dropdown.Item>
+                                        <Dropdown.Item className="leaderboard-dropdown-item" as="button" onClick={() => { this.streakTypeClicked("Longest") }}>Longest</Dropdown.Item>
                                     </div>
                                 </DropdownButton>
                             </div>
@@ -240,6 +272,7 @@ class LeaderboardApp extends Component {
                             axisLabel={this.axisTitles[selectedStat]} chartInfo={this.chartInfos[selectedStat]} />
                     </div>
                 </div>
+                <Footer />
             </Fragment>
         )
     }
