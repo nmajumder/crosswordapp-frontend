@@ -6,7 +6,7 @@ import User from '../libs/User.js'
 import api from '../libs/api.js'
 import '../css/CrosswordApp.css'
 import UserValidation from '../libs/UserValidation.js'
-import fullSizedThemers from '../images/fullSizedThemers2.png'
+import fullSizedThemers from '../images/fullSizedThemers.png'
 import auto from '../images/auto.png'
 import generated from '../images/generated.png'
 import minis from '../images/minis.png'
@@ -128,7 +128,7 @@ class CrosswordApp extends Component {
                     <div className="crossword-app-welcome">
                         Welcome to CrosswordInfinity.com the only online crossword site where you can complete unlimited puzzles! 
                         Try your hand at some full-sized, themed puzzles or binge minis of varying sizes. 
-                        The mini puzzles are generated <span style={{fontStyle: "italic"}}>on the fly</span>, so you can solve to your heart's desire.
+                        The mini puzzles are generated on demand, so you can solve to your heart's desire.
                         Check out the stats page to see detailed views on your performance, or visit the leaderboard to see how you stack up against other users.
                         Then go back and beat your best time!
                     </div>
