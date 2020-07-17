@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const baseUrl = 'http://ec2-18-218-75-146.us-east-2.compute.amazonaws.com/'
+// const baseUrl = 'http://localhost:8080'
+const baseUrl = 'https://api.crosswordinfinity.com'
 const axiosInstance = axios.create({
     baseURL: `${baseUrl}/api`,
     timeout: 4000
