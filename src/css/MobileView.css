@@ -1,0 +1,17 @@
+.mobile-nav-bar {
+    height: 80px;
+    width: 100%;
+    background-color: #3f84fb;
+}
+
+.mobile-logo {
+    margin-left: 10%;
+    margin-top: 13px;
+    height: 54px;
+    width: 90px;
+}
+
+.mobile-error-msg {
+    margin: 10% 10%;
+    font-size: 18pt;
+}

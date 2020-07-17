@@ -283,7 +283,7 @@ class LoginModal extends Component {
                                     <input className="login-input" type="text" placeholder="email" value={email} onChange={this.handleEmailChange} />
                                 </div>
                                 <div className="login-label">
-                                    <input className="login-input" type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+                                    <input className="login-input" type="text" placeholder="public username" value={username} onChange={this.handleUsernameChange} />
                                 </div>
                                 <div className="login-label">
                                     <input className="login-input" type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />

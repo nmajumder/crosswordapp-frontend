@@ -10,14 +10,14 @@ import FullCrosswordApp from './components/FullCrosswordApp.jsx'
 import MiniCrosswordApp from './components/MiniCrosswordApp.jsx'
 import StatsApp from './components/StatsApp.jsx'
 import LeaderboardApp from './components/LeaderboardApp.jsx'
+import MobileView from './components/MobileView';
 
 function App() {
 
   return (
     <Fragment>
-      <div className="screen-width-error-msg">
-        Sorry, you need a larger device to access the puzzles on this site. 
-        The solve feature won't work on mobile devices, try again on any standard size computer.
+      <div className="mobile-view">
+        <MobileView />
       </div>
       <div className="app-wrapper">
         <Router>
