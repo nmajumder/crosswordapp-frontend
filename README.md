@@ -1,5 +1,20 @@
 # crosswordapp-frontend
-React frontend of crossword application
+React frontend of CrosswordInfinity.com
+
+### Prerequisites to Local Development
+Get the local backend running first, DO NOT connect straight to the prod backend.
+
+### Local Development
+- Before anything else, go to src/libs/api.js and modify the commented url at the top to use localhost:8080.
+- Now ensure you can connect to localhost:8080 via a browser, if not go back and troubleshoot the backend app.
+- Start the react app:  
+> npm start
+- Now any changes saved will reload the site automatically
+- Go to localhost:3000 in the browser to view the site locally
+- Once all changes have been made, check in the changes, use a descriptive commit message, and push  
+> git add --all  
+> git commit -m "this is a descriptive commit message about what I changed"  
+> git push origin master  
 
 ----
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
