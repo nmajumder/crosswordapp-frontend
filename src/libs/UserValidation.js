@@ -98,6 +98,26 @@ class UserValidation {
         }
     }
 
+    async changeUsername (newUsername) {
+        let response
+        let requestSuccess = false
+        try {
+            response = await api.changeUsername(User.token, User.email, newUsername)
+            requestSuccess = response.status === 200
+        } catch (error) {
+            requestSuccess = false
+        }
+
+        if (!requestSuccess) {
+            return "Error processing username change request"
+        } else if (!response.data.success) {
+            return "Unable to validate your account data to change username"
+        } else {
+            User.username = newUsername
+            return ""
+        }
+    }
+
     async changePassword (oldPassword, newPassword) {
         let response
         let requestSuccess = false

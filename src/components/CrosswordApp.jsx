@@ -86,7 +86,8 @@ class CrosswordApp extends Component {
         User.token = user.token
         localStorage.setItem('user-token', user.token)
         localStorage.removeItem('link')
-        localStorage.removeItem('manage')
+        localStorage.removeItem('change-password')
+        localStorage.removeItem('change-username')
         localStorage.removeItem('logout')
 
         this.setState({
@@ -112,13 +113,16 @@ class CrosswordApp extends Component {
         let linkFlag = localStorage.getItem('link')
         const linking = linkFlag === 'true'
 
-        let manageFlag = localStorage.getItem('manage')
-        const manage = manageFlag === 'true'
+        let passwordFlag = localStorage.getItem('change-password')
+        const password = passwordFlag === 'true'
+
+        let usernameFlag = localStorage.getItem('change-username')
+        const username = usernameFlag === 'true'
 
         let logoutFlag = localStorage.getItem('logout')
         const loggedOut = logoutFlag === 'true'
 
-        let loginOpen = (!loggedIn || linking || manage || loggedOut) && !loading
+        let loginOpen = (!loggedIn || linking || password || username || loggedOut) && !loading
         let modalOpen = loginOpen || loading
 
         let boxWid = (windowWid * .3) - 20
@@ -127,7 +131,8 @@ class CrosswordApp extends Component {
         return (
             <Fragment>
                 <LoadingModal shouldShow={loading} />
-                <LoginModal shouldShow={loginOpen} linking={linking} manage={manage} onLogin={this.onLogin} />
+                <LoginModal shouldShow={loginOpen} linking={linking} 
+                    changePassword={password} changeUsername={username} onLogin={this.onLogin} />
                 <CrosswordNavBar blurred={modalOpen}/>
                 <div className="crossword-app-overlay"
                     style={{display: `${loginOpen ? "" : "none"}`}}></div>

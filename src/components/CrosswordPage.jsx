@@ -460,7 +460,7 @@ class CrosswordPage extends Component {
 
     crosswordFinished () {
         this.board.completed = true
-        let doneMsg = this.modalInfos["puzzleCorrect"]
+        let doneTuple = this.modalInfos["puzzleCorrect"]
         let s = this.board.numSeconds
         let h = Math.floor(s / 3600)
         if (h > 0) s -= h * 3600
@@ -477,9 +477,10 @@ class CrosswordPage extends Component {
         if (h > 0) timeStr += hourStr + ":"
         timeStr += minuteStr + ":" + secondStr
 
-        doneMsg[0] = doneMsg[0].replace('{}',timeStr)
+        let doneMsg = doneTuple[0].replace('{}',timeStr)
+        let newDoneTuple = [doneMsg, doneTuple[1], doneTuple[2]]
         this.setState({
-            modalInfo: doneMsg
+            modalInfo: newDoneTuple
         })
     }
 

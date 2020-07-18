@@ -34,6 +34,10 @@ class api {
         return axiosInstance.put('/user/password', {email: email, password: oldPassword, newPassword: newPassword})
     }
 
+    changeUsername (token, email, newUsername) {
+        return axiosInstance.put('/user/username', {token: token, email: email, newUsername: newUsername})
+    }
+
     resetPassword (email) {
         return axiosInstance.put('/user/password/reset', {email: email})
     }

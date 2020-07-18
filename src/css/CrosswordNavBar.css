@@ -139,6 +139,10 @@
     text-decoration: underline;
 }
 
+.middle-link {
+    margin: 5px 0 5px 0;
+}
+
 .bottom-link {
     margin: 5px 0 -5px 0;
 }

@@ -67,6 +67,7 @@ class MiniCrosswordApp extends Component {
             "puzzleCorrect":["Congratulations, you've solved the puzzle in {}! Want to play another?", "Let's do it", "Not yet"],
             "puzzleIncorrect":["Oops, there are still one or more errors to fix", "Close"]
         }
+        this.doneMsg = ""
 
         this.acrossClues = []
         this.downClues = []
@@ -274,7 +275,7 @@ class MiniCrosswordApp extends Component {
     }
 
     crosswordFinished () {
-        let doneMsg = this.modalInfos["puzzleCorrect"]
+        let doneTuple = this.modalInfos["puzzleCorrect"]
         let s = this.timerVal
         let h = Math.floor(s / 3600)
         if (h > 0) s -= h * 3600
@@ -291,9 +292,10 @@ class MiniCrosswordApp extends Component {
         if (h > 0) timeStr += hourStr + ":"
         timeStr += minuteStr + ":" + secondStr
 
-        doneMsg[0] = doneMsg[0].replace('{}',timeStr)
+        let doneMsg = doneTuple[0].replace('{}',timeStr)
+        let newDoneTuple = [doneMsg, doneTuple[1], doneTuple[2]]
         this.setState({
-            modalInfo: doneMsg,
+            modalInfo: newDoneTuple,
             complete: true
         })
         MiniStatsService.refreshMiniStats(User.token)

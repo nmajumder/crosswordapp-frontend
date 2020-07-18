@@ -23,7 +23,8 @@ class CrosswordNavBar extends Component {
         this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this)
         this.linkAccount = this.linkAccount.bind(this)
         this.loginExisting = this.loginExisting.bind(this)
-        this.manageAccount = this.manageAccount.bind(this)
+        this.changePassword = this.changePassword.bind(this)
+        this.changeUsername = this.changeUsername.bind(this)
         this.logout = this.logout.bind(this)
     }
 
@@ -65,8 +66,13 @@ class CrosswordNavBar extends Component {
         this.props.history.push('/')
     }
 
-    manageAccount () {
-        localStorage.setItem('manage', 'true')
+    changePassword () {
+        localStorage.setItem('change-password', 'true')
+        this.props.history.push('/')
+    }
+
+    changeUsername () {
+        localStorage.setItem('change-username', 'true')
         this.props.history.push('/')
     }
 
@@ -144,7 +150,8 @@ class CrosswordNavBar extends Component {
                                     </div> :
                                     <div className="nav-account-dropdown-profile-body">
                                         <div>Email: {User.email}</div>
-                                        <div className="nav-account-dropdown-link" onClick={() => this.manageAccount()}>Change password</div>
+                                        <div className="nav-account-dropdown-link" onClick={() => this.changePassword()}>Change password</div>
+                                        <div className="nav-account-dropdown-link middle-link" onClick={() => this.changeUsername()}>Change public username</div>
                                         <div className="nav-account-dropdown-link bottom-link" onClick={() => this.logout()}>Log out</div>
                                     </div>
                                 }

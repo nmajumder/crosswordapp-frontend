@@ -19,6 +19,7 @@ class LoginModal extends Component {
             forgotInfo: false,
             errorMessage: null,
             newPassword: "",
+            newUsername: "",
             sentEmail: false,
             loading: false
         }
@@ -27,6 +28,7 @@ class LoginModal extends Component {
         this.handlePasswordChange = this.handlePasswordChange.bind(this)
         this.handleEmailChange = this.handleEmailChange.bind(this)
         this.handleNewPasswordChange = this.handleNewPasswordChange.bind(this)
+        this.handleNewUsernameChange = this.handleNewUsernameChange.bind(this)
 
         this.emailIsValid = this.emailIsValid.bind(this)
         this.passwordIsValid = this.passwordIsValid.bind(this)
@@ -98,6 +100,21 @@ class LoginModal extends Component {
         return true
     }
 
+    newUsernameIsValid () {
+        if (this.state.newUsername.trim() === "") {
+            this.setState({
+                errorMessage: "Username cannot be empty"
+            })
+            return false
+        } else if (this.state.newUsername.length < 6) {
+            this.setState({
+                errorMessage: "Username must be at least 6 characters"
+            })
+            return false
+        }
+        return true
+    }
+
     handleUsernameChange (event) {
         this.setState({
             username: event.target.value
@@ -119,6 +136,12 @@ class LoginModal extends Component {
     handleNewPasswordChange (event) {
         this.setState({
             newPassword: event.target.value
+        })
+    }
+
+    handleNewUsernameChange (event) {
+        this.setState({
+            newUsername: event.target.value
         })
     }
 
@@ -144,9 +167,13 @@ class LoginModal extends Component {
         })
         if (this.state.forgotInfo) {
             this.sendRecoveryEmail()
-        } else if (this.props.manage) {
+        } else if (this.props.changePassword) {
             if (this.newPasswordIsValid()) {
                 this.changePassword()
+            }
+        } else if (this.props.changeUsername) {
+            if (this.newUsernameIsValid()) {
+                this.changeUsername()
             }
         } else if (this.props.linking || this.state.newAccount) {
             if (this.emailIsValid() && this.passwordIsValid() && this.usernameIsValid()) {
@@ -225,6 +252,23 @@ class LoginModal extends Component {
         })
     }
 
+    async changeUsername () {
+        this.setState({
+            loading: true
+        })
+        let error = await UserValidation.changeUsername(this.state.newUsername)
+        if (error === "") {
+            this.cleanupStateAndLogin()
+        } else {
+            this.setState({
+                errorMessage: error
+            })
+        }
+        this.setState({
+            loading: false
+        })
+    }
+
     async sendRecoveryEmail () {
         this.setState({
             loading: true
@@ -253,6 +297,7 @@ class LoginModal extends Component {
             forgotInfo: false,
             errorMessage: null,
             newPassword: "",
+            newUsername: "",
             sentEmail: false
         })
         this.props.onLogin(User)
@@ -266,7 +311,7 @@ class LoginModal extends Component {
     }
 
     render () {
-        const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, sentEmail, loading } = this.state
+        const { username, password, email, newAccount, forgotInfo, errorMessage, newPassword, newUsername, sentEmail, loading } = this.state
 
         if (this.props.shouldShow) {
             if (this.props.linking) {
@@ -304,7 +349,7 @@ class LoginModal extends Component {
                         </div>
                     </Fragment>
                 )
-            } else if (this.props.manage) {
+            } else if (this.props.changePassword) {
                 return (
                     <Fragment>
                         <div className="login-modal-wrapper">
@@ -324,6 +369,41 @@ class LoginModal extends Component {
                                 </div>
                                 <div className="login-label">
                                     <input className="login-input" type="password" placeholder="new password" value={newPassword} onChange={this.handleNewPasswordChange} />
+                                </div>
+                                <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
+                                    <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
+                                        icon={faTimes} onClick={() => this.setState({ errorMessage: null })}/>
+                                    {errorMessage}
+                                </div>
+                                <div className="login-loading-message" style={{display: loading ? "" : "none"}}>
+                                    Loading...
+                                </div>
+                            </div>
+                            <div className="login-footer">
+                                <div className="login-footer-button-submit footer-btn" disabled={loading} onClick={() => this.loginClicked()}>Confirm</div>
+                                <div className="login-footer-button-skip footer-btn" disabled={loading} onClick={() => this.skipClicked()}>Cancel</div>
+                            </div>
+                        </div>
+                    </Fragment>
+                )
+            } else if (this.props.changeUsername) {
+                return (
+                    <Fragment>
+                        <div className="login-modal-wrapper">
+                            <div className="login-header-top">Change public username</div>
+                            <div className="login-modal">
+                                <div className="login-change-password-field">
+                                    <span className="login-change-password-header">Email:</span><span>{User.email}</span>
+                                </div>
+                                <div className="login-change-password-field">
+                                    <div className="login-change-username-header">Current public username:</div>
+                                    <div className="login-change-username-existing">{User.username}</div>
+                                </div>
+                                <div className="login-change-password-prompt">
+                                    Please enter the new public username you wish to use instead.
+                                </div>
+                                <div className="login-label">
+                                    <input className="login-input" type="text" placeholder="new username" value={newUsername} onChange={this.handleNewUsernameChange} />
                                 </div>
                                 <div className="login-error-message" style={{display: errorMessage !== null ? "" : "none"}}>
                                     <FontAwesomeIcon className="login-error-x" style={{display: errorMessage !== null ? "" : "none"}}
@@ -455,7 +535,8 @@ class LoginModal extends Component {
 LoginModal.propTypes = {
     shouldShow: PropTypes.bool.isRequired,
     linking: PropTypes.bool.isRequired,
-    manage: PropTypes.bool.isRequired,
+    changePassword: PropTypes.bool.isRequired,
+    changeUsername: PropTypes.bool.isRequired,
     onLogin: PropTypes.func.isRequired
 }
 
