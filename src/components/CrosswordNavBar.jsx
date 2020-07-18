@@ -9,13 +9,15 @@ import crosswordinfinityinverted from '../images/crosswordinfinityinverted.png'
 import User from '../libs/User.js'
 import UserValidation from '../libs/UserValidation'
 import Settings from '../libs/Settings'
+import LoadingModal from './LoadingModal'
 
 class CrosswordNavBar extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            dropdownOpen: false
+            dropdownOpen: false,
+            loading: false
         }
 
         this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this)
@@ -32,8 +34,14 @@ class CrosswordNavBar extends Component {
             return
         }
         console.log("Validating user from nav bar")
+        this.setState({
+            loading: true
+        })
         let user = await UserValidation.validateUser()
         let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
+        this.setState({
+            loading: false
+        })
         if (validated) {
             if (this.props.loggedIn) this.props.loggedIn()
         } else {
@@ -81,12 +89,15 @@ class CrosswordNavBar extends Component {
 
         const selectedStyle = {backgroundColor: "#306acf"}
 
+        let blurred = this.props.blurred || this.state.loading
+
         return (
             <Fragment>
+                <LoadingModal shouldShow={this.state.loading} />
                 <div className="nav-full-page-overlay" style={{display: this.state.dropdownOpen ? "" : "none"}}></div>
                 <div className="crossword-nav-bar" 
-                    style={{display: `${this.props.hidden ? "none" : ""}`, filter: `${this.props.blurred ? "blur(5px)" : "none"}`,
-                            pointerEvents: `${this.props.blurred ? "none" : ""}`}}>
+                    style={{display: `${this.props.hidden ? "none" : ""}`, filter: `${blurred ? "blur(5px)" : "none"}`,
+                            pointerEvents: `${blurred ? "none" : ""}`}}>
                     <div className="nav-home-button nav-button" 
                         style={curPage === homePage ? selectedStyle : {}}
                         onClick={() => this.props.history.push(homePage)}>

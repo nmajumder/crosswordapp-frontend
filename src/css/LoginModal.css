@@ -6,8 +6,7 @@
     left: calc(50% - 250px);
     padding: 40px 80px;
     background-color: white;
-    z-index: 11;
-    position: fixed;
+    z-index: 12;
     box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: .5em;
 }

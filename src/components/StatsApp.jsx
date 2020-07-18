@@ -10,6 +10,7 @@ import MiniStatsSummaryPage from './MiniStatsSummaryPage.jsx'
 import MiniStatsCategoryPage from './MiniStatsCategoryPage.jsx'
 import MiniStatsMetricPage from './MiniStatsMetricPage.jsx'
 import Footer from './Footer'
+import LoadingModal from './LoadingModal'
 
 class StatsApp extends Component {
     constructor (props) {
@@ -18,7 +19,8 @@ class StatsApp extends Component {
         this.state = {
             selected: 0,
             crosswords: null,
-            ministats: null
+            ministats: null,
+            loading: false
         }
 
         this.optionSelected = this.optionSelected.bind(this)
@@ -26,9 +28,15 @@ class StatsApp extends Component {
 
     async componentDidMount () {
         console.log("Validating user from stats page")
+        this.setState({
+            loading: true
+        })
         let user = await UserValidation.validateUser()
         let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
 
+        this.setState({
+            loading: false
+        })
         if (!validated) {
             this.props.history.push('/')
         } else {
@@ -48,14 +56,15 @@ class StatsApp extends Component {
     }
 
     render () {
-        const { selected, crosswords, ministats } = this.state
+        const { selected, crosswords, ministats, loading } = this.state
 
         let selectedStyle = {borderBottomColor: "#3f84fb"}
 
         return (
             <Fragment>
-                <CrosswordNavBar/>
-                <div className="stats-page-wrapper">
+                <LoadingModal shouldShow={loading} />
+                <CrosswordNavBar blurred={loading}/>
+                <div className="stats-page-wrapper" style={{filter: loading ? "blur(5px)" : ""}}>
                     <div className="stats-page-options-bar">
                         <div className="stats-page-option option-left" style={selected === 0 ? selectedStyle : {}}
                             onClick={() => this.optionSelected(0)}>
@@ -82,7 +91,7 @@ class StatsApp extends Component {
                     
                     }
                 </div>
-                <Footer />
+                <Footer blur={loading} />
             </Fragment>
         )
     }

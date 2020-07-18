@@ -158,7 +158,14 @@ class LeaderboardApp extends Component {
                     leaderboard.bestTimesPerCategory[startInd+2]
                 )
                 allDifficultyResults.sort((a,b) => a.data > b.data ? 1 : -1)
-                data = allDifficultyResults.slice(0, 10)
+                try {
+                    let unique = (value, index, self) => {
+                        return self.map(e => e.username).indexOf(value.username) === index
+                    }
+                    data = allDifficultyResults.filter(unique).slice(0,10)
+                } catch(error) {
+                    data = allDifficultyResults.slice(0,10)
+                }
                 data.sort((a,b) => a.data > b.data ? 1 : -1)
                 type = "TIME"
                 if (data.length > 0 && data[data.length-1].data < 120) {

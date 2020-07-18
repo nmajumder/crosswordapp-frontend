@@ -2,6 +2,7 @@ import React, { Fragment, Component } from 'react'
 import ReactDOM from 'react-dom'
 import CrosswordNavBar from './CrosswordNavBar.jsx'
 import LoginModal from './LoginModal.jsx'
+import LoadingModal from './LoadingModal.jsx'
 import User from '../libs/User.js'
 import api from '../libs/api.js'
 import '../css/CrosswordApp.css'
@@ -22,7 +23,8 @@ class CrosswordApp extends Component {
 
         this.state = {
             loggedIn: false,
-            windowWid: window.innerWidth
+            windowWid: window.innerWidth,
+            loading: false
         }
 
         this.miniPageSelected = this.miniPageSelected.bind(this)
@@ -39,11 +41,15 @@ class CrosswordApp extends Component {
     async componentDidMount () {
         window.addEventListener('resize', this.handleResize)
         console.log("Validating user from crossword app home page")
+        this.setState({
+            loading: true
+        })
         let user = await UserValidation.validateUser()
         let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
 
         this.setState({
-            loggedIn: validated
+            loggedIn: validated,
+            loading: false
         })
     }
 
@@ -101,7 +107,7 @@ class CrosswordApp extends Component {
     }
 
     render () {
-        const { loggedIn, windowWid } = this.state
+        const { loggedIn, windowWid, loading } = this.state
 
         let linkFlag = localStorage.getItem('link')
         const linking = linkFlag === 'true'
@@ -112,19 +118,21 @@ class CrosswordApp extends Component {
         let logoutFlag = localStorage.getItem('logout')
         const loggedOut = logoutFlag === 'true'
 
-        let loginOpen = !loggedIn || linking || manage || loggedOut
+        let loginOpen = (!loggedIn || linking || manage || loggedOut) && !loading
+        let modalOpen = loginOpen || loading
 
         let boxWid = (windowWid * .3) - 20
         let boxMarg = (windowWid * .05) - 4
 
         return (
             <Fragment>
+                <LoadingModal shouldShow={loading} />
                 <LoginModal shouldShow={loginOpen} linking={linking} manage={manage} onLogin={this.onLogin} />
-                <CrosswordNavBar blurred={loginOpen}/>
+                <CrosswordNavBar blurred={modalOpen}/>
                 <div className="crossword-app-overlay"
                     style={{display: `${loginOpen ? "" : "none"}`}}></div>
                 <div className="crossword-app-wrapper" 
-                    style={{filter: `${loginOpen ? "blur(5px)" : "none"}`, pointerEvents: `${loginOpen ? "none" : ""}`}}>
+                    style={{filter: `${modalOpen ? "blur(5px)" : "none"}`, pointerEvents: `${modalOpen ? "none" : ""}`}}>
                     <div className="crossword-app-welcome">
                         Welcome to CrosswordInfinity.com the only online crossword site where you can complete unlimited puzzles! 
                         Try your hand at some full-sized, themed puzzles or binge minis of varying sizes. 
@@ -148,7 +156,7 @@ class CrosswordApp extends Component {
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
-                <Footer blur={loginOpen}/>
+                <Footer blur={modalOpen}/>
             </Fragment>
         )
     }

@@ -86,7 +86,8 @@ class MiniCrosswordApp extends Component {
             generateDisabled: true,
             generationError: false,
             settingsClicked: false,
-            windowSize: window.innerWidth
+            windowSize: window.innerWidth,
+            loading: true
         }
 
         this.idleReset = this.idleReset.bind(this)
@@ -225,7 +226,8 @@ class MiniCrosswordApp extends Component {
         console.log("Callback to mini crossword app was hit with login notice")
         this.setState({
             settings: Settings,
-            generateDisabled: false
+            generateDisabled: false,
+            loading: false
         })
     }
 
@@ -700,7 +702,7 @@ class MiniCrosswordApp extends Component {
     }
 
     render() {
-        const { size, difficulty, mini, board, complete, settings, modalInfo, generating, generateDisabled, generationError, settingsClicked, windowSize } = this.state
+        const { size, difficulty, mini, board, complete, settings, modalInfo, generating, generateDisabled, generationError, settingsClicked, windowSize, loading } = this.state
 
         const modalOpen = settingsClicked || modalInfo.length > 0
         const colorScheme = settings.colorScheme
@@ -735,7 +737,7 @@ class MiniCrosswordApp extends Component {
                     buttonAction1={modalButtonAction}
                     buttonText2={modalInfo.length > 2 ? modalInfo[2] : ""}
                     buttonAction2={this.closeModal} />
-                <div className="crossword-mini-app-wrapper" ref={this.topRef} style={{filter: modalOpen ? "blur(5px)" : "none", height: wrapperHeightPx}}>
+                <div className="crossword-mini-app-wrapper" ref={this.topRef} style={{filter: modalOpen || loading ? "blur(5px)" : "none", height: wrapperHeightPx}}>
                     <div className="crossword-mini-app-intro-header">
                         Customize, generate, solve, repeat.
                     </div>

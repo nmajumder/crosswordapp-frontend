@@ -1,0 +1,28 @@
+.loading-modal-wrapper {
+    position: fixed;
+    height: auto;
+    width: 280px;
+    top: 200px;
+    left: calc(50% - 200px);
+    padding: 40px 40px;
+    background-color: white;
+    z-index: 12;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: .5em;
+}
+
+.loading-modal-text {
+    text-align: center;
+    font-size: 18pt;
+}
+
+.loading-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 11;
+    background-color: black;
+    opacity: .4;
+}

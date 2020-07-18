@@ -37,6 +37,8 @@ class UserValidation {
             this.setLoggedInUserData(response.data.user)
             return User
         } else {
+            User.token = null
+            localStorage.removeItem('user-token')
             return null
         }
     }

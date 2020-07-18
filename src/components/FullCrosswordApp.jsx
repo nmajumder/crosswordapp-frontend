@@ -9,6 +9,7 @@ import User from '../libs/User.js'
 import CrosswordService from '../libs/CrosswordService.js'
 import RatingsService from '../libs/RatingsService.js'
 import Footer from './Footer.jsx'
+import LoadingModal from './LoadingModal.jsx'
 
 class FullCrosswordApp extends Component {
     constructor(props) {
@@ -18,6 +19,7 @@ class FullCrosswordApp extends Component {
             crosswords: [],
             ratings: [],
             selectedCrossword: null,
+            loading: false
         }
 
         this.crosswordSelected = this.crosswordSelected.bind(this)
@@ -25,9 +27,15 @@ class FullCrosswordApp extends Component {
 
     async componentDidMount () {
         console.log("Validating user from crosswords page")
+        this.setState({
+            loading: true
+        })
         let user = await UserValidation.validateUser()
         let validated = user !== null && user.token !== null && user.email !== null && user.username !== null
 
+        this.setState({
+            loading: false
+        })
         if (!validated) {
             this.props.history.push('/')
         } else {
@@ -64,10 +72,13 @@ class FullCrosswordApp extends Component {
     }
 
     render () {
-        let { crosswords, ratings, selectedCrossword } = this.state
+        let { crosswords, ratings, selectedCrossword, loading } = this.state
 
+        let loadingStyle = {filter: "blur(5px)", pointerEvents: "none"}
         return (
             <Fragment>
+                <LoadingModal shouldShow={loading} />
+                <div style={loading ? loadingStyle : {}}>
                 { selectedCrossword ? 
                     <CrosswordPage 
                     crossword={selectedCrossword} /> :
@@ -76,6 +87,7 @@ class FullCrosswordApp extends Component {
                         ratings={ratings}
                         crosswordSelected={this.crosswordSelected} />
                 }
+                </div>
             </Fragment>
         )
     }
