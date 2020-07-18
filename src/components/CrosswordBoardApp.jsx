@@ -133,8 +133,6 @@ class CrosswordBoardApp extends Component {
         const selection = this.props.selection
         const grid = this.props.grid
 
-        let clueWidthPx = "" + (this.props.windowWidthPx - (this.props.boardWidthPx + 160) - 1) + "px"
-
         const boardPx = this.props.boardWidthPx
         const boardSize = grid.length
         const rowPx = boardPx / boardSize
@@ -226,7 +224,7 @@ class CrosswordBoardApp extends Component {
                         )}
                     </div>
                     { this.props.generating ? null :
-                        <div className="crossword-clue-section" style={{width : clueWidthPx, height : boardPx}}>
+                        <div className="crossword-clue-section" style={{height : boardPx}}>
                             <CrosswordClueScroll 
                                 listTitle={"Across"}
                                 clueList={this.acrossClues}
@@ -258,8 +256,7 @@ CrosswordBoardApp.propTypes = {
     clueRefMap: PropTypes.object.isRequired,
     boardSquareClicked: PropTypes.func.isRequired,
     clueClicked: PropTypes.func.isRequired,
-    boardWidthPx: PropTypes.number.isRequired,
-    windowWidthPx: PropTypes.number.isRequired
+    boardWidthPx: PropTypes.number.isRequired
 }
 
 export default CrosswordBoardApp

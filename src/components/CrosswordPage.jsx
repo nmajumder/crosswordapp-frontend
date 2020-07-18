@@ -702,8 +702,7 @@ class CrosswordPage extends Component {
                         clueRefMap={this.props.crossword.clueRefMap}
                         boardSquareClicked={this.boardSquareClicked}
                         clueClicked={this.clueClicked}
-                        boardWidthPx={boardPx}
-                        windowWidthPx={windowSize} />
+                        boardWidthPx={boardPx} />
                 </div>
                 <Footer blur={modalOpen} />
             </Fragment>

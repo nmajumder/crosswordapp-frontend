@@ -810,8 +810,7 @@ class MiniCrosswordApp extends Component {
                             clueRefMap={{}}
                             boardSquareClicked={this.boardSquareClicked}
                             clueClicked={this.clueClicked}
-                            boardWidthPx={boardPx}
-                            windowWidthPx={windowSize} />
+                            boardWidthPx={boardPx} />
                     </div>
                 </div>
                 <Footer />

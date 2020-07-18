@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import ReactGA from 'react-ga'
-import createHistory from 'history/createBrowserHistory'
+import { createBrowserHistory } from 'history'
 import './App.css'
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import CrosswordApp from './components/CrosswordApp.jsx'
@@ -10,14 +10,17 @@ import StatsApp from './components/StatsApp.jsx'
 import LeaderboardApp from './components/LeaderboardApp.jsx'
 import MobileView from './components/MobileView'
 
-const history = createHistory()
-ReactGA.initialize('UA-172908124-1');
-history.listen((location, action) => {
-    ReactGA.pageview(location.pathname + location.search);
-    console.log(location.pathname)
-});
+ReactGA.initialize('UA-172908124-1')
+const browserHistory = createBrowserHistory()
+browserHistory.listen((location, action) => {
+  ReactGA.pageview(location.pathname + location.search)
+  console.log("The current pathname: " + location.pathname + location.search)
+})
 
 function App() {
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.search)
+  }, [])
 
   return (
     <Fragment>
@@ -25,7 +28,7 @@ function App() {
         <MobileView />
       </div>
       <div className="app-wrapper">
-        <Router history={history}>
+        <Router history={browserHistory}>
           <Switch>
             <Route exact path="/" component={CrosswordApp} />
             <Route path="/crosswords" component={FullCrosswordApp} />

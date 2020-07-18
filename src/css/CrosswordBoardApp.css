@@ -43,7 +43,7 @@
 }
 
 .crossword-clue-section {
-    float: left;
+    overflow: hidden;
 }
 
 .crossword-clue-list-title {
