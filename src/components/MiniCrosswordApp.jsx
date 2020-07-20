@@ -709,7 +709,7 @@ class MiniCrosswordApp extends Component {
         const modalOpen = settingsClicked || modalInfo.length > 0
         const colorScheme = settings.colorScheme
         const boardSize = size
-        const baseBoardPx = windowSize < 1100 ? 500 : windowSize < 1600 ? 630 : 630 * 1.2
+        const baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
         const wrapperHeightPx = `${boardPx + 420}px`
 

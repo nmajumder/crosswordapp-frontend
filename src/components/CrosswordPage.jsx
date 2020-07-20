@@ -610,7 +610,7 @@ class CrosswordPage extends Component {
         const modalOpen = settingsClicked || modalInfo.length > 0
         const colorScheme = settings.colorScheme
         const boardSize = grid.length
-        const baseBoardPx = windowSize < 1600 ? 630 : 630 * 1.2
+        const baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
         return (
             <Fragment>

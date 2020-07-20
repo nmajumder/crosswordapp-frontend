@@ -180,7 +180,9 @@ class LoginModal extends Component {
                 this.createAccount(this.state.email, this.state.username, this.state.password)
             }
         } else {
-            this.loginToAccount()
+            if (this.emailIsValid()) {
+                this.loginToAccount()
+            }
         }
     }
 

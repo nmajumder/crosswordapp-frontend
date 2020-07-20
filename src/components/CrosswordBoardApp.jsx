@@ -151,7 +151,7 @@ class CrosswordBoardApp extends Component {
             8: ["17px", "19px", "23px"],
             9: ["15px", "18px", "22px"],
             15: ["12px", "12px", "14px"],
-            21: ["8px", "8px", "10px"]
+            21: ["7px", "8px", "10px"]
         }
 
         let squareNumberStyle = {
@@ -167,7 +167,7 @@ class CrosswordBoardApp extends Component {
             8: ["36px", "43px", "50px"],
             9: ["32px", "40px", "45px"],
             15: ["22px", "22px", "28px"],
-            21: ["17px", "17px", "21px"]
+            21: ["14px", "17px", "21px"]
         }
 
         let squareMarginTopMap = {
