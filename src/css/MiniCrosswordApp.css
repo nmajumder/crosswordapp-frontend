@@ -84,3 +84,34 @@
     margin: 20px 0;
     font-size: 14pt;
 }
+
+@media only screen and (max-width: 1120px) {
+    .crossword-mini-app-customizations-title {
+        font-size: 16pt;
+    }
+
+    .crossword-mini-app-customizations {
+        font-size: 14pt;
+    }
+
+    .crossword-mini-app-size {
+        margin-left: 12px;
+    }
+
+    .crossword-mini-app-difficulty {
+        margin-left: 12px;
+    }
+
+    .crossword-mini-app-option {
+        padding: 6px 8px;
+    }
+
+    .crossword-mini-app-generate {
+        margin-left: 40px;
+    }
+
+    .crossword-mini-app-generate-button {
+        font-size: 16pt;
+        padding: 8px 10px;
+    }
+}
