@@ -78,7 +78,7 @@
     .crossword-clue-list {
         height: 49%;
         width: 93%;
-        margin-bottom: 3%;
+        margin-bottom: calc(3% - 5px);
     }
 
     .crossword-clue-scroll {
