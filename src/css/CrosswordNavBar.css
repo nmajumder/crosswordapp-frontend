@@ -61,7 +61,6 @@
     margin-right: 80px;
     height: 80px;
     float: right;
-    text-align: center;
     font-size: 30pt;
     background-color: #3f84fb;
     outline: none;
@@ -248,7 +247,6 @@
     height: 80px;
     font-size: 36pt;
     background-color: #3f84fb;
-    text-align: center;
     outline: none;
     border: none;
     transition: background-color .3s;
@@ -256,7 +254,6 @@
 
 #nav-menu-dropdown:hover {
     cursor: pointer;
-    background-color: #306acf;
 }
 
 .nav-menu-dropdown-item-section {
@@ -282,6 +279,10 @@
 @media only screen and (max-width: 600px) {
     #nav-account-dropdown {
         width: 120px;
+    }
+
+    #nav-account-dropdown:hover {
+        background-color: #3f84fb;
     }
 }
 
