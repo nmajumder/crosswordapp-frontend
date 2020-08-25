@@ -133,7 +133,7 @@ class CrosswordHeaderPage extends Component {
         }
 
         crosswords.sort(sortFunc)
-        console.log(crosswords)
+
         return (
             <Fragment>
                 <CrosswordNavBar />
@@ -159,27 +159,29 @@ class CrosswordHeaderPage extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="crossword-header-page-sort-dropdown-section">
-                        <div className="crossword-header-page-sort-by">Sort by ... </div>
-                        <DropdownButton id="crossword-header-page-sort-dropdown"
-                            title={<div><span className="crossword-header-page-dropdown-title">{this.sortTypes[sortType]}</span>
-                                <FontAwesomeIcon id="sort-type-caret-icon" icon={faAngleDown} /></div>}
-                            onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen) }}>
-                            <div className="crossword-header-page-dropdown-item-section">
-                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(0) }}>{this.sortTypes[0]}</Dropdown.Item>
-                                <div className="crossword-header-page-dropdown-item-divider"></div>
-                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(1) }}>{this.sortTypes[1]}</Dropdown.Item>
-                                <div className="crossword-header-page-dropdown-item-divider"></div>
-                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(2) }}>{this.sortTypes[2]}</Dropdown.Item>
-                                <div className="crossword-header-page-dropdown-item-divider"></div>
-                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(3) }}>{this.sortTypes[3]}</Dropdown.Item>
-                                <div className="crossword-header-page-dropdown-item-divider"></div>
-                                <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(4) }}>{this.sortTypes[4]}</Dropdown.Item>
-                            </div>
-                        </DropdownButton>
-                        <FontAwesomeIcon id="crossword-header-page-sort-order-icon" icon={desc ? faLongArrowAltDown : faLongArrowAltUp} 
-                            onClick={() => this.sortOrderClicked()}/>
-                    </div>
+                    { window.innerWidth < 700 ? null :
+                        <div className="crossword-header-page-sort-dropdown-section">
+                            <div className="crossword-header-page-sort-by">Sort by ... </div>
+                            <DropdownButton id="crossword-header-page-sort-dropdown"
+                                title={<div><span className="crossword-header-page-dropdown-title">{this.sortTypes[sortType]}</span>
+                                    <FontAwesomeIcon id="sort-type-caret-icon" icon={faAngleDown} /></div>}
+                                onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen) }}>
+                                <div className="crossword-header-page-dropdown-item-section">
+                                    <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(0) }}>{this.sortTypes[0]}</Dropdown.Item>
+                                    <div className="crossword-header-page-dropdown-item-divider"></div>
+                                    <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(1) }}>{this.sortTypes[1]}</Dropdown.Item>
+                                    <div className="crossword-header-page-dropdown-item-divider"></div>
+                                    <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(2) }}>{this.sortTypes[2]}</Dropdown.Item>
+                                    <div className="crossword-header-page-dropdown-item-divider"></div>
+                                    <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(3) }}>{this.sortTypes[3]}</Dropdown.Item>
+                                    <div className="crossword-header-page-dropdown-item-divider"></div>
+                                    <Dropdown.Item className="crossword-header-page-dropdown-item" as="button" onClick={() => { this.sortTypeClicked(4) }}>{this.sortTypes[4]}</Dropdown.Item>
+                                </div>
+                            </DropdownButton>
+                            <FontAwesomeIcon id="crossword-header-page-sort-order-icon" icon={desc ? faLongArrowAltDown : faLongArrowAltUp} 
+                                onClick={() => this.sortOrderClicked()}/>
+                        </div>
+                    }
                     { crosswords === null || crosswords.length === 0 ? 
                         <div style={{width: "100%", margin: "50px 0 150px 0", textAlign: "center", fontSize: "24pt", fontFamily: "Arial", fontWeight: "bold", opacity: "0.7"}}>
                             Loading Crosswords...
