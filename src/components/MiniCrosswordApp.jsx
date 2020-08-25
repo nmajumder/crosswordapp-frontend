@@ -723,8 +723,7 @@ class MiniCrosswordApp extends Component {
         const colorScheme = settings.colorScheme
         const boardSize = size
         let baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
-        const mobile = windowSize < 700
-        console.log(windowSize)
+        const mobile = windowSize < 700 || window.mobileCheck()
         if (mobile) {
             baseBoardPx = Math.min(windowSize - 60, window.innerHeight - 60)
         }

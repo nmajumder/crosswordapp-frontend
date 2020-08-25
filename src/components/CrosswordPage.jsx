@@ -618,7 +618,7 @@ class CrosswordPage extends Component {
         const colorScheme = settings.colorScheme
         const boardSize = grid.length
         let baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
-        const mobile = windowSize <= 705
+        const mobile = windowSize <= 705 || window.mobileCheck()
         if (mobile) {
             baseBoardPx = Math.min(windowSize - 60, window.innerHeight - 60)
         }
@@ -646,7 +646,7 @@ class CrosswordPage extends Component {
                             <div className="crossword-page-title">{this.props.crossword.title}</div>
                             <div className="crossword-page-author">By Nathan Majumder</div>
                         </div>
-                        { window.innerWidth < 400 ? null :
+                        { window.innerWidth < 400 || mobile ? null :
                             <div className="crossword-page-rating-heading" style={{width: mobile ? "" : `calc(100% - ${boardPx}px)`}}>
                                 { this.board.difficultyRating > 0 || this.board.enjoymentRating > 0 ?
                                     <div className="crossword-page-my-ratings">

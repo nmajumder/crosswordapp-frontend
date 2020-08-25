@@ -181,7 +181,7 @@ class CrosswordBoardApp extends Component {
             7: ["25px", "32px", "40px", "44px", "52px", "60px"],
             8: ["20px", "26px", "32px", "36px", "43px", "50px"],
             9: ["18px", "23px", "28px", "32px", "40px", "45px"],
-            15: ["11px", "15px", "20px", "22px", "28px"],
+            15: ["11px", "16px", "20px", "22px", "28px"],
             21: ["8px", "11px", "14px", "17px", "21px"]
         }
 
@@ -198,7 +198,7 @@ class CrosswordBoardApp extends Component {
         let squareValueSize
         let squareMarginTop
 
-        if (boardPx < 360) {
+        if (boardPx < 370) {
             squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][0]
             squareNumberStyle["marginLeft"] = boardSize > 10 ? "0px" : "2px"
             squareNumberStyle["marginTop"] = boardSize > 10 ? "0px" : "1px"

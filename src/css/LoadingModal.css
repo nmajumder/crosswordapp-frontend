@@ -26,3 +26,11 @@
     background-color: black;
     opacity: .4;
 }
+
+@media only screen and (max-width: 500px) {
+    .loading-modal-wrapper {
+        width: 80%;
+        left: 7%;
+        padding: 3% 20px;
+    }
+}
