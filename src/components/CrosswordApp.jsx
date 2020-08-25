@@ -150,7 +150,7 @@ class CrosswordApp extends Component {
                 <div className="crossword-app-wrapper" 
                     style={{filter: `${modalOpen ? "blur(5px)" : "none"}`, pointerEvents: `${modalOpen ? "none" : ""}`}}>
                     <div className="crossword-app-welcome">
-                        Welcome to CrosswordInfinity.com the only online crossword site where you can complete unlimited puzzles! 
+                        Welcome to CrosswordInfinity.com, the only online crossword site where you can complete unlimited puzzles! 
                         Try your hand at some full-sized, themed puzzles or binge minis of varying sizes. 
                         The mini puzzles are generated on demand, so you can solve to your heart's desire.
                         Check out the stats page to see detailed views on your performance, or visit the leaderboard to see how you stack up against other users.
