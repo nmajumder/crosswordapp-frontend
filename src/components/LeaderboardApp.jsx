@@ -10,6 +10,7 @@ import User from '../libs/User'
 import CrosswordNavBar from './CrosswordNavBar'
 import LeaderboardChart from './LeaderboardChart'
 import Footer from './Footer'
+import MobileView from './MobileView'
 
 class LeaderboardApp extends Component {
     constructor (props) {
@@ -112,6 +113,15 @@ class LeaderboardApp extends Component {
 
     render () {
         const { leaderboard, selectedStat, selectedSize, sizeDropdownOpen, selectedStreak, streakDropdownOpen } = this.state
+        if (window.innerWidth < window.MOBILE_WID) {
+            return (
+                <Fragment>
+                    <CrosswordNavBar />
+                    <MobileView page="leaderboard" />
+                </Fragment>
+            )
+        }
+        
         if (leaderboard === null) {
             return (
                 <Fragment>
@@ -279,7 +289,7 @@ class LeaderboardApp extends Component {
                             axisLabel={this.axisTitles[selectedStat]} chartInfo={this.chartInfos[selectedStat]} />
                     </div>
                 </div>
-                <Footer />
+                { window.innerWidth < 700 ? null : <Footer /> }
             </Fragment>
         )
     }

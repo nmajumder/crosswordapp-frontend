@@ -1,6 +1,11 @@
 .crossword-mini-app-wrapper {
     margin: 50px 80px 120px 80px;
-    overflow: inherit;
+}
+
+@media only screen and (max-width: 900px) {
+    .crossword-mini-app-wrapper {
+        margin: 20px 30px 40px 30px;
+    }
 }
 
 .crossword-mini-app-intro-header {
@@ -107,11 +112,74 @@
     }
 
     .crossword-mini-app-generate {
-        margin-left: 40px;
+        margin-left: 12px;
     }
 
     .crossword-mini-app-generate-button {
         font-size: 16pt;
         padding: 8px 10px;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .crossword-mini-app-intro-header {
+        font-size: 18pt;
+    }
+    
+    .crossword-mini-app-intro-body {
+        font-size: 14pt;
+    }
+
+    .crossword-mini-app-customizations-title {
+        font-size: 15pt;
+    }
+
+    .crossword-mini-app-customizations {
+        font-size: 10pt;
+        padding: 10px 15px;
+    }
+
+    .crossword-mini-app-size {
+        margin-left: 8px;
+    }
+
+    .crossword-mini-app-difficulty {
+        margin-left: 8px;
+    }
+
+    .crossword-mini-app-option {
+        padding: 4px 6px;
+    }
+
+    .crossword-mini-app-generate {
+        margin-left: 8px;
+    }
+
+    .crossword-mini-app-generate-button {
+        font-size: 14pt;
+        padding: 6px 8px;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .crossword-mini-app-customizations {
+        font-size: 9pt;
+        padding: 5px 8px;
+    }
+
+    .crossword-mini-app-size {
+        margin-left: 4px;
+    }
+
+    .crossword-mini-app-difficulty {
+        margin-left: 4px;
+    }
+
+    .crossword-mini-app-option {
+        padding: 2px 4px;
+    }
+
+    .crossword-mini-app-generate {
+        margin-left: 4px;
     }
 }

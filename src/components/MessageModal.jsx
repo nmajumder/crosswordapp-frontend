@@ -66,7 +66,7 @@ class MessageModal extends Component {
                                 Difficulty Rating
                                 <OverlayTrigger
                                     placement="right"
-                                    delay={{ show: 100, hide: 400 }}
+                                    delay={{ show: 50, hide: 400 }}
                                     overlay={
                                         <Tooltip id="difficulty-info-tooltip">
                                             If familiar with NY Times puzzles:<br/>

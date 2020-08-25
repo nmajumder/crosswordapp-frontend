@@ -12,6 +12,14 @@
 .crossword-page-wrapper {
     margin: 20px 80px 40px 80px;
     height: 1000px;
+    position: relative;
+}
+
+@media only screen and (max-width: 900px) {
+    .crossword-page-wrapper {
+        margin: 20px 30px 40px 30px;
+        height: 1000px;
+    }
 }
 
 .btn:hover {
@@ -148,11 +156,23 @@
 }
 
 .crossword-timer-pause-wrapper {
-    width: calc(100% - 414px);
+    width: calc(100% - 400px);
     height: 100%;
-    margin-right: 50px;
     float: left;
     text-align: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .crossword-timer-pause-wrapper {
+        width: calc(100% - 450px);
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .crossword-timer-pause-wrapper {
+        width: auto;
+        margin-left: 2%;
+    }
 }
 
 .crossword-timer-pause {
@@ -174,7 +194,7 @@
 
 .crossword-dropdowns {
     width: 294px;
-    float: left;
+    float: right;
 }
 
 .crossword-reset-button {
@@ -237,4 +257,109 @@
 .crossword-dropdown-top:hover, .crossword-dropdown-middle:hover, .crossword-dropdown-bottom:hover {
     cursor: pointer;
     background-color: #E6E6E6;
+}
+
+/* mobile */
+.crossword-dropdown-section-mobile {
+    float: right;
+}
+
+#crossword-mobile-dropdown {
+    width: 80px;
+    height: 50px;
+    font-size: 24pt;
+    text-align: center;
+    color: white;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+#crossword-mobile-dropdown:hover {
+    background-color: #F0F0F0;
+}
+
+.crossword-mobile-dropdown-item-section {
+    border: solid black 1px;
+    z-index: 11;
+    box-shadow: 0 15px 15px 0 rgba(0, 0, 0, 0.6), 0 8px 25px 0 rgba(0, 0, 0, 0.3);
+}
+
+.crossword-mobile-dropdown-item {
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    font-size: 12pt;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    border-bottom: solid black 1px;
+    outline: none;
+    display: block;
+}
+
+.crossword-mobile-dropdown-item:hover {
+    cursor: pointer;
+}
+
+.mobile-reset-item {
+    color: white;
+    border: none;
+}
+
+@media only screen and (max-width: 705px) {
+    .crossword-page-wrapper {
+        height: auto;
+    }
+
+    .crossword-page-title-heading {
+        text-align: left;
+        float: left;
+        width: auto;
+    }
+
+    .crossword-page-rating-heading {
+        float: right;
+        margin: none;
+    }
+
+    .crossword-page-rating-button {
+        padding: 0 10px;
+        color: black;
+        background-color: #f8f5f5;
+        width: 70px;
+        font-size: 12pt;
+        font-weight: 600;
+        line-height: 50px;
+    }
+
+    .crossword-page-my-ratings {
+        margin: none;
+        width: auto;
+    }
+
+    .crossword-settings {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .crossword-page-title {
+        font-size: 18pt;
+    }
+
+    .crossword-page-author {
+        font-size: 11pt;
+    }
+    
+    .crossword-page-my-ratings-header {
+        font-size: 11pt;
+    }
+    
+    .crossword-page-my-ratings-line {
+        font-size: 10pt;
+    }
 }

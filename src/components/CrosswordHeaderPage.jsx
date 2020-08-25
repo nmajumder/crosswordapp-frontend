@@ -201,7 +201,7 @@ class CrosswordHeaderPage extends Component {
                         </div>
                     }
                 </div>
-                <Footer />
+                { window.innerWidth < 700 ? null : <Footer /> }
             </Fragment>
         )
     }

@@ -12,9 +12,14 @@
 .crossword-app-wrapper {
     float: left;
     margin-top: 60px;
-    margin-bottom: 100px;
     padding: 0 10%;
     z-index: -1;
+}
+
+@media only screen and (min-height: 900px) {
+    .crossword-app-wrapper {
+        height: 850px;
+    }
 }
 
 @media only screen and (min-height: 900px) {
@@ -178,4 +183,34 @@
     margin: 5% 10%;
     text-align: left;
     font-size: 20pt;
+}
+
+@media only screen and (min-width: 600px) and (max-width: 1000px) {
+    .crossword-app-wrapper {
+        padding: 0 4%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .crossword-app-wrapper {
+        height: 1200px;
+    }
+
+    .crossword-app-welcome {
+        font-size: 16pt;
+    }
+
+    .generated-mini-box {
+        margin-top: 60px;
+    }
+
+    .crossword-app-wrapper {
+        margin-bottom: 80px;
+    }
+}
+
+@media only screen and (max-width: 450px) {
+    .crossword-app-welcome {
+        font-size: 14pt;
+    }
 }

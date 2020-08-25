@@ -4,7 +4,7 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { withRouter, useLocation } from 'react-router-dom'
 import '../css/CrosswordNavBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faBars } from '@fortawesome/free-solid-svg-icons'
 import crosswordinfinityinverted from '../images/crosswordinfinityinverted.png'
 import User from '../libs/User.js'
 import UserValidation from '../libs/UserValidation'
@@ -17,7 +17,8 @@ class CrosswordNavBar extends Component {
 
         this.state = {
             dropdownOpen: false,
-            loading: false
+            loading: false,
+            windowSize: window.innerWidth
         }
 
         this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this)
@@ -26,6 +27,7 @@ class CrosswordNavBar extends Component {
         this.changePassword = this.changePassword.bind(this)
         this.changeUsername = this.changeUsername.bind(this)
         this.logout = this.logout.bind(this)
+        this.handleWindowResize = this.handleWindowResize.bind(this)
     }
 
     async componentDidMount () {
@@ -34,6 +36,8 @@ class CrosswordNavBar extends Component {
                 || this.props.location.pathname === "/stats") {
             return
         }
+        window.addEventListener('resize', this.handleWindowResize)
+
         console.log("Validating user from nav bar")
         this.setState({
             loading: true
@@ -48,6 +52,17 @@ class CrosswordNavBar extends Component {
         } else {
             this.props.history.push('/')
         }
+    }
+
+    componentWillUnmount () {
+        window.removeEventListener('resize', this.handleWindowResize)
+    }
+
+    handleWindowResize () {
+        this.setState({
+            windowSize: window.innerWidth
+        })
+        this.render()
     }
 
     toggleDropdownOpen (isOpen) {
@@ -97,6 +112,7 @@ class CrosswordNavBar extends Component {
 
         let blurred = this.props.blurred || this.state.loading
 
+        let collapse = this.state.windowSize < 620
         return (
             <Fragment>
                 <LoadingModal shouldShow={this.state.loading} />
@@ -108,26 +124,6 @@ class CrosswordNavBar extends Component {
                         style={curPage === homePage ? selectedStyle : {}}
                         onClick={() => this.props.history.push(homePage)}>
                         <img className="nav-home-logo" src={crosswordinfinityinverted} />
-                    </div>
-                    <div className="nav-crosswords-button nav-button nav-wide-button" 
-                        style={curPage === crosswordsPage ? selectedStyle : {}}
-                        onClick={() => this.props.history.push({pathname: crosswordsPage, home: true})}>
-                        Crosswords
-                    </div>
-                    <div className="nav-minis-button nav-button nav-narrow-button" 
-                        style={curPage === minisPage ? selectedStyle : {}}
-                        onClick={() => this.props.history.push(minisPage)}>
-                        Minis
-                    </div>
-                    <div className="nav-stats-button nav-button nav-narrow-button" 
-                        style={curPage === statsPage ? selectedStyle : {}}
-                        onClick={() => this.props.history.push(statsPage)}>
-                        Stats
-                    </div>
-                    <div className="nav-leaderboard-button nav-button nav-wide-button" 
-                        style={curPage === leaderboardPage ? selectedStyle : {}}
-                        onClick={() => this.props.history.push(leaderboardPage)}>
-                        Leaderboard
                     </div>
                     <DropdownButton id="nav-account-dropdown"
                         title={<FontAwesomeIcon style={{color: "white"}} icon={faUser} />}
@@ -175,6 +171,56 @@ class CrosswordNavBar extends Component {
                             </div>
                         </Dropdown.Item>
                     </DropdownButton>
+                    { collapse ? 
+                        <DropdownButton id="nav-menu-dropdown"
+                            title={<FontAwesomeIcon style={{color: "white"}} icon={faBars} />}
+                            onToggle={(isOpen, event, metadata) => { this.toggleDropdownOpen(isOpen) }}>
+                            <div className="nav-menu-dropdown-item-section">
+                                <Dropdown.Item 
+                                    className="nav-menu-dropdown-item" 
+                                    onClick={() => this.props.history.push({pathname: crosswordsPage, home: true})}>
+                                        Crosswords
+                                </Dropdown.Item>
+                                <Dropdown.Item 
+                                    className="nav-menu-dropdown-item" 
+                                    onClick={() => this.props.history.push(minisPage)}>
+                                        Minis
+                                </Dropdown.Item>
+                                <Dropdown.Item 
+                                    className="nav-menu-dropdown-item" 
+                                    onClick={() => this.props.history.push(statsPage)}>
+                                        Stats
+                                </Dropdown.Item>
+                                <Dropdown.Item 
+                                    className="nav-menu-dropdown-item" 
+                                    onClick={() => this.props.history.push(leaderboardPage)}>
+                                        Leaderboard
+                                </Dropdown.Item>
+                            </div>
+                        </DropdownButton> :
+                        <div>
+                            <div className="nav-crosswords-button nav-button nav-wide-button" 
+                                style={curPage === crosswordsPage ? selectedStyle : {}}
+                                onClick={() => this.props.history.push({pathname: crosswordsPage, home: true})}>
+                                Crosswords
+                            </div>
+                            <div className="nav-minis-button nav-button nav-narrow-button" 
+                                style={curPage === minisPage ? selectedStyle : {}}
+                                onClick={() => this.props.history.push(minisPage)}>
+                                Minis
+                            </div>
+                            <div className="nav-stats-button nav-button nav-narrow-button" 
+                                style={curPage === statsPage ? selectedStyle : {}}
+                                onClick={() => this.props.history.push(statsPage)}>
+                                Stats
+                            </div>
+                            <div className="nav-leaderboard-button nav-button nav-wide-button" 
+                                style={curPage === leaderboardPage ? selectedStyle : {}}
+                                onClick={() => this.props.history.push(leaderboardPage)}>
+                                Leaderboard
+                            </div>
+                        </div>
+                    }
                 </div>
             </Fragment>
         )

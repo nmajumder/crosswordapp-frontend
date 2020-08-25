@@ -11,6 +11,7 @@ import MiniStatsCategoryPage from './MiniStatsCategoryPage.jsx'
 import MiniStatsMetricPage from './MiniStatsMetricPage.jsx'
 import Footer from './Footer'
 import LoadingModal from './LoadingModal'
+import MobileView from './MobileView'
 
 class StatsApp extends Component {
     constructor (props) {
@@ -58,6 +59,16 @@ class StatsApp extends Component {
     render () {
         const { selected, crosswords, ministats, loading } = this.state
 
+        if (window.innerWidth < 900) {
+            return (
+                <Fragment>
+                    <CrosswordNavBar />
+                    <MobileView page="stats" />
+                </Fragment>
+            )
+        }
+
+
         let selectedStyle = {borderBottomColor: "#3f84fb"}
 
         return (
@@ -91,7 +102,7 @@ class StatsApp extends Component {
                     
                     }
                 </div>
-                <Footer blur={loading} />
+                { window.innerWidth < 700 ? null : <Footer blur={loading} /> }
             </Fragment>
         )
     }

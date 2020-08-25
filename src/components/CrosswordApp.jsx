@@ -128,6 +128,17 @@ class CrosswordApp extends Component {
         let boxWid = (windowWid * .3) - 20
         let boxMarg = (windowWid * .05) - 4
 
+        if (windowWid < 1000) {
+            boxWid = (windowWid * .4) - 20
+            boxMarg = (windowWid * .06) - 30
+        }
+        if (windowWid < 600) {
+            boxWid = (windowWid * .6) - 20
+            boxMarg = (windowWid * .1)
+        }
+        console.log(windowWid)
+        console.log(boxWid)
+
         return (
             <Fragment>
                 <LoadingModal shouldShow={loading} />
@@ -161,7 +172,7 @@ class CrosswordApp extends Component {
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
-                <Footer blur={modalOpen}/>
+                { window.innerWidth < 700 ? null : <Footer blur={modalOpen}/> }
             </Fragment>
         )
     }

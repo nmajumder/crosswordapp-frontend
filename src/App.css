@@ -2,18 +2,6 @@
   text-align: center;
 }
 
-@media only screen and (min-width: 1000px) {
-  .mobile-view {
-    display: none
-  }
-}
-
-@media only screen and (max-width: 999px) {
-  .app-wrapper {
-    display: none;
-  }
-}
-
 /*.App-logo {
   height: 40vmin;
   pointer-events: none;

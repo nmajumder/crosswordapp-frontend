@@ -1,22 +1,26 @@
 import React, { Component, Fragment } from 'react'
+import PropTypes from 'prop-types'
 import '../css/MobileView.css'
 import crosswordinfinityinverted from '../images/crosswordinfinityinverted.png'
+
+const MOBILE_WID = 625
 
 class MobileView extends Component {
     
     render () {
         return (
             <Fragment>
-                <div className="mobile-nav-bar">
-                    <img className="mobile-logo" src={crosswordinfinityinverted} />
-                </div>
                 <div className="mobile-error-msg">
-                    Welcome to CrosswordInfinity.com!<br/><br/>Unfortunately, the crossword solving features are not available on mobile devices or small screens.
-                    Try again on any standard sized computer and get to puzzling!
+                    Sorry the {this.props.page} page is not currently available on screens of this size.
+                    Please try again on any standard sized computer.
                 </div>
             </Fragment>
         )
     }
+}
+
+MobileView.propTypes = {
+    page: PropTypes.string.isRequired
 }
 
 export default MobileView

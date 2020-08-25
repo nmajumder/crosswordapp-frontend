@@ -5,6 +5,8 @@ import CrosswordClueScroll from './CrosswordClueScroll.jsx'
 import api from '../libs/api.js'
 import Settings from '../libs/Settings.js'
 import CrosswordSquareSlash from './CrosswordSquareSlash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
 class CrosswordBoardApp extends Component {
     constructor (props) {
@@ -129,7 +131,6 @@ class CrosswordBoardApp extends Component {
     }
 
     render () {
-
         const selection = this.props.selection
         const grid = this.props.grid
 
@@ -144,14 +145,28 @@ class CrosswordBoardApp extends Component {
         const acrossClue = this.props.generating ? null : this.acrossClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].acrossClueNum)
         const downClue = this.props.generating ? null : this.downClues.find(c => c.number === grid[selection.rowCoord][selection.colCoord].downClueNum)
 
+        // for mobile clue
+        let thisClueNum = null
+        let thisClueText = null
+        if (!this.props.generating && acrossClue !== undefined && downClue !== undefined) {
+            if (selection.direction === "Across") {
+                thisClueNum = acrossClue.number + "A"
+                thisClueText = acrossClue.text
+            } else {
+                thisClueNum = downClue.number + "D"
+                thisClueText = downClue.text
+            }
+        }
+        let clueBoxWid = boardPx - 20
+
         let squareNumberFontSizeMap = {
-            5: ["21px", "22px", "26px"],
-            6: ["20px", "21px", "25px"],
-            7: ["16px", "20px", "24px"],
-            8: ["17px", "19px", "23px"],
-            9: ["15px", "18px", "22px"],
-            15: ["12px", "12px", "14px"],
-            21: ["7px", "8px", "10px"]
+            5: ["14px", "16px", "19px", "21px", "22px", "26px"],
+            6: ["13px", "15px", "18px", "20px", "21px", "25px"],
+            7: ["10px", "12px", "14px", "16px", "20px", "24px"],
+            8: ["10px", "12px", "14px", "17px", "19px", "23px"],
+            9: ["9px", "11px", "13px", "15px", "18px", "22px"],
+            15: ["6px", "8px", "12px", "12px", "14px"],
+            21: ["5px", "6px", "7px", "8px", "10px"]
         }
 
         let squareNumberStyle = {
@@ -161,41 +176,53 @@ class CrosswordBoardApp extends Component {
         }
 
         let squareFontSizeMap = {
-            5: ["60px", "68px", "76px"],
-            6: ["50px", "58px", "66px"],
-            7: ["44px", "52px", "60px"],
-            8: ["36px", "43px", "50px"],
-            9: ["32px", "40px", "45px"],
-            15: ["22px", "22px", "28px"],
-            21: ["14px", "17px", "21px"]
+            5: ["34px", "44px", "50px", "60px", "68px", "76px"],
+            6: ["28px", "38px", "44px", "50px", "58px", "66px"],
+            7: ["25px", "32px", "40px", "44px", "52px", "60px"],
+            8: ["20px", "26px", "32px", "36px", "43px", "50px"],
+            9: ["18px", "23px", "28px", "32px", "40px", "45px"],
+            15: ["11px", "15px", "20px", "22px", "28px"],
+            21: ["8px", "11px", "14px", "17px", "21px"]
         }
 
         let squareMarginTopMap = {
-            5: [squarePx*3/10, squarePx*3/10, squarePx*35/100],
-            6: [squarePx*3/10, squarePx*35/100, squarePx*35/100],
-            7: [squarePx*3/10, squarePx*3/10, squarePx*3/10],
-            8: [squarePx*35/100, squarePx*35/100, squarePx*35/100],
-            9: [squarePx*35/100, squarePx*32/100, squarePx*35/100],
-            15: [squarePx*4/10, squarePx*4/10, squarePx*35/100],
-            21: [squarePx*33/100, squarePx*33/100, squarePx*3/10]
+            5: [squarePx*3/10, squarePx*3/10, squarePx*3/10, squarePx*35/100],
+            6: [squarePx*3/10, squarePx*3/10, squarePx*35/100, squarePx*35/100],
+            7: [squarePx*3/10, squarePx*3/10, squarePx*3/10, squarePx*3/10],
+            8: [squarePx*35/100, squarePx*35/100, squarePx*35/100, squarePx*35/100],
+            9: [squarePx*35/100, squarePx*35/100, squarePx*32/100, squarePx*35/100],
+            15: [squarePx*3/10, squarePx*35/100, squarePx*4/10, squarePx*35/100],
+            21: [squarePx*37/100, squarePx*33/100, squarePx*33/100, squarePx*3/10]
         }
 
         let squareValueSize
         let squareMarginTop
 
-        if (boardPx < 580) {
+        if (boardPx < 360) {
             squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][0]
+            squareNumberStyle["marginLeft"] = boardSize > 10 ? "0px" : "2px"
+            squareNumberStyle["marginTop"] = boardSize > 10 ? "0px" : "1px"
             squareValueSize = squareFontSizeMap[boardSize][0]
             squareMarginTop = squareMarginTopMap[boardSize][0]
-        } else if (boardPx < 700) {
+        } else if (boardPx < 480) {
             squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][1]
             squareValueSize = squareFontSizeMap[boardSize][1]
-            squareMarginTop = squareMarginTopMap[boardSize][1]
-        } else {
-            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][2]
+            squareMarginTop = squareMarginTopMap[boardSize][0]
+        } else if (boardPx < 580) {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][1]
             squareValueSize = squareFontSizeMap[boardSize][2]
+            squareMarginTop = squareMarginTopMap[boardSize][1]
+        } else if (boardPx < 700) {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][2]
+            squareValueSize = squareFontSizeMap[boardSize][3]
             squareMarginTop = squareMarginTopMap[boardSize][2]
+        } else {
+            squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][3]
+            squareValueSize = squareFontSizeMap[boardSize][4]
+            squareMarginTop = squareMarginTopMap[boardSize][3]
         }
+
+        console.log(this.props.mobile)
 
         return (
             <Fragment>
@@ -224,6 +251,18 @@ class CrosswordBoardApp extends Component {
                         )}
                     </div>
                     { this.props.generating ? null :
+                        this.props.mobile ? 
+                        <div className="mobile-crossword-clue-box"
+                            style={{width: clueBoxWid, padding: "10px", backgroundColor: Settings.colorScheme.colors[2]}}>
+                            <FontAwesomeIcon id="mobile-left-chevron" icon={faChevronLeft} onClick={() => this.props.nextClueClicked(-1)} />
+                            <div className="mobile-crossword-clue">
+                                <span className="mobile-crossword-clue-span">
+                                    <span style={{fontWeight: "600", marginRight: "10px"}}>{thisClueNum}</span>{thisClueText}
+                                </span>
+                            </div>
+                            <FontAwesomeIcon id="mobile-right-chevron" icon={faChevronRight} onClick={() => this.props.nextClueClicked(1)} />
+                        </div>
+                        :
                         <div className="crossword-clue-section" style={{height : boardPx}}>
                             <CrosswordClueScroll 
                                 listTitle={"Across"}
@@ -256,7 +295,9 @@ CrosswordBoardApp.propTypes = {
     clueRefMap: PropTypes.object.isRequired,
     boardSquareClicked: PropTypes.func.isRequired,
     clueClicked: PropTypes.func.isRequired,
-    boardWidthPx: PropTypes.number.isRequired
+    boardWidthPx: PropTypes.number.isRequired,
+    mobile: PropTypes.bool,
+    nextClueClicked: PropTypes.func
 }
 
 export default CrosswordBoardApp

@@ -10,6 +10,7 @@ import CrosswordKeyActions from '../libs/CrosswordKeyActions.js'
 import '../css/CrosswordPage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faPause, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faLightbulb } from '@fortawesome/free-regular-svg-icons'
 import Settings from '../libs/Settings.js'
 import BoardStatus from '../libs/BoardStatus.js'
 import User from '../libs/User.js'
@@ -610,7 +611,11 @@ class CrosswordPage extends Component {
         const modalOpen = settingsClicked || modalInfo.length > 0
         const colorScheme = settings.colorScheme
         const boardSize = grid.length
-        const baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
+        let baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
+        const mobile = windowSize <= 705
+        if (mobile) {
+            baseBoardPx = Math.min(windowSize - 60, window.innerHeight - 60)
+        }
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
         return (
             <Fragment>
@@ -631,34 +636,36 @@ class CrosswordPage extends Component {
                     board={this.board} />
                 <div style={{filter: `${modalOpen ? "blur(5px)" : "none"}`}} className="crossword-page-wrapper">
                     <div className="crossword-page-heading">
-                        <div className="crossword-page-title-heading" style={{ width : boardPx }}>
+                        <div className="crossword-page-title-heading" style={{ width : mobile ? "" : boardPx }}>
                             <div className="crossword-page-title">{this.props.crossword.title}</div>
                             <div className="crossword-page-author">By Nathan Majumder</div>
                         </div>
-                        <div className="crossword-page-rating-heading" style={{width: `calc(100% - ${boardPx}px)`}}>
-                            { this.board.difficultyRating > 0 || this.board.enjoymentRating > 0 ?
-                                <div className="crossword-page-my-ratings">
-                                    <div className="crossword-page-my-ratings-header bold">My Ratings</div>
-                                    <FontAwesomeIcon id="ratings-edit-icon" icon={faEdit} onClick={() => this.ratePuzzleClicked()} />
-                                    <div className="crossword-page-my-ratings-line">
-                                        <span className="crossword-page-my-ratings-line-header">Difficulty:</span>
-                                        <span className="bold">
-                                            {this.board.difficultyRating > 0 ? this.board.difficultyRating + " / 10" : "Not Rated"}
-                                        </span></div>
-                                    <div className="crossword-page-my-ratings-line">
-                                        <span className="crossword-page-my-ratings-line-header">Enjoyment:</span>
-                                        <span className="bold">
-                                            {this.board.enjoymentRating > 0 ? this.board.enjoymentRating + " / 10" : "Not Rated"}
-                                        </span></div>
-                                </div>
-                                :
-                                <button disabled={this.crosswordIsComplete() ? false : true} 
-                                    title={this.crosswordIsComplete() ? "" : "Finish the puzzle first"} 
-                                    className="crossword-page-rating-button" onClick={() => this.ratePuzzleClicked()}>
-                                    Rate this puzzle!
-                                </button>
-                            }
-                        </div>
+                        { window.innerWidth < 400 ? null :
+                            <div className="crossword-page-rating-heading" style={{width: mobile ? "" : `calc(100% - ${boardPx}px)`}}>
+                                { this.board.difficultyRating > 0 || this.board.enjoymentRating > 0 ?
+                                    <div className="crossword-page-my-ratings">
+                                        <div className="crossword-page-my-ratings-header bold">My Ratings</div>
+                                        <FontAwesomeIcon id="ratings-edit-icon" icon={faEdit} onClick={() => this.ratePuzzleClicked()} />
+                                        <div className="crossword-page-my-ratings-line">
+                                            <span className="crossword-page-my-ratings-line-header">Difficulty:</span>
+                                            <span className="bold">
+                                                {this.board.difficultyRating > 0 ? this.board.difficultyRating + " / 10" : "Not Rated"}
+                                            </span></div>
+                                        <div className="crossword-page-my-ratings-line">
+                                            <span className="crossword-page-my-ratings-line-header">Enjoyment:</span>
+                                            <span className="bold">
+                                                {this.board.enjoymentRating > 0 ? this.board.enjoymentRating + " / 10" : "Not Rated"}
+                                            </span></div>
+                                    </div>
+                                    :
+                                    <button disabled={this.crosswordIsComplete() ? false : true} 
+                                        title={this.crosswordIsComplete() ? "" : "Finish the puzzle first"} 
+                                        className="crossword-page-rating-button" onClick={() => this.ratePuzzleClicked()}>
+                                        { mobile ? "Rate" : "Rate this puzzle!" }
+                                    </button>
+                                }
+                            </div>
+                        }
                     </div>
                     <div className="crossword-page-controls">
                         <div className="crossword-settings" onClick={() => { this.settingsClicked() }}>
@@ -674,26 +681,46 @@ class CrosswordPage extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="crossword-dropdowns">
-                            <div className="crossword-reset-button" style={{backgroundColor: colorScheme.colors[3]}}
-                                onClick={() => this.resetPuzzleClicked()}>
-                                Reset
+                        { windowSize < 550 ? 
+                            <div className="crossword-dropdown-section-mobile" >
+                                <DropdownButton alignRight id="crossword-mobile-dropdown"
+                                    title={<FontAwesomeIcon style={{color: colorScheme.colors[3]}} icon={faLightbulb} />}>
+                                    <div className="crossword-mobile-dropdown-item-section">
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.checkClicked("Square") }}>Check Square</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.checkClicked("Word") }}>Check Word</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.checkClicked("Puzzle") }}>Check Puzzle</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.revealClicked("Square") }}>Reveal Square</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.revealClicked("Word") }}>Reveal Word</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item" onClick={() => { this.revealClicked("Puzzle") }}>Reveal Puzzle</Dropdown.Item>
+                                        <Dropdown.Item className="crossword-mobile-dropdown-item mobile-reset-item" onClick={() => this.resetPuzzleClicked()}
+                                            style={{backgroundColor: colorScheme.colors[3]}}>
+                                            Reset Puzzle
+                                        </Dropdown.Item>
+                                    </div>
+                                </DropdownButton>
                             </div>
-                            <DropdownButton id="crossword-check-dropdown" 
-                                title={<span style={{color: "#121212"}}>Check</span>}
-                                onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen, 'check') }}>
-                                <Dropdown.Item className="crossword-dropdown-top" as="button" onClick={() => { this.checkSquareClicked() }}>Square</Dropdown.Item>
-                                <Dropdown.Item className="crossword-dropdown-middle" as="button" onClick={() => { this.checkWordClicked() }}>Word</Dropdown.Item>
-                                <Dropdown.Item className="crossword-dropdown-bottom" as="button" onClick={() => { this.checkPuzzleClicked() }}>Puzzle</Dropdown.Item>
-                            </DropdownButton>
-                            <DropdownButton id="crossword-reveal-dropdown" 
-                                title={<span style={{color: "#121212"}}>Reveal</span>}
-                                onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen, 'reveal') }}>
-                                <Dropdown.Item className="crossword-dropdown-top" as="button" onClick={() => { this.revealSquareClicked() }}>Square</Dropdown.Item>
-                                <Dropdown.Item className="crossword-dropdown-middle" as="button" onClick={() => { this.revealWordClicked() }}>Word</Dropdown.Item>
-                                <Dropdown.Item className="crossword-dropdown-bottom" as="button" onClick={() => { this.revealPuzzleClicked() }}>Puzzle</Dropdown.Item>
-                            </DropdownButton>
-                        </div>
+                        :
+                            <div className="crossword-dropdowns">
+                                <div className="crossword-reset-button" style={{backgroundColor: colorScheme.colors[3]}}
+                                    onClick={() => this.resetPuzzleClicked()}>
+                                    Reset
+                                </div>
+                                <DropdownButton id="crossword-check-dropdown" 
+                                    title={<span style={{color: "#121212"}}>Check</span>}
+                                    onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen, 'check') }}>
+                                    <Dropdown.Item className="crossword-dropdown-top" as="button" onClick={() => { this.checkSquareClicked() }}>Square</Dropdown.Item>
+                                    <Dropdown.Item className="crossword-dropdown-middle" as="button" onClick={() => { this.checkWordClicked() }}>Word</Dropdown.Item>
+                                    <Dropdown.Item className="crossword-dropdown-bottom" as="button" onClick={() => { this.checkPuzzleClicked() }}>Puzzle</Dropdown.Item>
+                                </DropdownButton>
+                                <DropdownButton id="crossword-reveal-dropdown" 
+                                    title={<span style={{color: "#121212"}}>Reveal</span>}
+                                    onToggle={(isOpen, event, metadata) => { this.toggleDropdownVisibility(isOpen, 'reveal') }}>
+                                    <Dropdown.Item className="crossword-dropdown-top" as="button" onClick={() => { this.revealSquareClicked() }}>Square</Dropdown.Item>
+                                    <Dropdown.Item className="crossword-dropdown-middle" as="button" onClick={() => { this.revealWordClicked() }}>Word</Dropdown.Item>
+                                    <Dropdown.Item className="crossword-dropdown-bottom" as="button" onClick={() => { this.revealPuzzleClicked() }}>Puzzle</Dropdown.Item>
+                                </DropdownButton>
+                            </div>
+                        }
                     </div>
                     <CrosswordBoardApp
                         grid={grid}
@@ -703,9 +730,10 @@ class CrosswordPage extends Component {
                         clueRefMap={this.props.crossword.clueRefMap}
                         boardSquareClicked={this.boardSquareClicked}
                         clueClicked={this.clueClicked}
-                        boardWidthPx={boardPx} />
+                        boardWidthPx={boardPx}
+                        mobile={mobile} />
                 </div>
-                <Footer blur={modalOpen} />
+                { window.innerWidth < 700 ? null : <Footer blur={modalOpen} /> }
             </Fragment>
         )
     }

@@ -2,6 +2,12 @@
     margin: 50px 80px;
 }
 
+@media only screen and (max-width: 600px) {
+    .crossword-header-page-wrapper {
+        margin: 50px 20px;
+    }
+}
+
 .crossword-header-page-intro-header {
     font-size: 22pt;
 }
@@ -138,4 +144,30 @@
     height: 20px; 
     margin-top: 5px; 
     border-right: solid black 1px;
+}
+
+@media only screen and (max-width: 700px) {
+    .crossword-header-page-dropdown-item {
+        display: block;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .crossword-header-page-stats-box-number {
+        font-size: 15pt;
+    }
+    
+    .crossword-header-page-stats-box-title {
+        font-size: 12pt;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    .crossword-header-page-stats-box-number {
+        font-size: 14pt;
+    }
+    
+    .crossword-header-page-stats-box-title {
+        font-size: 11pt;
+    }
 }

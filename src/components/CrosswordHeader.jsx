@@ -100,7 +100,8 @@ class CrosswordHeader extends Component {
                     <div className="crossword-header-background-overlay"></div>
                     <div className={this.state.flipped ? "crossword-header-flip-card-inner flip-card-flipped" : "crossword-header-flip-card-inner"}>
                         <div className={this.state.flipped ? "crossword-header-front hidden" : "crossword-header-front"}
-                            onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}>
+                            onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}
+                            onTouchStart={() => this.overlayHover()}>
                             <div className={this.state.showHoverStyle ? "crossword-header-overlay crossword-header-overlay-hover" : "crossword-header-overlay"}>
                                 <FontAwesomeIcon id="info-icon-overlay" icon={faInfoCircle} onClick={() => this.moreInfoClicked(true)} />
                             </div>
