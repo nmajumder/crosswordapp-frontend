@@ -2,7 +2,7 @@ import React, { Fragment, Component } from 'react'
 import PropTypes from 'prop-types'
 import '../css/CrosswordBoardApp.css'
 import CrosswordClueScroll from './CrosswordClueScroll.jsx'
-import api from '../libs/api.js'
+import Keyboard from './Keyboard.jsx'
 import Settings from '../libs/Settings.js'
 import CrosswordSquareSlash from './CrosswordSquareSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -252,15 +252,26 @@ class CrosswordBoardApp extends Component {
                     </div>
                     { this.props.generating ? null :
                         this.props.mobile ? 
-                        <div className="mobile-crossword-clue-box"
-                            style={{width: clueBoxWid, padding: "10px", backgroundColor: Settings.colorScheme.colors[2]}}>
-                            <FontAwesomeIcon id="mobile-left-chevron" icon={faChevronLeft} onClick={() => this.props.nextClueClicked(-1)} />
-                            <div className="mobile-crossword-clue">
-                                <span className="mobile-crossword-clue-span">
-                                    <span style={{fontWeight: "600", marginRight: "10px"}}>{thisClueNum}</span>{thisClueText}
-                                </span>
+                        <div>
+                            <div className="mobile-crossword-clue-box"
+                                style={{width: clueBoxWid, padding: "10px", backgroundColor: Settings.colorScheme.colors[2]}}>
+                                <FontAwesomeIcon id="mobile-left-chevron" icon={faChevronLeft}
+                                    onClick={() => document.dispatchEvent(
+                                        new KeyboardEvent('keydown', {key: 'Enter', shiftKey: true, bubbles: true})
+                                    )} />
+                                <div className="mobile-crossword-clue">
+                                    <span className="mobile-crossword-clue-span">
+                                        <span style={{fontWeight: "600", marginRight: "10px"}}>{thisClueNum}</span>{thisClueText}
+                                    </span>
+                                </div>
+                                <FontAwesomeIcon id="mobile-right-chevron" icon={faChevronRight} 
+                                    onClick={() => document.dispatchEvent(
+                                        new KeyboardEvent('keydown', {key: 'Enter', shiftKey: false, bubbles: true})
+                                    )} />
                             </div>
-                            <FontAwesomeIcon id="mobile-right-chevron" icon={faChevronRight} onClick={() => this.props.nextClueClicked(1)} />
+                            <Keyboard id="embedded-keyboard" onKeyPress={(key) => document.dispatchEvent(
+                                new KeyboardEvent('keydown',{key: key, bubbles: true})
+                            )}/>
                         </div>
                         :
                         <div className="crossword-clue-section" style={{height : boardPx}}>
@@ -296,8 +307,7 @@ CrosswordBoardApp.propTypes = {
     boardSquareClicked: PropTypes.func.isRequired,
     clueClicked: PropTypes.func.isRequired,
     boardWidthPx: PropTypes.number.isRequired,
-    mobile: PropTypes.bool,
-    nextClueClicked: PropTypes.func
+    mobile: PropTypes.bool
 }
 
 export default CrosswordBoardApp

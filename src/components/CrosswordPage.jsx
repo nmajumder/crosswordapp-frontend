@@ -81,7 +81,7 @@ class CrosswordPage extends Component {
         this.crosswordIsComplete = this.crosswordIsComplete.bind(this)
 
         this.onKeyDown = this.onKeyDown.bind(this)
-
+        this.getWhichNumFromKey = this.getWhichNumFromKey.bind(this)
     }
 
     componentDidMount () {
@@ -492,6 +492,13 @@ class CrosswordPage extends Component {
         })
     }
 
+    getWhichNumFromKey (key) {
+        if (key === "Backspace") return 8
+        else if (key === "Enter") return 13
+        else if (key === "Tab") return 9
+        else return key.charCodeAt(0)
+    }
+
     onKeyDown (event) {
         this.idleReset()
         // if special key pressed, allow default action
@@ -499,14 +506,17 @@ class CrosswordPage extends Component {
             return
         }
         event.preventDefault()
+        
+        const which = event.which === 0 ? this.getWhichNumFromKey(event.key) : event.which
+
         let modalOpen = this.state.settingsClicked || this.state.modalInfo.length > 0
         if (modalOpen) {
             if (this.state.modalInfo.length > 0 && this.state.modalInfo[0] !== "resetClicked") {
-                if (event.which === 13 || event.which === 27) {
+                if (which === 13 || which === 27) {
                     // allow enter/esc keys to close modal (except resetting puzzle requires click)
                     this.closeModal()
                 }
-            } else if (this.state.settingsClicked && event.which === 27) {
+            } else if (this.state.settingsClicked && which === 27) {
                 // allow esc key to close settings
                 this.closeModal()
             }
@@ -514,38 +524,37 @@ class CrosswordPage extends Component {
         }
         let grid = this.state.grid
         let selection = this.state.selection
-        if (event.which === 13 || event.which === 9) {
+        if (which === 13 || which === 9) {
             // enter or tab
             CrosswordKeyActions.tabOrEnter(grid, selection, event.shiftKey, 
                 this.props.crossword.acrossClues, this.props.crossword.downClues, this.board.completed)
-        } else if (event.which === 8) {
+        } else if (which === 8) {
             // delete
             CrosswordKeyActions.delete(grid, selection, this.board.completed)
-        } else if (event.which === 32) {
+        } else if (which === 32) {
             // space bar
             selection.direction = selection.direction === "Across" ? "Down" : "Across"
-        } else if (event.which === 37) {
+        } else if (which === 37) {
             // left arrow
             CrosswordKeyActions.leftArrow(grid, selection)
-        } else if (event.which === 38) {
+        } else if (which === 38) {
             // up arrow
             CrosswordKeyActions.upArrow(grid, selection)
-        } else if (event.which === 39) {
+        } else if (which === 39) {
             // right arrow
             CrosswordKeyActions.rightArrow(grid, selection)
-        } else if (event.which === 40) {
+        } else if (which === 40) {
             // down arrow
             CrosswordKeyActions.downArrow(grid, selection)
         } else {
             let gridWasFull = CrosswordKeyActions.gridIsFull(grid)
-            console.log("Grid was full? " + gridWasFull)
-            if (event.which >= 65 && event.which <= 90) {
+            if (which >= 65 && which <= 90) {
                 // a to z
                 CrosswordKeyActions.alphaNumeric(grid, selection, event.key.toUpperCase(), this.board.completed)
-            } else if (event.which >= 48 && event.which <= 57) {
+            } else if (which >= 48 && which <= 57) {
                 // 0 to 9 or the symbols on the same keys
                 CrosswordKeyActions.alphaNumeric(grid, selection, event.key, this.board.completed)
-            } else if (event.which >= 186 && event.which <= 222) {
+            } else if (which >= 186 && which <= 222) {
                 // various symbols that we want to allow in case of special themed puzzle
                 // disallow the underscore because it is reserved for black squares
                 if (event.key === "_") {
@@ -553,10 +562,7 @@ class CrosswordPage extends Component {
                 }
                 CrosswordKeyActions.alphaNumeric(grid, selection, event.key, this.board.completed)
             }
-            console.log("Grid is now full? " + CrosswordKeyActions.gridIsFull(grid))
-            console.log("Board was prev completed")
             if (CrosswordKeyActions.gridIsFull(grid) && this.board.completed !== true) {
-                console.log("Checking for completion")
                 this.checkForCompletion(!gridWasFull)
             }
         }
