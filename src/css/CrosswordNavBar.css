@@ -277,8 +277,13 @@
 }
 
 @media only screen and (max-width: 600px) {
+    
     #nav-account-dropdown {
-        width: 120px;
+        width: 80px;
+    }
+
+    #nav-menu-dropdown {
+        width: 80px;
     }
 
     #nav-account-dropdown:hover {
@@ -295,14 +300,6 @@
         height: 54px;
         width: 90px;
         margin: 13px 10px;
-    }
-
-    #nav-account-dropdown {
-        width: 80px;
-    }
-
-    #nav-menu-dropdown {
-        width: 80px;
     }
 
     .nav-account-dropdown-body {
