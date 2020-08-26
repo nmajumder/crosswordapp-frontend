@@ -112,7 +112,7 @@ class CrosswordNavBar extends Component {
 
         let blurred = this.props.blurred || this.state.loading
 
-        let collapse = this.state.windowSize < 620
+        let collapse = this.state.windowSize < 620 || window.mobileCheck()
         return (
             <Fragment>
                 <LoadingModal shouldShow={this.state.loading} />

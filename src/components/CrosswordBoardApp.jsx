@@ -182,7 +182,7 @@ class CrosswordBoardApp extends Component {
             8: ["20px", "26px", "32px", "36px", "43px", "50px"],
             9: ["18px", "23px", "28px", "32px", "40px", "45px"],
             15: ["11px", "16px", "20px", "22px", "28px"],
-            21: ["8px", "11px", "14px", "17px", "21px"]
+            21: ["8px", "10px", "14px", "17px", "21px"]
         }
 
         let squareMarginTopMap = {
@@ -192,13 +192,13 @@ class CrosswordBoardApp extends Component {
             8: [squarePx*35/100, squarePx*35/100, squarePx*35/100, squarePx*35/100],
             9: [squarePx*35/100, squarePx*35/100, squarePx*32/100, squarePx*35/100],
             15: [squarePx*3/10, squarePx*35/100, squarePx*4/10, squarePx*35/100],
-            21: [squarePx*37/100, squarePx*33/100, squarePx*33/100, squarePx*3/10]
+            21: [squarePx*33/100, squarePx*33/100, squarePx*33/100, squarePx*3/10]
         }
 
         let squareValueSize
         let squareMarginTop
 
-        if (boardPx < 370) {
+        if (boardPx < 350) {
             squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][0]
             squareNumberStyle["marginLeft"] = boardSize > 10 ? "0px" : "2px"
             squareNumberStyle["marginTop"] = boardSize > 10 ? "0px" : "1px"
@@ -206,6 +206,8 @@ class CrosswordBoardApp extends Component {
             squareMarginTop = squareMarginTopMap[boardSize][0]
         } else if (boardPx < 480) {
             squareNumberStyle["fontSize"] = squareNumberFontSizeMap[boardSize][1]
+            squareNumberStyle["marginLeft"] = boardSize > 10 ? "0px" : "2px"
+            squareNumberStyle["marginTop"] = boardSize > 10 ? "0px" : "1px"
             squareValueSize = squareFontSizeMap[boardSize][1]
             squareMarginTop = squareMarginTopMap[boardSize][0]
         } else if (boardPx < 580) {
@@ -259,7 +261,10 @@ class CrosswordBoardApp extends Component {
                                     onClick={() => document.dispatchEvent(
                                         new KeyboardEvent('keydown', {key: 'Enter', shiftKey: true, bubbles: true})
                                     )} />
-                                <div className="mobile-crossword-clue">
+                                <div className="mobile-crossword-clue"
+                                    onClick={() => document.dispatchEvent(
+                                        new KeyboardEvent('keydown', {key: 'Space', bubbles: true})
+                                    )}>
                                     <span className="mobile-crossword-clue-span">
                                         <span style={{fontWeight: "600", marginRight: "10px"}}>{thisClueNum}</span>{thisClueText}
                                     </span>

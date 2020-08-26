@@ -14,12 +14,6 @@
     position: relative;
 }
 
-@media only screen and (max-width: 900px) {
-    .crossword-page-wrapper {
-        margin: 20px 30px 40px 30px;
-    }
-}
-
 .btn:hover {
     cursor: pointer;
 }
@@ -308,15 +302,21 @@
     border: none;
 }
 
+@media only screen and (max-width: 900px) {
+    .crossword-page-wrapper {
+        margin: 20px 30px 40px 30px;
+    }
+}
+
 @media only screen and (max-width: 705px) {
     .crossword-page-wrapper {
         height: auto;
+        margin: 0;
     }
 
     .crossword-page-title-heading {
-        text-align: left;
         float: left;
-        width: auto;
+        width: 100%;
     }
 
     .crossword-page-rating-heading {
@@ -337,10 +337,6 @@
     .crossword-page-my-ratings {
         margin: none;
         width: auto;
-    }
-
-    .crossword-settings {
-        display: none;
     }
 }
 

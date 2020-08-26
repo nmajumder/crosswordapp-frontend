@@ -314,6 +314,7 @@ class MiniCrosswordApp extends Component {
         if (key === "Backspace") return 8
         else if (key === "Enter") return 13
         else if (key === "Tab") return 9
+        else if (key === "Space") return 32
         else return key.charCodeAt(0)
     }
 
@@ -725,10 +726,9 @@ class MiniCrosswordApp extends Component {
         let baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
         const mobile = windowSize < 700 || window.mobileCheck()
         if (mobile) {
-            baseBoardPx = Math.min(windowSize - 60, window.innerHeight - 60)
+            baseBoardPx = Math.min(windowSize, 600)
         }
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
-        const wrapperHeightPx = `${boardPx + 420}px`
 
         const selectedStyle = {borderColor: "black", backgroundColor: "#F0F0F0"}
         const generatingStyle = {backgroundColor: "gray", pointerEvents: "none"}
@@ -756,7 +756,8 @@ class MiniCrosswordApp extends Component {
                     buttonAction1={modalButtonAction}
                     buttonText2={modalInfo.length > 2 ? modalInfo[2] : ""}
                     buttonAction2={this.closeModal} />
-                <div className="crossword-mini-app-wrapper" ref={this.topRef} style={{filter: modalOpen || loading ? "blur(5px)" : "none"}}>
+                <div className="crossword-mini-app-wrapper" ref={this.topRef} 
+                    style={{filter: modalOpen || loading ? "blur(5px)" : "none", margin: mobile ? `20px ${(windowSize - boardPx) / 2}px` : ""}}>
                     <div className="crossword-mini-app-intro-header">
                         Customize, generate, solve, repeat.
                     </div>
@@ -789,7 +790,7 @@ class MiniCrosswordApp extends Component {
                     </div>
                     <div ref={this.scrollRef}>
                         <div className="crossword-page-controls">
-                            <div className="crossword-settings" onClick={() => { this.settingsClicked() }}>
+                            <div className="crossword-settings" style={{display: mobile ? "none" : ""}} onClick={() => { this.settingsClicked() }}>
                                 <FontAwesomeIcon style={{color: colorScheme.colors[3]}} className="btn crossword-settings-button" icon={faCog} />
                             </div>
                             <div className="crossword-timer-pause-wrapper">
@@ -801,7 +802,7 @@ class MiniCrosswordApp extends Component {
                                     </div>
                                 </div>
                             </div>
-                            { windowSize < 550 ? 
+                            { mobile ? 
                                 <div className="crossword-dropdown-section-mobile" >
                                     <DropdownButton alignRight id="crossword-mobile-dropdown"
                                         title={<FontAwesomeIcon style={{color: colorScheme.colors[3]}} icon={faLightbulb} />}>

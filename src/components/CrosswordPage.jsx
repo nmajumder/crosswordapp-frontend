@@ -496,6 +496,7 @@ class CrosswordPage extends Component {
         if (key === "Backspace") return 8
         else if (key === "Enter") return 13
         else if (key === "Tab") return 9
+        else if (key === "Space") return 32
         else return key.charCodeAt(0)
     }
 
@@ -620,7 +621,7 @@ class CrosswordPage extends Component {
         let baseBoardPx = windowSize < 1200 ? 500 : windowSize < 1600 ? 525 : windowSize < 1800 ? 630 : 630 * 1.2
         const mobile = windowSize <= 705 || window.mobileCheck()
         if (mobile) {
-            baseBoardPx = Math.min(windowSize - 60, window.innerHeight - 60)
+            baseBoardPx = Math.min(windowSize, 600)
         }
         const boardPx = baseBoardPx % boardSize === 0 ? baseBoardPx : baseBoardPx - (baseBoardPx % boardSize)
         return (
@@ -640,7 +641,7 @@ class CrosswordPage extends Component {
                     buttonText2={modalInfo.length > 2 ? modalInfo[2] : ""}
                     buttonAction2={this.closeModal} 
                     board={this.board} />
-                <div style={{filter: `${modalOpen ? "blur(5px)" : "none"}`}} className="crossword-page-wrapper">
+                <div className="crossword-page-wrapper" style={{filter: `${modalOpen ? "blur(5px)" : "none"}`, margin: mobile ? `20px ${(windowSize - boardPx) / 2}px` : ""}} >
                     <div className="crossword-page-heading">
                         <div className="crossword-page-title-heading" style={{ width : mobile ? "" : boardPx }}>
                             <div className="crossword-page-title">{this.props.crossword.title}</div>
@@ -674,7 +675,7 @@ class CrosswordPage extends Component {
                         }
                     </div>
                     <div className="crossword-page-controls">
-                        <div className="crossword-settings" onClick={() => { this.settingsClicked() }}>
+                        <div className="crossword-settings" style={{display: mobile ? "none" : ""}} onClick={() => { this.settingsClicked() }}>
                             <FontAwesomeIcon style={{color: colorScheme.colors[3]}} className="btn crossword-settings-button" icon={faCog} />
                         </div>
                         <div className="crossword-timer-pause-wrapper">
@@ -687,7 +688,7 @@ class CrosswordPage extends Component {
                                 </div>
                             </div>
                         </div>
-                        { windowSize < 550 ? 
+                        { mobile ? 
                             <div className="crossword-dropdown-section-mobile" >
                                 <DropdownButton alignRight id="crossword-mobile-dropdown"
                                     title={<FontAwesomeIcon style={{color: colorScheme.colors[3]}} icon={faLightbulb} />}>

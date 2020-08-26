@@ -131,7 +131,7 @@
     float: left;
     font-size: 12pt;
     padding: 0 20px;
-    width: calc(100% - 90px);
+    width: calc(100% - 130px);
     height: auto;
     margin-top: -2px;
 
@@ -155,20 +155,14 @@
 
 #mobile-left-chevron {
     float: left;
+    padding: 0 10px;
 }
 
 #mobile-right-chevron {
     float: right;
+    padding: 0 10px;
 }
 
 #mobile-left-chevron:hover, #mobile-right-chevron:hover {
     cursor: pointer;
-}
-
-@media only screen and (max-width: 450px) {
-    .mobile-crossword-clue {
-        font-size: 11pt;
-        padding: 0 10px;
-        width: calc(100% - 70px);
-    }
 }

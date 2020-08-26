@@ -121,6 +121,28 @@
     }
 }
 
+@media only screen and (max-width: 700px) {
+    .crossword-mini-app-intro-header {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .crossword-mini-app-intro-body {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .crossword-mini-app-divider {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .crossword-mini-app-customizations {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
 @media only screen and (max-width: 550px) {
     .crossword-mini-app-intro-header {
         font-size: 18pt;
