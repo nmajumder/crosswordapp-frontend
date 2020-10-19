@@ -289,7 +289,6 @@ class LeaderboardApp extends Component {
                             axisLabel={this.axisTitles[selectedStat]} chartInfo={this.chartInfos[selectedStat]} />
                     </div>
                 </div>
-                { window.innerWidth < 700 ? null : <Footer /> }
             </Fragment>
         )
     }

@@ -740,7 +740,6 @@ class CrosswordPage extends Component {
                         boardWidthPx={boardPx}
                         mobile={mobile} />
                 </div>
-                { window.innerWidth < 700 ? null : <Footer blur={modalOpen} /> }
             </Fragment>
         )
     }

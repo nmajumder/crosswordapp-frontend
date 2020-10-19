@@ -102,7 +102,6 @@ class StatsApp extends Component {
                     
                     }
                 </div>
-                { window.innerWidth < 700 ? null : <Footer blur={loading} /> }
             </Fragment>
         )
     }

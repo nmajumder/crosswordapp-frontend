@@ -172,7 +172,6 @@ class CrosswordApp extends Component {
                             onMouseEnter={() => this.overlayHover()} onMouseLeave={() => this.overlayUnhover()}></div>
                     </div>
                 </div>
-                { window.innerWidth < 700 ? null : <Footer blur={modalOpen}/> }
             </Fragment>
         )
     }

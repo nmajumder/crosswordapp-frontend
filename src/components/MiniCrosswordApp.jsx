@@ -856,7 +856,6 @@ class MiniCrosswordApp extends Component {
                             mobile={mobile} />
                     </div>
                 </div>
-                { window.innerWidth < 700 ? null : <Footer /> }
             </Fragment>
         )
     }
